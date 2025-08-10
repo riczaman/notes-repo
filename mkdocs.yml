@@ -2,6 +2,10 @@ site_name: "Ricky's Notes"
 site_description: "Personal Technical Notes"
 site_author: "Ricky Zaman"
 
+# GitHub Pages configuration
+site_url: https://rickyzaman.github.io/notes-repo/
+repo_url: https://github.com/rickyzaman/notes-repo
+
 theme:
   name: material
   palette:
@@ -31,3 +35,6 @@ exclude_docs: |
   topics/*.png
   topics/*.jpg
   topics/*.jpeg
+
+# GitHub Pages deployment
+use_directory_urls: true
