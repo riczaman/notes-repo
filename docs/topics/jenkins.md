@@ -1,16 +1,16 @@
 Automation platform that lets you build, test, and deploy automations using pipelines.
 
-##Jenkins Infrastructure 
+## Jenkins Infrastructure 
 - Master Server = Controls the pipelines & schedules builds
 - Agents/Minions Servers = Run the builds 
 
-###Jenkins Build Types
-`1.` Freestyle Builds - shell scripts that are run on servers based on specific events.
-`2.` Pipeline Builds - Use Jenkins files to define declaritively on how to deploy the build in different stages.
+### Jenkins Build Types
+1. Freestyle Builds - shell scripts that are run on servers based on specific events.
+2. Pipeline Builds - Use Jenkins files to define declaritively on how to deploy the build in different stages.
 
 ---
 
-##Jenkins GUI
+## Jenkins GUI
 - Manage Jenkins: This contains all of the settings that you need for your Jenins instance such as plugins, global settings, etc.
 - `System Configuration/Configure System`
 - `System Configuration/Manage Plugins`
@@ -20,12 +20,11 @@ Automation platform that lets you build, test, and deploy automations using pipe
 
 ---
 
-##Setting up Freestyle Jenkins Projects
-`1.` Go to the Jenkins Dashboard then click on  `New Item`. The two most popular types of projects are `freestyle` and `pipelines`
-`2.` Pick the type of job and give it a name. **Make sure to not to put spaces in the name**
-`3.` From the build options: 
+## Setting up Freestyle Jenkins Projects
+1. Go to the Jenkins Dashboard then click on  `New Item`. The two most popular types of projects are `freestyle` and `pipelines`
+2. Pick the type of job and give it a name. **Make sure to not to put spaces in the name**
+3. From the build options: 
       - `Source Code Management` is usually always `Git` and Jenkins will pull that repo that is specified here. You also will mention any branches if you need specific ones. 
       - Then we have `Build Triggers`: You would usually using GitHub webhooks but you need to make sure the firewall or port is open on the Jenkins server so that it can work with the webhook. `Build Periodically` is used to build jobs on a schedule using cron jobs. 
       - `Build Enviornments` 
-`4.`
-`5.`
+4. 
