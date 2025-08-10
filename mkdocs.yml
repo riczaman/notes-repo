@@ -7,6 +7,10 @@ theme:
   palette:
     primary: white
     accent: deep orange
+  
+  # Static files
+  static_templates:
+    - 404.html
 
 
 nav:
@@ -20,3 +24,10 @@ plugins:
 # Static files configuration
 docs_dir: docs
 site_dir: site
+
+# Exclude certain files from being processed as pages
+exclude_docs: |
+  topics/*.gif
+  topics/*.png
+  topics/*.jpg
+  topics/*.jpeg
