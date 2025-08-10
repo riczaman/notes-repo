@@ -4,7 +4,7 @@ Jenkins is an open-source automation server used for continuous integration and 
 <pre> python def hello(): print("Hello, Jenkins!")</pre>
 ```oo```
 
-<pre>bash<br>docker pull jenkins/jenkins:lts<br></pre> txt
+<pre>bash<br>docker pull jenkins/jenkins:lts<br></pre> 
 
 !!! note "Why Docker is useful here"
 
