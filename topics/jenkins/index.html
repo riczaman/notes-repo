@@ -28,6 +28,9 @@
     
       <link rel="stylesheet" href="../../assets/stylesheets/main.7e37652d.min.css">
       
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
       
 
 
@@ -55,7 +58,12 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -107,8 +115,8 @@
       </div>
     </div>
     
+      
     
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
     
@@ -345,6 +353,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#jenkins-filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkins Filesystem
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -427,6 +444,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#jenkins-filesystem" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkins Filesystem
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -469,16 +495,66 @@
 <hr />
 <h2 id="setting-up-freestyle-jenkins-projects">Setting up Freestyle Jenkins Projects</h2>
 <ol>
-<li>Go to the Jenkins Dashboard then click on  <code>New Item</code>. The two most popular types of projects are <code>freestyle</code> and <code>pipelines</code></li>
-<li>Pick the type of job and give it a name. <strong>Make sure to not to put spaces in the name</strong></li>
-<li>From the build options: <ul>
-<li><code>Source Code Management</code> is usually always <code>Git</code> and Jenkins will pull that repo that is specified here. You also will mention any branches if you need specific ones. </li>
-<li>Then we have <code>Build Triggers</code>: You would usually using GitHub webhooks but you need to make sure the firewall or port is open on the Jenkins server so that it can work with the webhook. <code>Build Periodically</code> is used to build jobs on a schedule using cron jobs. </li>
-<li><code>Build Enviornments</code> </li>
+<li>
+<p>Go to the Jenkins Dashboard then click on  <strong>New Item</strong>. The two most popular types of projects are <code>freestyle</code> and <code>pipelines</code></p>
+</li>
+<li>
+<p>Pick the type of job and give it a name. <strong>Make sure to not to put spaces in the name</strong></p>
+</li>
+<li>
+<p>From the build options: </p>
+<ul>
+<li>
+<p><code>Source Code Management</code> is usually always <code>Git</code> and Jenkins will pull that repo that is specified here. You also will mention any branches if you need specific ones. </p>
+</li>
+<li>
+<p>Then we have <code>Build Triggers</code>: You would usually using GitHub webhooks but you need to make sure the firewall or port is open on the Jenkins server so that it can work with the webhook. <code>Build Periodically</code> is used to build jobs on a schedule using cron jobs. </p>
+</li>
+<li>
+<p><code>Build Enviornments</code>: Good to select the 'Delete Workspace' option to clean up any artifacts from previous runs</p>
+</li>
 </ul>
 </li>
-<li></li>
+<li>
+<p><code>Build</code>:</p>
+<ul>
+<li>Most common option is <code>Execute Shell</code></li>
+</ul>
+</li>
+<li>
+<p><code>Post-Build</code>: Like email notifications</p>
+</li>
+<li>
+<p>After clicking and saving on the build - from the job dashboard you can click <code>Build Now</code></p>
+</li>
 </ol>
+<p><img alt="Freestyle Jenkins Build GIF" src="images/first-job.gif" /></p>
+<ol>
+<li>
+<p>Click on <code>Configure</code> from the Build Homepage to change any settings</p>
+</li>
+<li>
+<p><code>Enviornment Variable</code>:</p>
+<ul>
+<li>To see what env variables your build has access to go to <code>Configure</code> on the build and then scroll to Build Steps and check the <code>Execute Shell</code> step and click on "See the list of available environment variables"</li>
+<li><code>Main Enviornment Variables</code>:
+        - <code>BUILD_ID</code>: Gives you the current build ID and you can use this for docker images
+        - <code>BUILD_URL</code></li>
+<li>To see use enviornment variables <code>${VAR_NAME}</code> in your shell script</li>
+</ul>
+</li>
+<li>
+<p>Reading Console Output:</p>
+<ul>
+<li>Any line in the console that is prefixed with a plus sign <code>+</code> means that is a command that is being run</li>
+</ul>
+</li>
+<li>
+<p><code>Workspace</code>: If there are files that are created and managed by your build they will show up in Jenkins on the Project homepage under the Workspace folder</p>
+</li>
+</ol>
+<hr />
+<h2 id="jenkins-filesystem">Jenkins Filesystem</h2>
 
 
 
