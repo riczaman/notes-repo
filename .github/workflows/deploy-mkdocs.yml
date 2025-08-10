@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -15,22 +15,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false   # important for using PAT below
 
       - uses: actions/setup-python@v4
         with:
           python-version: '3.x'
 
       - run: pip install mkdocs mkdocs-material
-
       - run: mkdocs build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.PAT_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
-          # Optional: specify branch and commit message
-          # publish_branch: gh-pages
-          # commit_message: "Deploy MkDocs site"

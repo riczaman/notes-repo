@@ -27,4 +27,5 @@ Automation platform that lets you build, test, and deploy automations using pipe
       - `Source Code Management` is usually always `Git` and Jenkins will pull that repo that is specified here. You also will mention any branches if you need specific ones. 
       - Then we have `Build Triggers`: You would usually using GitHub webhooks but you need to make sure the firewall or port is open on the Jenkins server so that it can work with the webhook. `Build Periodically` is used to build jobs on a schedule using cron jobs. 
       - `Build Enviornments` 
-`4.`      
+`4.`
+`5.`
