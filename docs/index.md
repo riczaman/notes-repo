@@ -30,7 +30,7 @@ Each section contains:
 
 ---
 
-## Example
+## How I learn
 ![Tech Learning GIF](images/learning.gif)
 
 ---

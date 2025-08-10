@@ -1,85 +1,30 @@
-## Jenkins Notes
+Automation platform that lets you build, test, and deploy automations using pipelines.
 
-Jenkins is an open-source automation server used for continuous integration and delivery (CI/CD).
-<pre> python def hello(): print("Hello, Jenkins!")</pre>
-```oo```
+##Jenkins Infrastructure 
+- Master Server = Controls the pipelines & schedules builds
+- Agents/Minions Servers = Run the builds 
 
-<pre>bash<br>docker pull jenkins/jenkins:lts<br></pre> tt
-
-!!! note "Why Docker is useful here"
-
-    Running Jenkins in Docker avoids messing with your local setup.
-
-    ```bash
-    docker pull jenkins/jenkins:lts
-    docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts
-    ```
-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
----
-
-## Overview
-- Automates building, testing, and deploying software.
-- Highly customizable via plugins.
-- Supports pipelines written in **Groovy**.
+###Jenkins Build Types
+`1.` Freestyle Builds - shell scripts that are run on servers based on specific events.
+`2.` Pipeline Builds - Use Jenkins files to define declaritively on how to deploy the build in different stages.
 
 ---
 
-## Installation
-
-!!! note "Why Docker is useful here"
-    Running Jenkins in Docker avoids messing with your local setup.
-
-```bash
-docker pull jenkins/jenkins:lts
-docker run -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts
-
-Accessing Jenkins
-Open your browser: http://localhost:8080
-
-Retrieve the admin password:
-
-bash
-Copy
-Edit
-docker exec -it <container_id> cat /var/jenkins_home/secrets/initialAdminPassword
-Example Pipeline
-??? example "Click to view a basic pipeline"
-groovy pipeline { agent any stages { stage('Build') { steps { echo 'Building...' } } stage('Test') { steps { echo 'Running tests...' } } stage('Deploy') { steps { echo 'Deploying...' } } } }
-
-Screenshot
-
-Key Points
-Keep pipelines modular.
-
-Use environment variables for secrets.
-
-Test locally before pushing changes.
-
-yaml
-Copy
-Edit
+##Jenkins GUI
+- Manage Jenkins: This contains all of the settings that you need for your Jenins instance such as plugins, global settings, etc.
+- `System Configuration/Configure System`
+- `System Configuration/Manage Plugins`
+- `System Configuration/Manage Nodes & Cloud`: This is where you setup agents
+- `Security/Manage Credentials`: This where you store `SSH keys` or `API tokens`
+-  `Tools and Actions/Prepare for Shutdown`: You need to use this when you are performing and upgrade or maintanence if you just shutdown the server without doing this step then you will interrupt jobs that are running. 
 
 ---
 
-### Folder Structure
-docs/
-index.md
-jenkins.md
-images/
-jenkins-dashboard.png
-
-markdown
-Copy
-Edit
-
----
-
-If you want, I can now give you a **full starter repo** with:
-- `mkdocs.yml` preconfigured for Material theme
-- `index.md`
-- `jenkins.md`
-- `images/` folder
-- GitHub Action ready for deployment
-
-That way you just push and see it live.  
-Do you want me to set that up?
+##Setting up Freestyle Jenkins Projects
+`1.` Go to the Jenkins Dashboard then click on  `New Item`. The two most popular types of projects are `freestyle` and `pipelines`
+`2.` Pick the type of job and give it a name. **Make sure to not to put spaces in the name**
+`3.` From the build options: 
+      - `Source Code Management` is usually always `Git` and Jenkins will pull that repo that is specified here. You also will mention any branches if you need specific ones. 
+      - Then we have `Build Triggers`: You would usually using GitHub webhooks but you need to make sure the firewall or port is open on the Jenkins server so that it can work with the webhook. `Build Periodically` is used to build jobs on a schedule using cron jobs. 
+      - `Build Enviornments` 
+`4.`      

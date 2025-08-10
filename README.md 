@@ -1,2 +1,14 @@
-https://<username>.github.io/<repo-name>/
+https://riczaman.github.io/notes-repo/
 
+---
+| Syntax                            | Purpose                             | Example                                                  |
+| --------------------------------- | ----------------------------------- | -------------------------------------------------------- |
+| `#` / `##` / `###`                | Headings (H1, H2, H3)               | `## Jenkins Notes`                                       |
+| `-` or `*`                        | Bullet lists                        | `- Item 1`                                               |
+| `1.`                              | Numbered list                       | `1. Step one`                                            |
+| `` `inline code` ``               | Inline code snippet                 | `Use the command \`docker run\`\`                        |
+| <pre>`bash<br>commands<br>`</pre> | Code block with syntax highlighting | <pre>`bash<br>docker pull jenkins/jenkins:lts<br>`</pre> |
+| `---` or `***`                    | Horizontal rule (separator line)    | `---`                                                    |
+| `![alt](path)`                    | Image embedding                     | `![Jenkins](images/jenkins.png)`                         |
+| `[text](url)`                     | Hyperlink                           | `[Jenkins](https://jenkins.io)`                          |
+| `> blockquote`                    | Blockquote (for quotes or notes)    | `> Note: Jenkins is great`                               |
