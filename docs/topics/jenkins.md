@@ -40,7 +40,7 @@ Automation platform that lets you build, test, and deploy automations using pipe
 
 6. After clicking and saving on the build - from the job dashboard you can click `Build Now`
 
-![Freestyle Jenkins Build GIF](images/first-job.gif)
+![Freestyle Jenkins Build GIF](../images/first-job.gif)
 
 7. Click on `Configure` from the Build Homepage to change any settings
 
@@ -58,4 +58,4 @@ Automation platform that lets you build, test, and deploy automations using pipe
 
 ---
 
-## Jenkins Filesystem
+## Jenkins Filesystems
