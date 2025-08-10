@@ -1,5 +1,5 @@
 https://riczaman.github.io/notes-repo/
-
+https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
 ---
 | Syntax                            | Purpose                             | Example                                                  |
 | --------------------------------- | ----------------------------------- | -------------------------------------------------------- |
@@ -12,3 +12,21 @@ https://riczaman.github.io/notes-repo/
 | `![alt](path)`                    | Image embedding                     | `![Jenkins](images/jenkins.png)`                         |
 | `[text](url)`                     | Hyperlink                           | `[Jenkins](https://jenkins.io)`                          |
 | `> blockquote`                    | Blockquote (for quotes or notes)    | `> Note: Jenkins is great`                               |
+
+!!! note "Formatting Examples"
+    Here are different ways to format text with colors:
+    
+    - **Bold text** (dark/emphasized)
+    - *Italic text* (subtle emphasis)
+    - `Code text` (monospace, different background)
+    - ==Highlighted text== (yellow highlight)
+    - ~~Strikethrough text~~ (grayed out)
+    - [Link text](https://example.com) (blue, clickable)
+
+!!! tip "Color Options"
+    - **Bold** = Darker, emphasized
+    - *Italic* = Subtle emphasis  
+    - `Code` = Monospace with background
+    - ==Highlight== = Yellow background
+    - ~~Strike~~ = Grayed out
+    - [Links] = Blue, clickable

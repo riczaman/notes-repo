@@ -4,6 +4,10 @@ site_author: "Ricky Zaman"
 
 theme:
   name: material
+  palette:
+    primary: white
+    accent: deep orange
+
 
 nav:
   - Home: index.md
