@@ -1,0 +1,14 @@
+site_name: "Ricky's Notes"
+site_description: "Personal Technical Notes"
+site_author: "Ricky Zaman"
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Topics:
+      - Jenkins: topics/jenkins.md
+
+plugins:
+  - search
