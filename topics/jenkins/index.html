@@ -417,6 +417,51 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-jenkins-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Jenkins Triggers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-jenkin-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up Jenkin Pipelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jenkin-pipeline-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkin Pipeline Syntax
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jenkinsfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkinsfile
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -530,6 +575,51 @@
   <a href="#configuring-jobs-to-agents" class="md-nav__link">
     <span class="md-ellipsis">
       Configuring Jobs to Agents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-jenkins-triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Adding Jenkins Triggers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setting-up-jenkin-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting up Jenkin Pipelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jenkin-pipeline-syntax" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkin Pipeline Syntax
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#jenkinsfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      Jenkinsfile
     </span>
   </a>
   
@@ -716,7 +806,45 @@
 <li>
 <p>For these Docker Jobs on the same screen of the Console Output you will see a tab called <code>Built on Docker</code> which shows the container details. </p>
 </li>
+<li>
+<p>This helps you troubleshoot because some agents might not have the required software like Python3 so if you assign this agent template that does not have python to a build that requires it then it will error out. <strong>In this scenario you should create your own Docker Image that has python installed</strong></p>
+</li>
+<li>
+<p>To create another agent you just need to go back to the <code>Docker Agent Template</code> and then create another template.</p>
+</li>
 </ol>
+<h2 id="_1"><img alt="Cloud Agent Templates" src="/notes-repo/images/cloud-agent.gif" /></h2>
+<h2 id="adding-jenkins-triggers">Adding Jenkins Triggers</h2>
+<ol>
+<li>Build Triggers/<code>Poll SCM</code>: Jenkins Master will periodically check github for any changes and its much easier to manage then setting up webhooks.<ul>
+<li>It uses cron notation </li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="setting-up-jenkin-pipelines">Setting up Jenkin Pipelines</h2>
+<ol>
+<li>
+<p>Similair to how we created freestyle projects you need to go to <code>New Item</code> and then click on <code>Pipeline</code>. You will notice that at the top most of the settings are the same but you have less freedom with pipelines for advanced settings as most of the steps are carried out by the <strong><code>Pipeline Script</code></strong> section.</p>
+</li>
+<li>
+<p>There are two ways to build out the pipeline script and both ways use the <strong><code>Groovy Syntax</code></strong>:</p>
+<ul>
+<li><code>Directly in the UI</code></li>
+<li><code>Jenkinsfile</code></li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="jenkin-pipeline-syntax">Jenkin Pipeline Syntax</h2>
+<ul>
+<li>Everything is wrapped in a <code>pipeline</code> parameter {}</li>
+<li>First step in the pipeline is to select the <code>agent</code> that will carry out the job and it is specified by the <code>label</code> parameter</li>
+<li>Next step is the <code>Stages</code>: This is where you define your stages like building -&gt; testing -&gt; deploying</li>
+<li>When you create a Pipeline Build you can see a section for <strong>Pipleline Overview</strong> which will show you all of the stages you built. </li>
+</ul>
+<hr />
+<h2 id="jenkinsfile">Jenkinsfile</h2>
 
 
 
