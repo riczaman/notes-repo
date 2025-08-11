@@ -146,8 +146,197 @@ Automation platform that lets you build, test, and deploy automations using pipe
 
 ## Jenkinsfile
 
+- Instead of putting the script directly into the UI of Jenkins you can create a `Jenkinsfile` within the parent folder of your code repository and then outline all of the deployment steps in this special file
+
+```groovy title="Jenkinsfile" linenums="1"
+pipeline { 
+    agent { 
+        node {
+            label 'docker-agent-python'
+        }
+    }
+    triggers {
+        pollSCM '* * * * *'
+    }
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building.."
+                sh '''
+                cd myapp
+                pip install -r requirements.txt
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                echo "Testing.."
+                sh '''
+                cd myapp
+                python3 hello.py
+                python3 hello.py --name=Brad
+                '''
+            }
+        }
+        stage('Deliver') {
+            steps {
+                echo 'Deliver....'
+                sh '''
+                echo "doing delivery stuff.."
+                '''
+            }
+        }
+    }
+}
+```
+- Within the Pipeline build in Jenkins, you need to change the pipeline from using *Pipeline Script* to use `Pipeline Script from SCM` then add the github repo. **Make sure you put the `Jenkinsfile` path in the `Script Path`**
+
+- When you get the pipeline from SCM it will add a first step where it sees if it can checkout from SCM without any errors. 
 
 
+```groovy title="Standardized Jenkinsfile" linenums="1"
+pipeline {
+    agent any  // Use any available Jenkins agent/node
 
+    // Parameters allow customization without changing the Jenkinsfile
+    parameters {
+        string(name: 'GIT_REPO', defaultValue: 'https://github.com/your-org/your-repo.git', description: 'GitHub repository URL')
+        string(name: 'GIT_BRANCH', defaultValue: 'develop', description: 'Git branch to build')
+        string(name: 'GITHUB_CREDENTIALS_ID', defaultValue: 'github-credentials-id', description: 'Jenkins credentials ID for GitHub access')
+        string(name: 'SONARQUBE_PROJECT_KEY', defaultValue: 'my-app', description: 'SonarQube project key')
+        string(name: 'SONARQUBE_TOKEN', defaultValue: 'sonarqube-token-id', description: 'Jenkins credentials ID for SonarQube token')
+        choice(name: 'BUILD_ENV', choices: ['dev', 'qa', 'prod'], description: 'Deployment environment')
+    }
+
+    environment {
+        // Common environment variables for builds
+        NODE_VERSION = '18'
+        JAVA_VERSION = '17'
+        MAVEN_HOME = tool name: 'Maven 3', type: 'maven'
+        // This assumes Jenkins SonarQube plugin is configured as "sonarqube"
+        SONARQUBE_ENV = 'sonarqube'
+    }
+
+    triggers {
+        // Automatically build when there are new commits in the repo
+        pollSCM('H/5 * * * *') // Every 5 minutes
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clone code from GitHub using stored credentials
+                git branch: "${params.GIT_BRANCH}",
+                    credentialsId: "${params.GITHUB_CREDENTIALS_ID}",
+                    url: "${params.GIT_REPO}"
+            }
+        }
+
+        stage('Set Up Node') {
+            steps {
+                // Install Node version for frontend builds
+                sh """
+                    echo "Setting up Node.js ${NODE_VERSION}"
+                    nvm install ${NODE_VERSION}
+                    nvm use ${NODE_VERSION}
+                """
+            }
+        }
+
+        stage('Set Up Java') {
+            steps {
+                // Configure Java for backend builds
+                sh "java -version"
+                sh "javac -version"
+            }
+        }
+
+        stage('Install Frontend Dependencies') {
+            when { expression { fileExists('frontend/package.json') } }
+            steps {
+                dir('frontend') {
+                    sh "npm install"
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            when { expression { fileExists('backend/pom.xml') } }
+            steps {
+                dir('backend') {
+                    sh "${MAVEN_HOME}/bin/mvn clean install -DskipTests"
+                }
+            }
+        }
+
+        stage('Run Unit Tests') {
+            parallel {
+                stage('Frontend Tests') {
+                    when { expression { fileExists('frontend/package.json') } }
+                    steps {
+                        dir('frontend') {
+                            sh "npm test"
+                        }
+                    }
+                }
+                stage('Backend Tests') {
+                    when { expression { fileExists('backend/pom.xml') } }
+                    steps {
+                        dir('backend') {
+                            sh "${MAVEN_HOME}/bin/mvn test"
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${SONARQUBE_ENV}") {
+                    withCredentials([string(credentialsId: "${params.SONARQUBE_TOKEN}", variable: 'SONAR_TOKEN')]) {
+                        dir('backend') {
+                            // You can run separate Sonar scans for frontend/backend if needed
+                            sh """
+                                ${MAVEN_HOME}/bin/mvn sonar:sonar \
+                                    -Dsonar.projectKey=${params.SONARQUBE_PROJECT_KEY} \
+                                    -Dsonar.login=$SONAR_TOKEN
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Conditional Deployment') {
+            when {
+                anyOf {
+                    branch pattern: "feature/.*", comparator: "REGEXP"
+                    branch pattern: "hotfix/.*", comparator: "REGEXP"
+                    branch 'main'
+                    branch 'develop'
+                }
+            }
+            steps {
+                sh """
+                    echo "Deploying to ${params.BUILD_ENV} environment"
+                    # Add deployment scripts or commands here
+                """
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully."
+        }
+        failure {
+            echo "Pipeline failed. Check logs for details."
+        }
+        always {
+            cleanWs() // Clean workspace after build
+        }
+    }
+}
+```
 
 

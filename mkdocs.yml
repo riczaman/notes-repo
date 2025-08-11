@@ -11,6 +11,12 @@ theme:
   palette:
     primary: teal
     accent: cyan
+  features:
+     - content.code.copy
+     - content.code.select
+     - content.code.annotate
+
+
   
   # Static files
   static_templates:
@@ -48,3 +54,12 @@ extra_css:
 
 extra_javascript:
   - javascripts/extra.js
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
