@@ -110,3 +110,44 @@ Automation platform that lets you build, test, and deploy automations using pipe
 2. Now when you build the job it will use the specific agent that you assigned the docker-alpine label too. **Note: It's important that you use the correct image because outdated ones will keep your job in pending state as it won't be able to find a live agent since an incorrect image will lead to provisioning errors**
 
 3. For these Docker Jobs on the same screen of the Console Output you will see a tab called `Built on Docker` which shows the container details. 
+
+4. This helps you troubleshoot because some agents might not have the required software like Python3 so if you assign this agent template that does not have python to a build that requires it then it will error out. **In this scenario you should create your own Docker Image that has python installed**
+
+5. To create another agent you just need to go back to the `Docker Agent Template` and then create another template.
+
+![Cloud Agent Templates](/notes-repo/images/cloud-agent.gif)
+--- 
+
+## Adding Jenkins Triggers
+
+1. Build Triggers/`Poll SCM`: Jenkins Master will periodically check github for any changes and its much easier to manage then setting up webhooks.
+    - It uses cron notation 
+
+---
+
+## Setting up Jenkin Pipelines
+
+1. Similair to how we created freestyle projects you need to go to `New Item` and then click on `Pipeline`. You will notice that at the top most of the settings are the same but you have less freedom with pipelines for advanced settings as most of the steps are carried out by the **`Pipeline Script`** section.
+
+2. There are two ways to build out the pipeline script and both ways use the **`Groovy Syntax`**:
+      - `Directly in the UI`
+      - `Jenkinsfile`
+
+---
+
+## Jenkin Pipeline Syntax
+
+- Everything is wrapped in a `pipeline` parameter {}
+- First step in the pipeline is to select the `agent` that will carry out the job and it is specified by the `label` parameter
+- Next step is the `Stages`: This is where you define your stages like building -> testing -> deploying
+- When you create a Pipeline Build you can see a section for **Pipleline Overview** which will show you all of the stages you built. 
+
+---
+
+## Jenkinsfile
+
+
+
+
+
+
