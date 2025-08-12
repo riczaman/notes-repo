@@ -1,0 +1,1 @@
+Docker is an open platform designed for developing, shipping, and running applications using containerization. At a high level, it enables users to package an application and all its dependencies (code, libraries, system tools, runtime, and configurations) into a standardized unit called a container. 

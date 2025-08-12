@@ -27,6 +27,7 @@ nav:
   - Home: index.md
   - Topics:
       - Jenkins: topics/jenkins.md
+      - Docker: topics/docker.md
 
 # Ensure proper URL handling
 strict: false
