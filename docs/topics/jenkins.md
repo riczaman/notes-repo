@@ -148,51 +148,9 @@ Automation platform that lets you build, test, and deploy automations using pipe
 
 - Instead of putting the script directly into the UI of Jenkins you can create a `Jenkinsfile` within the parent folder of your code repository and then outline all of the deployment steps in this special file
 
-```groovy title="Jenkinsfile" linenums="1"
-pipeline { 
-    agent { 
-        node {
-            label 'docker-agent-python'
-        }
-    }
-    triggers {
-        pollSCM '* * * * *'
-    }
-    stages {
-        stage('Build') {
-            steps {
-                echo "Building.."
-                sh '''
-                cd myapp
-                pip install -r requirements.txt
-                '''
-            }
-        }
-        stage('Test') {
-            steps {
-                echo "Testing.."
-                sh '''
-                cd myapp
-                python3 hello.py
-                python3 hello.py --name=Brad
-                '''
-            }
-        }
-        stage('Deliver') {
-            steps {
-                echo 'Deliver....'
-                sh '''
-                echo "doing delivery stuff.."
-                '''
-            }
-        }
-    }
-}
-```
 - Within the Pipeline build in Jenkins, you need to change the pipeline from using *Pipeline Script* to use `Pipeline Script from SCM` then add the github repo. **Make sure you put the `Jenkinsfile` path in the `Script Path`**
 
 - When you get the pipeline from SCM it will add a first step where it sees if it can checkout from SCM without any errors. 
-
 
 ```groovy title="Standardized Jenkinsfile" linenums="1"
 pipeline {
@@ -339,4 +297,65 @@ pipeline {
 }
 ```
 
+---
 
+## Settings up Jenkins Agents on Windows Server
+
+- Need to make sure the version of Java that you install on the Windows Server is the same one that is installed on the Jenkins Controller
+- To find the version, go to `Manage Jenkins` then go to `System Information` and search for **java.home**
+- Adding these Nodes:
+      1. Click on Manage Configurations and then go to Nodes and create a new node
+      2. Provide a name and then click on `Permanent` this it is not a cloud or dynamic server.
+      3. The remote root directory will be a path on the server: `d:\tools\jenkins-agent`
+      4. If you leave the `label` blank it will take on the name of the agent.
+      5. Usage needs to be set as only when using the label name
+      6. `Websocket` If you don't select this option then you need to just make sure you open a specific port on the agent so that it can communicate with the master via `tcp`. When you save this in the Jenkins Master it will save the connection type but will be marked with a red X because you need to connect the agent to the master. **If you click on the red X it will give you commands to run on the agent**
+
+      7. For exectuable services you can leverage `WinSW` which is a wrapper for any executable so that it can be run as a Windows Service
+         - The way this works is you rename the WinSW ex as your jenkins agent and then need an xml file that defines what it runs
+         - The arguments in the xml come from the Jenkins UI when you click on the red X
+         - The agent.jar also comes from this locaton after you click on the red X
+         - After you start the service then it will connect to the master
+
+---
+
+## Jenkins Multibranch Pipelines
+
+1. Creating a `GitHub App`: Go to GitHub and click on Settings then go to Developer Settings then create the GitHub App and Set the permissions. Then set the subscribe events like push, repository, and other events.
+
+2. To add credentials in Jenkins: Click on `Manage Jenkins\Credentials` then click on the Global one and then add credential and add for a GitHub app.
+**PAT (personal access token) gives you a lot less GitHub limits whereas a GitHub app lets you call to GitHub a lot more**
+
+3. Create a new item and select `Multi-Branch Pipeline`:
+      - For branch sources select GitHub
+      - *If you dont have a Jenkinsfile then there will be no build configuration since you are selecting builds based on this type of file*
+
+4. The way the multibranch pipeline works is that Jenkins scans the repo for every branch name and allows you to see that in the app homepage view:
+      - `On Different Branches you can modify the Jenkinsfile so that different things can be carried out`
+
+For Example, you can create stages in the pipeline based on a specific type of branch
+```
+stage('fix branch){
+  when{
+    branch "fix-*"
+  }
+  steps{
+    sh ```
+    cat README.md
+    ```
+  }
+}
+
+stage('merge pr){
+  when{
+    branch "pr-*"
+  }
+  steps{
+    echo "this is for prs"
+  }
+}
+```
+
+5. `Dealing with Pull Requests`: Now you need to create a PR to merge this branch back into the `main` which will in this scenario also update the root jenkins file so going forward each type of branch will have a specific pathway
+      - Pull Requests also show up in the Jenkins build page for the multibranch pipeline
+      - **Any PR or branch that has a strikethough means that it was already `merged and then the branch deleted` so it no longer exists** These go away next time a scan occurs
