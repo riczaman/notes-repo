@@ -75,6 +75,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#deployment-before-containers" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -319,6 +324,19 @@
       
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Docker
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -330,6 +348,50 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-before-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment before Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-with-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment with Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-vs-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      VM vs Docker
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -361,6 +423,41 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-before-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment before Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-with-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Deployment with Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-vs-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      VM vs Docker
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -381,6 +478,26 @@
   <h1>Docker</h1>
 
 <p>Docker is an open platform designed for developing, shipping, and running applications using containerization. At a high level, it enables users to package an application and all its dependencies (code, libraries, system tools, runtime, and configurations) into a standardized unit called a container. </p>
+<h2 id="deployment-before-containers">Deployment before Containers</h2>
+<ul>
+<li>Each developer needs to install the services and dependencies locally on their OS on their laptop (Redis, Database, Messaging, etc)</li>
+<li>Installation on different OS (Mac vs Windows) is different</li>
+<li>Prone to error as the setup can be difficult especially if your application is complex</li>
+</ul>
+<h2 id="deployment-with-containers">Deployment with Containers</h2>
+<ul>
+<li>With containers like Docker you don't have to install all of the services independently on your OS instead these services come packaged with the application in an isolated enviornment</li>
+<li>Docker also allows you to run different versions of an application without any conflicts (ie. Redis 4.1, Redis 4.2, Redis 4.3, etc)</li>
+</ul>
+<h2 id="vm-vs-docker">VM vs Docker</h2>
+<ul>
+<li>Docker only contains and deals with the OS application layer</li>
+<li>VM has the container layer and the OS Kernel</li>
+<li><em>As a result Docker packages are a lot smaller since they only have to implement one layer of the OS and they are faster to start up since VMS have to boot up the OS Kernel</em></li>
+<li><strong>VMs are compatible with all OS but Docker is only compatible with Linux OS for example if you have Linux Docker file it can run on a Windows machine because the Windows machine has the Windos OS Kernel</strong></li>
+<li><code>Docker Desktop</code> now lets Linux Containers work with Mac or Windows OS. Docker Desktop uses a hypervisor layer which has the Linux kernel that is needed. </li>
+</ul>
+<hr />
 
 
 
