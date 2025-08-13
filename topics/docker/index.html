@@ -389,6 +389,60 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#docker-images-vs-docker-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Images vs Docker Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Registry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Image Versioning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Images
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Images
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#port-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Port Binding
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -456,6 +510,60 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#docker-images-vs-docker-containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Images vs Docker Containers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Registry
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Image Versioning
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Images
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Images
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#port-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Port Binding
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -474,8 +582,6 @@
   
   
 
-
-  <h1>Docker</h1>
 
 <p>Docker is an open platform designed for developing, shipping, and running applications using containerization. At a high level, it enables users to package an application and all its dependencies (code, libraries, system tools, runtime, and configurations) into a standardized unit called a container. </p>
 <h2 id="deployment-before-containers">Deployment before Containers</h2>
@@ -498,6 +604,62 @@
 <li><code>Docker Desktop</code> now lets Linux Containers work with Mac or Windows OS. Docker Desktop uses a hypervisor layer which has the Linux kernel that is needed. </li>
 </ul>
 <hr />
+<h2 id="docker-images-vs-docker-containers">Docker Images vs Docker Containers</h2>
+<ul>
+<li>
+<p><code>Docker image</code> is the artifact that we create that has the application and all of it envionrment dependencies that we can then upload to an artifact repository so another server/person can download and run it &amp; it is executable</p>
+</li>
+<li>
+<p><code>Docker Container</code> is a running instance of an image. Basically the server or host or machine that runs the image becomes the Docker container 
+            - <em>You can run multiple containers from one image</em></p>
+</li>
+<li>
+<p><code>docker images</code>: <strong>Command to see all the images that you have in your docker instance</strong></p>
+</li>
+<li><code>docker ps</code>: <strong>See your running containers</strong></li>
+</ul>
+<hr />
+<h2 id="docker-registry">Docker Registry</h2>
+<ul>
+<li>Registries are places that have premade docker images stored</li>
+<li><code>Docker Hub</code> is Docker's officially registry: https://hub.docker.com/</li>
+</ul>
+<hr />
+<h2 id="image-versioning">Image Versioning</h2>
+<ul>
+<li>New versions of the application require new versions of the docker image and these versions are called <strong>Tags</strong></li>
+<li>All images have a tag called <code>latest</code> which indicates it the newest version of that image. If you don't choose a specific version you get latest by default</li>
+</ul>
+<hr />
+<h2 id="getting-images">Getting Images</h2>
+<ol>
+<li>Search for the image (package) that you need from a Registry</li>
+<li>Then run <code>docker pull {name}:tag</code></li>
+<li>You didn't have to specify the registry here because DockerHub is the default location where it searches. </li>
+</ol>
+<p><img alt="Docker Pull GIF" src="/notes-repo/images/dockerpull.gif" /></p>
+<hr />
+<h2 id="running-images">Running Images</h2>
+<ol>
+<li>To run images you just need to use this commmand: <code>docker run imageName:tagnNumber</code></li>
+<li>
+<p>Running the container using this command runs it in the foreground which means your terminal is now blocked</p>
+</li>
+<li>
+<p>Using <code>-d</code> flag will run the container in the background and it will give you the full process ID</p>
+</li>
+<li>
+<p><code>docker run -d name:tag</code> </p>
+</li>
+<li>
+<p>To see <strong>Logs</strong> while running containers in the backround: <code>docker logs containerID</code> (you get this from docker ps)</p>
+</li>
+<li>
+<p><em>You can skip the docker pull command and just run the docker run for an image that you don't have locally as long as that image is found in DockerHub</em></p>
+</li>
+</ol>
+<hr />
+<h1 id="port-binding">Port Binding</h1>
 
 
 
