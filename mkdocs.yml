@@ -28,6 +28,7 @@ nav:
   - Topics:
       - Jenkins: topics/jenkins.md
       - Docker: topics/docker.md
+      - GitHub Actions: topics/actions.md
 
 # Ensure proper URL handling
 strict: false
