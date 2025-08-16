@@ -56,3 +56,43 @@
 - Deep Learning is used extracting features and rules from data and it uses neural networks with multiple layers. 
 
 ---
+
+##Machine Learning Foundations
+
+- ML provides statidstical tools to analyze, visualize, and make predictions from data like Netflix movie suggestions. 
+
+- ML uses `input features` to describe what the `output label` should be. Train the model with the input features and then when the model is trained we can apply ==**inference**== which is the ability to predic the label. 
+
+- Types of Machine Learning:
+   - Supervised which uses labeled data, unsupervised where we just understand relationships and reinforcement which make decisions. 
+   - Supervised examples include: disease detection, weather forecasting, stock price prediction, spam detection
+   - Unsupervised examples: Fradulent transactions, outlier detection and targeted marketing campaigns 
+   - Reinforcement: automated robots, autonomous cars, healthcare and video games
+
+##==**Supervised Learning: Classification**==
+- There are 2 types of output labels:
+   - `Continous` - This leads to `Regression`
+   - `Categorical` - This leads to `Classification` and these can be `binary` or `multi-class` (different types of the same thing like 3 different species of a flower)
+
+- Classification = a supervised mL technique used to categorize or assign data points into predefined classes based on their features or attributes. 
+- They train using a labelled data set
+
+Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: helps in predicting if something is true or false. Logistic regression uses an S-sjaped curve (sigmoid) for the data as opposed to linear regression.
+
+##==**Supervised Learning: Regression**==
+- Independent features are the labeled input and the dependent feature is the output label
+- Uses linear regression 
+- loss is a number indicating how far the predicted value is from the actual value
+
+---
+
+##Jupyter Notebooks
+- `Anaconda` is an open source python and R for data science and machine learning. It helps with package management and deployment. Within Anaconda is `Jupyter Notebooks` which is an IDE that allows you to share documents. 
+- This opens up a terminal view on localhost of your files. 
+
+- Machine Level Process consists of: 
+   1. Loading Data
+   2. Preprocessing - this involves creating features and labels
+   3. Training a Model
+   4. Evaluating the Model
+   5. Making Predictions 
