@@ -30,3 +30,9 @@ https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
     - ==Highlight== = Yellow background
     - ~~Strike~~ = Grayed out
     - [Links] = Blue, clickable
+
+==text== - Yellow highlight
+^^text^^ - Red highlight
+~~text~~ - Strikethrough
+**text** - Bold
+*text* - Italic

@@ -8,9 +8,13 @@ repo_url: https://github.com/riczaman/notes-repo
 
 theme:
   name: material
+  font:
+    text: Raleway
+    code: Fira Code
   palette:
-    primary: teal
-    accent: cyan
+    primary: deep orange
+    accent: green
+
   features:
      - content.code.copy
      - content.code.select
@@ -29,6 +33,7 @@ nav:
       - Jenkins: topics/jenkins.md
       - Docker: topics/docker.md
       - GitHub Actions: topics/actions.md
+      - Oracle AI Foundations: topics/aiFoundations.md
 
 # Ensure proper URL handling
 strict: false
@@ -65,3 +70,6 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.mark
+  - pymdownx.caret
+  - pymdownx.tilde
