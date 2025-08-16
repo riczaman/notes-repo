@@ -96,3 +96,35 @@ Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: he
    3. Training a Model
    4. Evaluating the Model
    5. Making Predictions 
+
+- Important ML Libraries in Python from `Sklearn`
+   1. `train_test_split` - this module is used to split the data into 2 sets one where you can train the model and other set to test
+   2. `StandardScalar` - Process of transforming data so it has a mean of 0 and a standard deviation of 1 and it make sures all features use the same scale. if. square foot vs number of beds when predicting the price of a house. 
+   3. `accuracy_score`- gives you an prediction of how strong the prediction is (classification)
+
+- `Unsupervised Learning`:
+   - There are no labelled outputs 
+   - Algorithms learn the patterns in the data and group similair data items together. 
+
+   - ==**Clustering**==: is the grouping of simialir data items
+   - ==**Similarity**==: is how close two data points are to each other and is a value between 0 and 1 and this determines what cluster objects belong too.
+
+   - Unsupervised Workflow:
+      1. Prepare the data (remove missing values and normalize)
+      2. Create similarity metrics
+      3. Run the clustering algorithm (parition, density, hierarchial and distribution)
+      4. Interpret results and adjust clusternig 
+
+- `Reinforcement Learning`:
+   - type of machine learning that enables an agent to learn from its interactions within the enviornment.
+   - agent = interacts with the enviornment and takes action and learns from feedback
+   - enviornment = external systems with which the agent interacts
+   - state = representation of the current situation of the enviornment
+   - action = possible moves or decisions that the agent can take
+   - policy = mapping that the agent uses to devide which action to take
+
+   - `optimal policy` = finding the policy that yields a lot of rewards. The algorithms used are: ==**Q learning or Deep Q learning**==
+
+---
+
+##Deep Learning Foundations
