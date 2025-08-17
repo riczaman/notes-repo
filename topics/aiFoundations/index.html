@@ -486,6 +486,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#generative-ai-llm-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generative AI &amp; LLM Foundations
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -599,6 +608,15 @@
   <a href="#deep-learning-foundations" class="md-nav__link">
     <span class="md-ellipsis">
       Deep Learning Foundations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generative-ai-llm-foundations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generative AI &amp; LLM Foundations
     </span>
   </a>
   
@@ -835,7 +853,7 @@
 <p>Building Blocks of ANN:</p>
 </li>
 <li><code>Layers</code> which are inputs and hidden layers </li>
-<li><code>Neurons</code> are computantional units that accept input and produce an output</li>
+<li><code>Neurons</code> are computantional units that accept input and produce an output and applies ther activation function to generate output</li>
 <li><code>Weights</code> which determine the strength of connection between neurons</li>
 <li><code>Activation Function</code> work on the weighted sum of inputs to a neuron to produce an output</li>
 <li>
@@ -871,8 +889,26 @@
     - CNN: processes grid like data like images and videos. CNN works good with 2D data by reducing images into an easier to process form.
 
     - CNN Layers:
-       1.
+       1. Input Layer 
+       2. Feature Extraction layers: This layer is to automatically learn and extract patterns from the input images
+          -convolutional layers (uses small filters kernels)
+          -activation function allows the network to learn more complex non linear data
+          -pooling layer reduces computational complexity
+          -fully connected layer
+          -softmax layer
+          -dropout layer
+       3. Classification Layers
+
+    - Limitations of CNN:
+       - Computation: needs alot of data and compute 
+       - Overfitting: happens with limited traning data
+       -Interpretiability: black box models
+       -Sensitivity: sensitive to input variations
+
+    - Main use of CNN is image classification, object detection, image segmentation, face recognition.
 </code></pre></div>
+<hr />
+<h2 id="generative-ai-llm-foundations">Generative AI &amp; LLM Foundations</h2>
 
 
 
