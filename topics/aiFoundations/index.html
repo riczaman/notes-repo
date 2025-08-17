@@ -809,6 +809,70 @@
 </ul>
 <hr />
 <h2 id="deep-learning-foundations">Deep Learning Foundations</h2>
+<ul>
+<li>
+<p>A subset of machine learning that focuses on training <mark><strong>Artificial Neural Networks (ANNs)</strong></mark> with multiple layers </p>
+</li>
+<li>
+<p>ML needs us to specify features wheres in <code>Deep Learning extracts features from raw and complex data and DL algorithms allow parallel processing of data so it has better scalability and performance</code>. </p>
+</li>
+<li>
+<p>The use of GPUs were needed for this complex learning and machine algorithms</p>
+</li>
+<li>
+<p>Types of Deep Learning algorithms can be broken down into two types: <code>Data</code> (Images, videos, text, audio) and the <code>applications</code> (image classification, face detection, NLP) </p>
+</li>
+<li>
+<p>Deep Learning Alorithm for <code>images</code> is <mark><strong>Convolutional Neural Networks (CNN)</strong></mark></p>
+</li>
+<li>
+<p>For <code>text</code> we use <mark><strong>Transformers, Long-Short Term Memory (LSTM) or Recurrent Neural Networks (RNN)</strong></mark></p>
+</li>
+<li>
+<p>For <code>images, audio and text generation</code> we can use: <mark><strong>Transformers, Difussion models, and Generative Adversarial networks (GAN)</strong></mark></p>
+</li>
+<li>
+<p>Building Blocks of ANN:</p>
+</li>
+<li><code>Layers</code> which are inputs and hidden layers </li>
+<li><code>Neurons</code> are computantional units that accept input and produce an output</li>
+<li><code>Weights</code> which determine the strength of connection between neurons</li>
+<li><code>Activation Function</code> work on the weighted sum of inputs to a neuron to produce an output</li>
+<li>
+<p><code>Bias</code>: is additional input to a neuron that allows a certain degree of flexibility </p>
+</li>
+<li>
+<p>ANNs are trained using <mark><strong>Backpropgation Algorithm</strong></mark> which is guessing and comparing and then measuring the error. Then the weights are adjusted and then weights are updated. Repeat and Learng Model training method</p>
+</li>
+<li>
+<p>Deep Learning Models for <code>Sequence Models</code></p>
+</li>
+<li>Sequence models are input data in the form of sequences and the goal is to find patterns and make predictions. Like NLP, speech recognition, gesture recognition, etc</li>
+</ul>
+<p>-<mark><strong>Recurrent Neural Networks (RNN)</strong></mark> handle sequential data and there is a feedback loop and it can maintain a hidden state or memory and it updates as each element in the sequence is processed. So it can capture dependencies 
+      -Architecture:
+         1. <code>One to One</code>: used for non sequential data
+         2. <code>One to Many</code>: music generation or sequence generation
+         3. <code>Many to one</code>: sentiment analysis 
+         4. <code>Many to Many</code>: machine translation and entity recognition. </p>
+<div class="language-text highlight"><pre><span></span><code>-==**Long Short Term Memory**==: Works by using a specialized memory cell and gating mechanisms to capture long term dependencies which RNN is not good at. 
+- Input processing at step 1, then it recieves the previous memory hidden state value then there is a gating mechanism (input gate, forget gate, and output gate) then it updates the memory and then it produced output generation.
+
+-==**Convolutional Neural Networks**==: 
+   -Deep Learning Models: 
+       1. `Feed Forward Neural Networks (FNN)` - multi layer perception MLP (simplest)
+       2. `Convolutional Neural Networks (CNN)` - good for image and video 
+       3. `Recurrent Neural Networks (RNN)` - good  for time series and sequential data
+       4. `Autoencoders` - are unsupervised learning models used for feature extraction.
+       5. `Long Short Term Memory` - specilized RNN for long term dependencies
+       6. Generative Adversarial Network` (GAN) producing images and content 
+       7. `Transformers` which is used for language processing
+
+    - CNN: processes grid like data like images and videos. CNN works good with 2D data by reducing images into an easier to process form.
+
+    - CNN Layers:
+       1.
+</code></pre></div>
 
 
 
