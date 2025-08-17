@@ -143,7 +143,7 @@ Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: he
 
 - Building Blocks of ANN:
    1. `Layers` which are inputs and hidden layers 
-   2. `Neurons` are computantional units that accept input and produce an output
+   2. `Neurons` are computantional units that accept input and produce an output and applies ther activation function to generate output
    3. `Weights` which determine the strength of connection between neurons
    4. `Activation Function` work on the weighted sum of inputs to a neuron to produce an output
    5. `Bias`: is additional input to a neuron that allows a certain degree of flexibility 
@@ -176,4 +176,24 @@ Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: he
         - CNN: processes grid like data like images and videos. CNN works good with 2D data by reducing images into an easier to process form. 
 
         - CNN Layers:
-           1. 
+           1. Input Layer 
+           2. Feature Extraction layers: This layer is to automatically learn and extract patterns from the input images
+              -convolutional layers (uses small filters kernels)
+              -activation function allows the network to learn more complex non linear data
+              -pooling layer reduces computational complexity
+              -fully connected layer
+              -softmax layer
+              -dropout layer
+           3. Classification Layers
+
+        - Limitations of CNN:
+           - Computation: needs alot of data and compute 
+           - Overfitting: happens with limited traning data
+           -Interpretiability: black box models
+           -Sensitivity: sensitive to input variations 
+
+        - Main use of CNN is image classification, object detection, image segmentation, face recognition. 
+
+---
+
+##Generative AI & LLM Foundations
