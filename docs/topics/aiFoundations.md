@@ -128,3 +128,52 @@ Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: he
 ---
 
 ##Deep Learning Foundations
+- A subset of machine learning that focuses on training ==**Artificial Neural Networks (ANNs)**== with multiple layers 
+
+- ML needs us to specify features wheres in `Deep Learning extracts features from raw and complex data and DL algorithms allow parallel processing of data so it has better scalability and performance`. 
+- The use of GPUs were needed for this complex learning and machine algorithms
+
+- Types of Deep Learning algorithms can be broken down into two types: `Data` (Images, videos, text, audio) and the `applications` (image classification, face detection, NLP) 
+
+1. Deep Learning Alorithm for `images` is ==**Convolutional Neural Networks (CNN)**==
+
+2. For `text` we use ==**Transformers, Long-Short Term Memory (LSTM) or Recurrent Neural Networks (RNN)**==
+
+3. For `images, audio and text generation` we can use: ==**Transformers, Difussion models, and Generative Adversarial networks (GAN)**==
+
+- Building Blocks of ANN:
+   1. `Layers` which are inputs and hidden layers 
+   2. `Neurons` are computantional units that accept input and produce an output
+   3. `Weights` which determine the strength of connection between neurons
+   4. `Activation Function` work on the weighted sum of inputs to a neuron to produce an output
+   5. `Bias`: is additional input to a neuron that allows a certain degree of flexibility 
+
+- ANNs are trained using ==**Backpropgation Algorithm**== which is guessing and comparing and then measuring the error. Then the weights are adjusted and then weights are updated. Repeat and Learng Model training method
+
+- Deep Learning Models for `Sequence Models`
+   - Sequence models are input data in the form of sequences and the goal is to find patterns and make predictions. Like NLP, speech recognition, gesture recognition, etc
+
+   -==**Recurrent Neural Networks (RNN)**== handle sequential data and there is a feedback loop and it can maintain a hidden state or memory and it updates as each element in the sequence is processed. So it can capture dependencies 
+      -Architecture:
+         1. `One to One`: used for non sequential data
+         2. `One to Many`: music generation or sequence generation
+         3. `Many to one`: sentiment analysis 
+         4. `Many to Many`: machine translation and entity recognition. 
+    
+    -==**Long Short Term Memory**==: Works by using a specialized memory cell and gating mechanisms to capture long term dependencies which RNN is not good at. 
+    - Input processing at step 1, then it recieves the previous memory hidden state value then there is a gating mechanism (input gate, forget gate, and output gate) then it updates the memory and then it produced output generation. 
+
+    -==**Convolutional Neural Networks**==: 
+       -Deep Learning Models: 
+           1. `Feed Forward Neural Networks (FNN)` - multi layer perception MLP (simplest)
+           2. `Convolutional Neural Networks (CNN)` - good for image and video 
+           3. `Recurrent Neural Networks (RNN)` - good  for time series and sequential data
+           4. `Autoencoders` - are unsupervised learning models used for feature extraction.
+           5. `Long Short Term Memory` - specilized RNN for long term dependencies
+           6. Generative Adversarial Network` (GAN) producing images and content 
+           7. `Transformers` which is used for language processing 
+
+        - CNN: processes grid like data like images and videos. CNN works good with 2D data by reducing images into an easier to process form. 
+
+        - CNN Layers:
+           1. 
