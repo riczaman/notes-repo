@@ -197,3 +197,81 @@ Machine Learning Algorithm for classfication is: ==**Logistic Regression**==: he
 ---
 
 ##Generative AI & LLM Foundations
+
+###Intro to GenAI
+- Subset of Deep learning where the models are trained to generate output on their own.
+- GenAI models learn the underlying patterns in a given data set and uses that knowledge to create a new data set. 
+
+-ML identifies patterns to recognize and classify patterns.
+-`inference` is the ability to predict based on the training that was done before. 
+-ML focuses on learning the relationship between data and the label
+-In GenAI it learns patterns in an unstructured content and it doesn't need labelled data to train. 
+-The output of ML is a label whereas in GenAI it is New content. 
+
+- 2 types of Gen AI Models
+   1. `Text-Based`: models generate text, code, dialogue and they learn from large collections of text data
+   2. `Multimodal`: process multiple modalities like text, images, videos, etc. 
+
+###Intro to LLM
+- A language model (LM) is a probalistic model of text. 
+- it helps determine what the next word will be in a sentence it gives a probabilitity to every word in its vocab. 
+- Large in LLM stands for the nuumber of parameters.
+-`EOS` stands for end of sentence or end of sequence. 
+
+LLM Features:
+   - Based on ==**Transformers**== this allows them to play attention to specific parts and gives them enhanced contextual understanding. 
+   - Deep Neural networks that are trained on a large set of text
+   - Paremeters are adustable weights in the models neural network. 
+   - Model size is the memory required to store the models parameters
+
+==**Transformers**==
+- `Recurrent Neural Network` handle sequential data like a sentence and they have a feedback loop that allows them to store and maintain a hidden state but RNN has trouble with `Long-range dependencies`. 
+   - As the length of the sentence grows it leads to `Vanishing Gradient` which means it loses context of the entire sequence. 
+
+- Transformers Architecture: 
+   - They understand the relationship between all the words in a sentence at the same time and understand how they relate to each other. 
+   - ==**Attention Mechanism (Self Attention)**== is used by transformers that adds context to the text and this also helps with long range dependencies 
+
+- Transformer has 2 main parts:
+   1. ==**Encoder**==: reads the input text aand encodes it into meanings using attention mechanism. Used for semantic search. 
+   2. ==**Decoder**== uses these embeddings to generate the output text of the next word (token). Decoders only generate a single token at a time. Used for text generation.
+- `tokens`: LLM understand tokens instead of workds. Tokens can be a part of a word, an entire word or a punctuation
+
+- `Embeddings`: numerical representation of a piece of text converted to number sequences. They can also be used in semantic search in a vector database
+
+- Words get converted into tokens then into embeddings (vector data)
+
+- `Encoder-Decoder`: encoder encodes a sequence of words to a set of vectors and the decoder generates the output sequence from the set of vectors. Here the decoder has a self referential loop as it keeps generating all of the tokens in the sequence. `Used for machine translation`
+
+###Prompt Engineering
+- ==**Prompt**==: the input or the initial text provided to the model 
+- ==**Prompt Engineering**==: the process of iteratively refining a prompt for the purpose of eliciting a particular style of a response. 
+-  `instruction tuning` is a critical step in LLM alignment and it involves fine tuning a pre trained LLM on a varied set of instructions, each paired iwth a desired output.
+   - ==**Reinforcement Learning From Human Feedback**== is used to fine tune LLMs to follow a broad class of written instructions. 
+
+- `In-context Learning`: prompting an LLM with instructions and or demonstrations of the task it is meant to complete
+- `k-shot prompting`: explicitly providing k examples of the intended task in the prompt 
+
+- `Chain of Thought Prompting`: provide examples in a prompt to show responses that include a reasoning step and describes the calculation logic to get to the final answer before giving the final answer. 
+
+- `Hallucination`: model generated text that is non factual and ungrounded. 
+   -`retrieval-augmentation` have less hallucination then 0-shot prompting. 
+
+###Customizing LLMs with your Data
+   1. `Prompt engineering` is the easiest to start
+   2. If you need more context than use `Retrieval-Augmented Generation (RAG)`
+   3. More instructions require `Fine-tuning`
+   - Usually need to use all of them
+
+- ==**Retrieval Augmented Generation (RAG)**==: languge queries enterprise knowledge bases (databases, wikis, vector database) to provide grounded responses. RAG does not require fine-tuning 
+   - Augmented Generation = providing a more concrete answer using the acquired information. 
+
+- ==**LLM Fine-tuning & Inference**==: take pre-trained foundational model and provide additional training using custom data
+   -`inference`: model recieves new text as input and generates output based on what it learning during pre-training and fine tuning. 
+   -benefits: model performance on specific tasks, and improve model efficiency 
+
+- Generative AI creates new content without making predictions
+- Sequence models are indeed well-suited for tasks involving sequentially ordered data points or events, such as time series analysis, natural language processing, speech recognition, and language translation. However, for image classification and object recognition, traditional machine learning models and convolutional neural networks (CNNs) are more commonly used.
+---
+
+##OCI AI Portfolio
