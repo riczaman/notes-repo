@@ -275,3 +275,62 @@ LLM Features:
 ---
 
 ##OCI AI Portfolio
+- Data -> Infrastructure -> AI Services -> SaaS Apps
+- No infrastructure needs to be managed. 
+
+- Ways to access Oracle Cloud Infra:
+   - `OCI Console` is a browser based for all the features needed for data science likes notebook
+   - `Rest API` 
+   - `Language SDKs`: Provides programming language SDKs
+   - `Command Line Interface`: provides quick access and full functionality without scripting
+
+###Overview of AI Services:
+   1. `Language`: Text analysis at scale using pretrained models and custom models 
+   2. `Vision`: upload images to detect and classify object using pretained and custom models
+   3. `Speech`: convert media files into readable text
+   4. `Document Understanding`: upload documents to detect and classify text.
+   5. `Digital Assistant`: Platform used to create and deploy digital assistants using natural language conversations.
+
+###Overview of ML Services: 
+- 3 core principles of OCI Data Science:
+   1. `Accelerated`: allows data scientists to work the way they want without needed to manage the infra
+   2. `Collaborative`: allows them to work together using `Projects` (notebook sessions) and uses the `Conda` enviornments 
+   3. `Enterprise-Grade`: Fully managed infra and updates and security
+
+- OCI Data science is used to build, train, and deploy ML models and it serves Data Scientists. 
+
+- Accelerated Data Science (ADS) SDK are given to data scientst that give them libraries to help data scientists 
+
+- `Model Catalog` is a centralized repo where model artifacts are stored. 
+- Model Deployments (to an HTTP Web app) -> Jobs
+
+###AI Infrastructure 
+- `GPU`: Hardware that performs simple operations and allows many processes to run with parallel computing.
+
+###GPU & Superclusters in OCI
+   - `RDMA`: Remote Direct Memory Access - Its a technology that allows for network communication without any cpu interference which allows GPUs to communicate with low latency and this is the core that their database services are built upon
+   - `ROCKY` = RDMA converged ethernet 
+   - The partnered with NVDIA because there is a high demand for high compute GPUs that can run within a single RDMA network (ie. a Supercluster)
+
+`RDMA Supercluster` which is designed to support a large number of GPUs.
+   -GPU node connects to the network fabrics and any GPU can talk to any GPU through the fabric
+   - Supercluster = it just means its much larger than a typical cluster and it has 2 blocks. One block uses a `Clos Fabric` and it uses a 3-tier network using silicon chips and buffers they counteract the latency that might occur with a large number of GPUs supercluster = ==**Lossless**==
+   - Using `placement` they are able to balance scalability and latency
+   - OCI AI Superclusters are specifically designed to handle demanding AI workloads that require significant computational power and scalability. They are optimized to provide high performance for complex tasks like training large machine learning models, deep learning, and other compute-intensive AI tasks.
+
+
+###Responsible AI
+- Guiding Principles for AI to be trustworthy:
+   1. AI should follow applicable laws
+   2. AI should be ethical: Human Ethics and AI Ethics - used to help humans, prevent harm, and fairness and explicable
+   3. AI should be robust 
+
+-Responsible AI Requirements;
+   1. Set up goverance
+   2. Develop policies and procedures
+   3. Ensure compliance 
+- roles: developers, deployers, and end users 
+
+---
+
+##OCI Generative AI Services 
