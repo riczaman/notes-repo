@@ -604,6 +604,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="OCI Generative AI Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vector-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vector Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select AI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-ai-services_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Services
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -839,6 +872,39 @@
   <a href="#oci-generative-ai-services" class="md-nav__link">
     <span class="md-ellipsis">
       OCI Generative AI Services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI Generative AI Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vector-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      Vector Search
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#select-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Select AI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-ai-services_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Services
     </span>
   </a>
   
@@ -1287,7 +1353,8 @@
    -GPU node connects to the network fabrics and any GPU can talk to any GPU through the fabric
    - Supercluster = it just means its much larger than a typical cluster and it has 2 blocks. One block uses a <code>Clos Fabric</code> and it uses a 3-tier network using silicon chips and buffers they counteract the latency that might occur with a large number of GPUs supercluster = <mark><strong>Lossless</strong></mark>
    - Using <code>placement</code> they are able to balance scalability and latency
-   - OCI AI Superclusters are specifically designed to handle demanding AI workloads that require significant computational power and scalability. They are optimized to provide high performance for complex tasks like training large machine learning models, deep learning, and other compute-intensive AI tasks.</p>
+   - OCI AI Superclusters are specifically designed to handle demanding AI workloads that require significant computational power and scalability. They are optimized to provide high performance for complex tasks like training large machine learning models, deep learning, and other compute-intensive AI tasks.
+   - Dedicated AI Clusters provide GPU-based compute resources required to fine-tune a pre-trained model for specific tasks like customer support.</p>
 <h3 id="responsible-ai">Responsible AI</h3>
 <ul>
 <li>Guiding Principles for AI to be trustworthy:</li>
@@ -1302,6 +1369,53 @@
 - roles: developers, deployers, and end users </p>
 <hr />
 <h2 id="oci-generative-ai-services">OCI Generative AI Services</h2>
+<ul>
+<li>Fully mangaged service that provides a set of customizable LLM available through APIs</li>
+<li><code>Choice of Models</code> - high performing models from Meta and Cohere</li>
+<li><code>Flexible Fine-Tuning</code> to create custom models by fine tuning models using your own data set</li>
+<li>
+<p><code>Dedicated AI Clusters</code> that host your workloads</p>
+</li>
+<li>
+<p>2 types of Pretrained Foundational Models:
+   1.Chat Models: Such as <mark><strong>Command-r-plus, command-r-16k, and llamma 3-70b-instruct</strong></mark>: Llama is made by meta and the first two by cohere. R plus is more expensive and its used for more complex scenarios. They work by asking questions and get <code>conversational repsonses</code> aka go through <code>instruction tuning</code></p>
+</li>
+<li>
+<p>Embedding Models such as: <mark><strong>embed-english-v3.0, embed-multilingual-v3.0</strong></mark>: Text converted to <code>vector embeddings</code> used for semantic search and allows for multilingual models.</p>
+</li>
+<li>
+<p>Fine tuning is used when a pretrained model isn't working or if you want to teach it something new.</p>
+</li>
+<li><code>T-Few Fine Tuning</code> is what Cohere uses and it enables fast and efficient customizations - it introduces new base layers and only updates a fraction of the model so you dont have to fine tune everything which takes longer and costs more </li>
+</ul>
+<p>-Preamble just changs the behaviour of the model but it is not finetuning </p>
+<h3 id="vector-search">Vector Search</h3>
+<ul>
+<li>AI Vector search is built into the <code>Oracle Database 23ai</code></li>
+<li>Works on structured and unstructured data</li>
+<li>Uses SQL support for vector generation, Vector Data type, indexes, and uses syntax similair to SQL.</li>
+<li>
+<p>Process: Load images as blob -&gt; Vector Embededding -&gt; store in DB -&gt; Vector Search for similair matches </p>
+</li>
+<li>
+<p><code>Vector Datatype</code>: You can use the dimension format or not this is optional (ie. int, float, etc).  The VECTOR datatype in Oracle Database 23ai is specifically designed to store embeddings for AI Vector Search. This datatype allows efficient storage and retrieval of high-dimensional numerical representations of data, enabling similarity searches for AI and machine learning applications.</p>
+</li>
+<li><code>Vector Distance Function</code> shows the similairty between vectors. Vectors that have a small distance are more similair. </li>
+<li><code>Vector Search SQL</code> used to find top k closes matches to a given query item that uses (vector_distance)</li>
+<li><code>Vector Index</code> are used not only for performance but it also controls the accuracy using the <code>organization</code> and <code>distance</code> parameters. Organization is if it will fit in memory. If it will fit in memory use <code>inmemory neighbour graph</code> and if it doesnt use <code>neighbour partitions</code></li>
+<li><code>Target accuracy</code> is a clause added to indicate the default accuracy the index should provide for similairty queries </li>
+<li><code>Approximate</code> keyword indicates that the user wants to perform a similarity search using a vector index. </li>
+<li>You can also perform similarity search over joins</li>
+<li>Allows you to efficiently orchestrate Gen-AI pipelines.</li>
+<li>Model endpoints allow deployed models to be accessed via an API for real-time inference, making them available for AI applications.</li>
+</ul>
+<h3 id="select-ai">Select AI</h3>
+<ul>
+<li>use your language to query the data (autonomous database) you dont need to know where the data is or how to access the database</li>
+<li>It takes the natural language question to form a SQL query </li>
+</ul>
+<hr />
+<h2 id="oci-ai-services_1">OCI AI Services</h2>
 
 
 
