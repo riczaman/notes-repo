@@ -544,6 +544,66 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="OCI AI Portfolio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview-of-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of AI Services:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview-of-ml-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of ML Services:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI Infrastructure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-superclusters-in-oci" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU &amp; Superclusters in OCI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#responsible-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Responsible AI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-generative-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI Generative AI Services
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -719,6 +779,66 @@
   <a href="#oci-ai-portfolio" class="md-nav__link">
     <span class="md-ellipsis">
       OCI AI Portfolio
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI AI Portfolio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview-of-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of AI Services:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview-of-ml-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of ML Services:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ai-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      AI Infrastructure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu-superclusters-in-oci" class="md-nav__link">
+    <span class="md-ellipsis">
+      GPU &amp; Superclusters in OCI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#responsible-ai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Responsible AI
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-generative-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI Generative AI Services
     </span>
   </a>
   
@@ -1113,6 +1233,75 @@
 </ol>
 <hr />
 <h2 id="oci-ai-portfolio">OCI AI Portfolio</h2>
+<ul>
+<li>Data -&gt; Infrastructure -&gt; AI Services -&gt; SaaS Apps</li>
+<li>
+<p>No infrastructure needs to be managed. </p>
+</li>
+<li>
+<p>Ways to access Oracle Cloud Infra:</p>
+</li>
+<li><code>OCI Console</code> is a browser based for all the features needed for data science likes notebook</li>
+<li><code>Rest API</code> </li>
+<li><code>Language SDKs</code>: Provides programming language SDKs</li>
+<li><code>Command Line Interface</code>: provides quick access and full functionality without scripting</li>
+</ul>
+<h3 id="overview-of-ai-services">Overview of AI Services:</h3>
+<ol>
+<li><code>Language</code>: Text analysis at scale using pretrained models and custom models </li>
+<li><code>Vision</code>: upload images to detect and classify object using pretained and custom models</li>
+<li><code>Speech</code>: convert media files into readable text</li>
+<li><code>Document Understanding</code>: upload documents to detect and classify text.</li>
+<li><code>Digital Assistant</code>: Platform used to create and deploy digital assistants using natural language conversations.</li>
+</ol>
+<h3 id="overview-of-ml-services">Overview of ML Services:</h3>
+<ul>
+<li>3 core principles of OCI Data Science:</li>
+<li><code>Accelerated</code>: allows data scientists to work the way they want without needed to manage the infra</li>
+<li><code>Collaborative</code>: allows them to work together using <code>Projects</code> (notebook sessions) and uses the <code>Conda</code> enviornments </li>
+<li>
+<p><code>Enterprise-Grade</code>: Fully managed infra and updates and security</p>
+</li>
+<li>
+<p>OCI Data science is used to build, train, and deploy ML models and it serves Data Scientists. </p>
+</li>
+<li>
+<p>Accelerated Data Science (ADS) SDK are given to data scientst that give them libraries to help data scientists </p>
+</li>
+<li>
+<p><code>Model Catalog</code> is a centralized repo where model artifacts are stored. </p>
+</li>
+<li>Model Deployments (to an HTTP Web app) -&gt; Jobs</li>
+</ul>
+<h3 id="ai-infrastructure">AI Infrastructure</h3>
+<ul>
+<li><code>GPU</code>: Hardware that performs simple operations and allows many processes to run with parallel computing.</li>
+</ul>
+<h3 id="gpu-superclusters-in-oci">GPU &amp; Superclusters in OCI</h3>
+<ul>
+<li><code>RDMA</code>: Remote Direct Memory Access - Its a technology that allows for network communication without any cpu interference which allows GPUs to communicate with low latency and this is the core that their database services are built upon</li>
+<li><code>ROCKY</code> = RDMA converged ethernet </li>
+<li>The partnered with NVDIA because there is a high demand for high compute GPUs that can run within a single RDMA network (ie. a Supercluster)</li>
+</ul>
+<p><code>RDMA Supercluster</code> which is designed to support a large number of GPUs.
+   -GPU node connects to the network fabrics and any GPU can talk to any GPU through the fabric
+   - Supercluster = it just means its much larger than a typical cluster and it has 2 blocks. One block uses a <code>Clos Fabric</code> and it uses a 3-tier network using silicon chips and buffers they counteract the latency that might occur with a large number of GPUs supercluster = <mark><strong>Lossless</strong></mark>
+   - Using <code>placement</code> they are able to balance scalability and latency
+   - OCI AI Superclusters are specifically designed to handle demanding AI workloads that require significant computational power and scalability. They are optimized to provide high performance for complex tasks like training large machine learning models, deep learning, and other compute-intensive AI tasks.</p>
+<h3 id="responsible-ai">Responsible AI</h3>
+<ul>
+<li>Guiding Principles for AI to be trustworthy:</li>
+<li>AI should follow applicable laws</li>
+<li>AI should be ethical: Human Ethics and AI Ethics - used to help humans, prevent harm, and fairness and explicable</li>
+<li>AI should be robust </li>
+</ul>
+<p>-Responsible AI Requirements;
+   1. Set up goverance
+   2. Develop policies and procedures
+   3. Ensure compliance 
+- roles: developers, deployers, and end users </p>
+<hr />
+<h2 id="oci-generative-ai-services">OCI Generative AI Services</h2>
 
 
 
