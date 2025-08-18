@@ -317,7 +317,7 @@ LLM Features:
    - Supercluster = it just means its much larger than a typical cluster and it has 2 blocks. One block uses a `Clos Fabric` and it uses a 3-tier network using silicon chips and buffers they counteract the latency that might occur with a large number of GPUs supercluster = ==**Lossless**==
    - Using `placement` they are able to balance scalability and latency
    - OCI AI Superclusters are specifically designed to handle demanding AI workloads that require significant computational power and scalability. They are optimized to provide high performance for complex tasks like training large machine learning models, deep learning, and other compute-intensive AI tasks.
-
+   - Dedicated AI Clusters provide GPU-based compute resources required to fine-tune a pre-trained model for specific tasks like customer support.
 
 ###Responsible AI
 - Guiding Principles for AI to be trustworthy:
@@ -334,3 +334,41 @@ LLM Features:
 ---
 
 ##OCI Generative AI Services 
+- Fully mangaged service that provides a set of customizable LLM available through APIs
+   1. `Choice of Models` - high performing models from Meta and Cohere
+   2. `Flexible Fine-Tuning` to create custom models by fine tuning models using your own data set
+   3. `Dedicated AI Clusters` that host your workloads
+
+- 2 types of Pretrained Foundational Models:
+   1.Chat Models: Such as ==**Command-r-plus, command-r-16k, and llamma 3-70b-instruct**==: Llama is made by meta and the first two by cohere. R plus is more expensive and its used for more complex scenarios. They work by asking questions and get `conversational repsonses` aka go through `instruction tuning`
+   2. Embedding Models such as: ==**embed-english-v3.0, embed-multilingual-v3.0**==: Text converted to `vector embeddings` used for semantic search and allows for multilingual models.
+
+- Fine tuning is used when a pretrained model isn't working or if you want to teach it something new.
+   - `T-Few Fine Tuning` is what Cohere uses and it enables fast and efficient customizations - it introduces new base layers and only updates a fraction of the model so you dont have to fine tune everything which takes longer and costs more 
+
+-Preamble just changs the behaviour of the model but it is not finetuning 
+
+###Vector Search
+- AI Vector search is built into the `Oracle Database 23ai`
+- Works on structured and unstructured data
+- Uses SQL support for vector generation, Vector Data type, indexes, and uses syntax similair to SQL.
+- Process: Load images as blob -> Vector Embededding -> store in DB -> Vector Search for similair matches 
+
+- `Vector Datatype`: You can use the dimension format or not this is optional (ie. int, float, etc).  The VECTOR datatype in Oracle Database 23ai is specifically designed to store embeddings for AI Vector Search. This datatype allows efficient storage and retrieval of high-dimensional numerical representations of data, enabling similarity searches for AI and machine learning applications.
+- `Vector Distance Function` shows the similairty between vectors. Vectors that have a small distance are more similair. 
+- `Vector Search SQL` used to find top k closes matches to a given query item that uses (vector_distance)
+- `Vector Index` are used not only for performance but it also controls the accuracy using the `organization` and `distance` parameters. Organization is if it will fit in memory. If it will fit in memory use `inmemory neighbour graph` and if it doesnt use `neighbour partitions`
+- `Target accuracy` is a clause added to indicate the default accuracy the index should provide for similairty queries 
+- `Approximate` keyword indicates that the user wants to perform a similarity search using a vector index. 
+- You can also perform similarity search over joins
+- Allows you to efficiently orchestrate Gen-AI pipelines.
+- Model endpoints allow deployed models to be accessed via an API for real-time inference, making them available for AI applications.
+
+
+###Select AI
+- use your language to query the data (autonomous database) you dont need to know where the data is or how to access the database
+- It takes the natural language question to form a SQL query 
+
+---
+
+##OCI AI Services
