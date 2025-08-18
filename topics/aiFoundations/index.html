@@ -493,6 +493,57 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Generative AI &amp; LLM Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intro-to-genai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intro to GenAI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intro-to-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intro to LLM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Engineering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-llms-with-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing LLMs with your Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-ai-portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Portfolio
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -617,6 +668,57 @@
   <a href="#generative-ai-llm-foundations" class="md-nav__link">
     <span class="md-ellipsis">
       Generative AI &amp; LLM Foundations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generative AI &amp; LLM Foundations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intro-to-genai" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intro to GenAI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intro-to-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Intro to LLM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Engineering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-llms-with-your-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing LLMs with your Data
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-ai-portfolio" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Portfolio
     </span>
   </a>
   
@@ -909,6 +1011,108 @@
 </code></pre></div>
 <hr />
 <h2 id="generative-ai-llm-foundations">Generative AI &amp; LLM Foundations</h2>
+<h3 id="intro-to-genai">Intro to GenAI</h3>
+<ul>
+<li>Subset of Deep learning where the models are trained to generate output on their own.</li>
+<li>GenAI models learn the underlying patterns in a given data set and uses that knowledge to create a new data set. </li>
+</ul>
+<p>-ML identifies patterns to recognize and classify patterns.
+-<code>inference</code> is the ability to predict based on the training that was done before. 
+-ML focuses on learning the relationship between data and the label
+-In GenAI it learns patterns in an unstructured content and it doesn't need labelled data to train. 
+-The output of ML is a label whereas in GenAI it is New content. </p>
+<ul>
+<li>2 types of Gen AI Models</li>
+<li><code>Text-Based</code>: models generate text, code, dialogue and they learn from large collections of text data</li>
+<li><code>Multimodal</code>: process multiple modalities like text, images, videos, etc. </li>
+</ul>
+<h3 id="intro-to-llm">Intro to LLM</h3>
+<ul>
+<li>A language model (LM) is a probalistic model of text. </li>
+<li>it helps determine what the next word will be in a sentence it gives a probabilitity to every word in its vocab. </li>
+<li>Large in LLM stands for the nuumber of parameters.
+-<code>EOS</code> stands for end of sentence or end of sequence. </li>
+</ul>
+<p>LLM Features:
+   - Based on <mark><strong>Transformers</strong></mark> this allows them to play attention to specific parts and gives them enhanced contextual understanding. 
+   - Deep Neural networks that are trained on a large set of text
+   - Paremeters are adustable weights in the models neural network. 
+   - Model size is the memory required to store the models parameters</p>
+<p><mark><strong>Transformers</strong></mark>
+- <code>Recurrent Neural Network</code> handle sequential data like a sentence and they have a feedback loop that allows them to store and maintain a hidden state but RNN has trouble with <code>Long-range dependencies</code>. 
+   - As the length of the sentence grows it leads to <code>Vanishing Gradient</code> which means it loses context of the entire sequence. </p>
+<ul>
+<li>Transformers Architecture: </li>
+<li>They understand the relationship between all the words in a sentence at the same time and understand how they relate to each other. </li>
+<li>
+<p><mark><strong>Attention Mechanism (Self Attention)</strong></mark> is used by transformers that adds context to the text and this also helps with long range dependencies </p>
+</li>
+<li>
+<p>Transformer has 2 main parts:</p>
+</li>
+<li><mark><strong>Encoder</strong></mark>: reads the input text aand encodes it into meanings using attention mechanism. Used for semantic search. </li>
+<li><mark><strong>Decoder</strong></mark> uses these embeddings to generate the output text of the next word (token). Decoders only generate a single token at a time. Used for text generation.</li>
+<li>
+<p><code>tokens</code>: LLM understand tokens instead of workds. Tokens can be a part of a word, an entire word or a punctuation</p>
+</li>
+<li>
+<p><code>Embeddings</code>: numerical representation of a piece of text converted to number sequences. They can also be used in semantic search in a vector database</p>
+</li>
+<li>
+<p>Words get converted into tokens then into embeddings (vector data)</p>
+</li>
+<li>
+<p><code>Encoder-Decoder</code>: encoder encodes a sequence of words to a set of vectors and the decoder generates the output sequence from the set of vectors. Here the decoder has a self referential loop as it keeps generating all of the tokens in the sequence. <code>Used for machine translation</code></p>
+</li>
+</ul>
+<h3 id="prompt-engineering">Prompt Engineering</h3>
+<ul>
+<li><mark><strong>Prompt</strong></mark>: the input or the initial text provided to the model </li>
+<li><mark><strong>Prompt Engineering</strong></mark>: the process of iteratively refining a prompt for the purpose of eliciting a particular style of a response. </li>
+<li><code>instruction tuning</code> is a critical step in LLM alignment and it involves fine tuning a pre trained LLM on a varied set of instructions, each paired iwth a desired output.</li>
+<li>
+<p><mark><strong>Reinforcement Learning From Human Feedback</strong></mark> is used to fine tune LLMs to follow a broad class of written instructions. </p>
+</li>
+<li>
+<p><code>In-context Learning</code>: prompting an LLM with instructions and or demonstrations of the task it is meant to complete</p>
+</li>
+<li>
+<p><code>k-shot prompting</code>: explicitly providing k examples of the intended task in the prompt </p>
+</li>
+<li>
+<p><code>Chain of Thought Prompting</code>: provide examples in a prompt to show responses that include a reasoning step and describes the calculation logic to get to the final answer before giving the final answer. </p>
+</li>
+<li>
+<p><code>Hallucination</code>: model generated text that is non factual and ungrounded. 
+   -<code>retrieval-augmentation</code> have less hallucination then 0-shot prompting. </p>
+</li>
+</ul>
+<h3 id="customizing-llms-with-your-data">Customizing LLMs with your Data</h3>
+<ol>
+<li><code>Prompt engineering</code> is the easiest to start</li>
+<li>If you need more context than use <code>Retrieval-Augmented Generation (RAG)</code></li>
+<li>More instructions require <code>Fine-tuning</code></li>
+<li>
+<p>Usually need to use all of them</p>
+</li>
+<li>
+<p><mark><strong>Retrieval Augmented Generation (RAG)</strong></mark>: languge queries enterprise knowledge bases (databases, wikis, vector database) to provide grounded responses. RAG does not require fine-tuning </p>
+</li>
+<li>
+<p>Augmented Generation = providing a more concrete answer using the acquired information. </p>
+</li>
+<li>
+<p><mark><strong>LLM Fine-tuning &amp; Inference</strong></mark>: take pre-trained foundational model and provide additional training using custom data
+   -<code>inference</code>: model recieves new text as input and generates output based on what it learning during pre-training and fine tuning. 
+   -benefits: model performance on specific tasks, and improve model efficiency </p>
+</li>
+<li>
+<p>Generative AI creates new content without making predictions</p>
+</li>
+<li>Sequence models are indeed well-suited for tasks involving sequentially ordered data points or events, such as time series analysis, natural language processing, speech recognition, and language translation. However, for image classification and object recognition, traditional machine learning models and convolutional neural networks (CNNs) are more commonly used.</li>
+</ol>
+<hr />
+<h2 id="oci-ai-portfolio">OCI AI Portfolio</h2>
 
 
 
