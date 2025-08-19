@@ -383,3 +383,9 @@ LLM Features:
 
 - `Document Understanding` its used for understanding document images
    -features: Text recognition (OCR) from images, document classification based on visual appearance, language detection, table extraction, and key value extraction 
+
+---
+
+##Additional Notes
+- Model training = establishing a relationship between input and output parameters
+- Gen AI aims to understand underlying data distribution and creates new examples. 
