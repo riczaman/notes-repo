@@ -372,3 +372,14 @@ LLM Features:
 ---
 
 ##OCI AI Services
+- `OCI Language` detects the language of your text, identifies entities in your text, identifies setinment for each aspect of text, identifies key phrases that represent important ideas or subjects, and it classifies general topic from list of 600 categories
+
+- `OCI Speech` converts speech to text using deep learning techniques. It also uses SRT closed caption support. 
+   - It also normalizes text to more concise versions of the text. (words to numbers) 
+   - Has profanity filtering: removing, mask (removes but leaves the first letter) and tags.
+
+- `OCI Vision` works on images and provides image analysis and document AI
+   Image Analysis: `Object Detection` where it detects objects inside an image with a bounding box and a label. It can also detect text. `Image Classification` labels the scene and you can retrain data for specific needs. 
+
+- `Document Understanding` its used for understanding document images
+   -features: Text recognition (OCR) from images, document classification based on visual appearance, language detection, table extraction, and key value extraction 
