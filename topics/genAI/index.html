@@ -15,14 +15,16 @@
         <link rel="canonical" href="https://riczaman.github.io/notes-repo/topics/genAI/">
       
       
+        <link rel="prev" href="../aiFoundations/">
+      
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.17">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
     
     
       
-        <title>genAI - Ricky's Notes</title>
+        <title>Oracle Generative AI Professional - Ricky's Notes</title>
       
     
     
@@ -74,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#basics-of-llms" class="md-skip">
+        <a href="#fundamentals-of-large-language-models" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              genAI
+              Oracle Generative AI Professional
             
           </span>
         </div>
@@ -249,18 +251,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
           <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
@@ -276,7 +280,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             Topics
@@ -379,10 +383,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../genAI.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Oracle Generative AI Professional
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -393,6 +417,123 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals-of-large-language-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fundamentals of Large Language Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fundamentals of Large Language Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basics-of-llms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basics of LLMs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-architectures" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Architectures
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prompting-prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompting &amp; Prompt Engineering
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prompting &amp; Prompt Engineering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hallucination" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hallucination
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-generative-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI Generative Services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI Generative Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chat-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chat Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -430,6 +571,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#fundamentals-of-large-language-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fundamentals of Large Language Models
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Fundamentals of Large Language Models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#basics-of-llms" class="md-nav__link">
     <span class="md-ellipsis">
       Basics of LLMs
@@ -437,13 +588,84 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#llm-architectures" class="md-nav__link">
     <span class="md-ellipsis">
       LLM Architectures
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prompting-prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompting &amp; Prompt Engineering
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prompting &amp; Prompt Engineering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#decoding" class="md-nav__link">
+    <span class="md-ellipsis">
+      Decoding
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hallucination" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hallucination
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#llm-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      LLM Applications
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oci-generative-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI Generative Services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OCI Generative Services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chat-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chat Models
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -466,25 +688,138 @@
   
 
 
-  <h1>genAI</h1>
+  <h1>Oracle Generative AI Professional</h1>
 
-<p><strong><mark>Fundamentals of Large Language Models</mark></strong></p>
-<h2 id="basics-of-llms">Basics of LLMs</h2>
+<h2 id="fundamentals-of-large-language-models"><mark><strong>Fundamentals of Large Language Models</strong></mark></h2>
+<h3 id="basics-of-llms">Basics of LLMs</h3>
 <ul>
 <li><code>Language Model</code> = probablilstic model of text. Large LMs just refers to the number of parameters (large)</li>
 <li><code>Decoding</code> = Term for generating text from an LLM</li>
 <li><code>Prompting</code> = Affects the distribution of the LLMs vocabulary but it does not change the models parameters</li>
 <li><code>Training</code> = Affects the distribution and changes the models parameters. </li>
 </ul>
-<h2 id="llm-architectures">LLM Architectures</h2>
+<h3 id="llm-architectures">LLM Architectures</h3>
 <ol>
-<li><strong><mark>Encoders</mark></strong> they are used for <code>embedding</code></li>
-<li><strong><mark>Decoders</mark></strong> they are used for <code>text generation</code></li>
+<li><mark><strong>Encoders</strong></mark> they are used for <code>embedding</code></li>
+<li><mark><strong>Decoders</strong></mark> they are used for <code>text generation</code></li>
 <li>Capabilities can be embedding or text generation </li>
 <li>All models are built using the <code>Transformer</code> Architecture. </li>
 <li><code>Embedding</code> = convert a sequence of word into a vector or sequence of vectors. Basically, embedding converts the text into a numerical representation of the text with meaning.</li>
-<li><code>Generation</code> = Generate text based on a sequence of input words. </li>
+<li>
+<p><code>Generation</code> = Generate text based on a sequence of input words. </p>
+</li>
+<li>
+<p>Encoders and Decoders can come in all sizes. Sizes is defined by the number of trainable parameters it has. <code>Decoder models are larger than encoders</code> but you can make encoders big but its not needed. </p>
+</li>
+<li>
+<p><code>Encoders</code>: Semantic search is the primary use where you can store an input snippet into an index and then use a group of documents to find the one that is most similair </p>
+</li>
+<li>
+<p><code>Decoders</code>: take a sequence of tokens and generate the next word in the sequence. They only produce a single token at a time. </p>
+</li>
+<li>
+<p><code>Encoder-Decoder</code>: encodes a sequence of words and uses the encoded to output the next word. Used for machine translation. </p>
+</li>
 </ol>
+<h2 id="prompting-prompt-engineering">Prompting &amp; Prompt Engineering</h2>
+<ul>
+<li>LLMs typically only involve decoder only models</li>
+</ul>
+<p>==<strong>Prompting</strong>=:
+- Altering the content or structure of the input that you pass to the model: text provided to an LLM as input, sometimes containing instructions and/or examples.
+- Decoders have pre-training which is where they are trained on a large set of input</p>
+<p><mark><strong>Prompt Engineering</strong></mark>
+- The process of iteratively refining a prompt for the purpose of eliciting a particular style of response. </p>
+<ol>
+<li>
+<p><em>In-context learning</em>: prompting an LLM with instructions and or demonstrations of the task its meant to complete. </p>
+</li>
+<li>
+<p><em>k-shot prompting</em>: explicitly providing k examples of the intended task in the prompt.</p>
+</li>
+<li>
+<p>0-shot prompting means not providing any examples</p>
+</li>
+<li>
+<p><em>Chain-of-Thought prompting</em>: prompt the LLM to emit intermediate reasoning steps </p>
+</li>
+<li>
+<p><em>Least-to-Most prompting</em>: prompt the LLM to decompose the problem and solve, easy first then hardest. </p>
+</li>
+<li>
+<p><em>Step-Back prompting</em>: prompt the LLM to identify high-level concepts pertinent to a specific task.</p>
+</li>
+</ol>
+<p><code>Issues with Prompting</code>:
+1. <em>Prompt Injection</em>: deliberately provide an LLM with input that attempts to cause it to ignore instructions, cause harm, or behave contrary to deployment expectations. </p>
+<ol>
+<li><em>Memorization</em>: after answering, repeat the original prompt (leaked prompt) or data from a previous prompt answer</li>
+</ol>
+<p><mark><strong>Training</strong></mark>:
+- prompting alone may be inappropriate when: training data exists or domain adaption is required because small changes in the prompt can lead to huge changes in the probablity of the next output. </p>
+<ul>
+<li>
+<p><em>Domain-Adaption</em>: adapting a model through training to enhance its performance outside of the domain/subject area it was trained on. </p>
+</li>
+<li>
+<p>Training is the process of giving a model an input then having the model guess the output and then based on the answer alter the parameters of the model so next time it generates something closer to the answer. </p>
+</li>
+</ul>
+<p>Training Styles:
+1. <em>Fine-Tuning</em>: take a pre-training model and train the model on custom data but its very expensive 
+2. <em>Param Efficient Fine Tuning</em>: Isolate a small set of the models parameters to train - Cheaper (LORA)
+3. <em>Soft Prompting</em>: Adding parameters to the prompt or specialized words in the prompt - learning and only uses a few parameters
+4. <em>Pre-Training</em>: changes all parameters but it uses unlabeled data </p>
+<ul>
+<li>Pre-training is more expensive then fine tuning</li>
+</ul>
+<h3 id="decoding">Decoding</h3>
+<ul>
+<li>The process of generating text with an LLM</li>
+<li>It happens 1 word at a time and it is iterative </li>
+<li>Word is appended to the input and the new revised input is fed into the model to be decoded for the next word. </li>
+</ul>
+<p>Types of Decoding:
+1. <em>Greedy Decoding</em>: pick the highest probability word at each step. 
+2. <em>Non-Deterministic Decoding</em>: Pick randomly among high probability candidates at each step. <strong>Tempature</strong> = controls the sharpness or smoothness of this probability distribution. A low temperature value results in a sharper distribution, meaning that the model is more confident in its predictions and tends to select the most likely word with higher probability. Conversely, a higher temperature value smooths out the distribution, making it more likely for lower probability words to be chosen, leading to more diverse and varied output.
+   - When temperature is decreased, the distribution is more peaked around the most likely word. = Greedy Decoding
+   - When temperature is increased, the distribution is flattened over all words. 
+   - But the probability in terms of the highest and lowest rated ones will always state that way. == Ordering of words is unaffected by temperature.</p>
+<ol>
+<li>
+<p><em>Nucleus Sampling Decoding</em>: Precise what portion of the distrubtion words you can sample from</p>
+</li>
+<li>
+<p><em>Beam Search</em>: Multiple similar sequences simultaneously and it is not greedy but outputs sequences with higher probability than greedy decoding. </p>
+</li>
+</ol>
+<h3 id="hallucination">Hallucination</h3>
+<ul>
+<li>generated text that is non-factual and or ungrounded. </li>
+</ul>
+<p>Reducing Hallucinations (no way to eliminate):
+- <em>Grounded</em>: generated text is grounded in a document if the document supports the text. Attribution/Grounding </p>
+<h3 id="llm-applications">LLM Applications</h3>
+<ol>
+<li><mark><strong>Retrieval Augmented Generation</strong></mark> (RAG): a system where input is turned into a query that has access to support documents which will generate a correct answer and this can reduce hallucination. </li>
+<li>
+<p>Non-parametric way of improving the model because you just add more documents but not the model itself</p>
+</li>
+<li>
+<p><mark><strong>Code Models</strong></mark>: Are LLMs training on code and comments instead of written language </p>
+</li>
+<li>
+<p><mark><strong>Mult-Modal Models</strong></mark>: Are trained on multiple modalities like languages, images, etc. </p>
+</li>
+<li>
+<p><mark><strong>Language Agents</strong></mark>: Models that are intended for sequential decision making scenarios like playing chess and take actions iteratively in response to their enviornment. </p>
+</li>
+<li>ReAct: Prompt the model for thoughts, then acts, and observes the results </li>
+<li>Toolformer: strings are replaced with calls to tools</li>
+<li>Bootstrapped reasoningL emit rationalization of intermediate steps</li>
+</ol>
+<h2 id="oci-generative-services"><mark><strong>OCI Generative Services</strong></mark></h2>
+<h3 id="chat-models">Chat Models</h3>
 
 
 
