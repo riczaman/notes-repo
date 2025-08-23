@@ -24,8 +24,10 @@
 ##Prompting & Prompt Engineering
 - LLMs typically only involve decoder only models
 
-==**Prompting**=:
+==**Prompting**==
+
 - Altering the content or structure of the input that you pass to the model: text provided to an LLM as input, sometimes containing instructions and/or examples.
+
 - Decoders have pre-training which is where they are trained on a large set of input
 
 ==**Prompt Engineering**==
@@ -63,12 +65,17 @@ Training Styles:
 - Pre-training is more expensive then fine tuning
 
 ###Decoding
+
 - The process of generating text with an LLM
+
 - It happens 1 word at a time and it is iterative 
+
 - Word is appended to the input and the new revised input is fed into the model to be decoded for the next word. 
 
 Types of Decoding:
+
 1. *Greedy Decoding*: pick the highest probability word at each step. 
+
 2. *Non-Deterministic Decoding*: Pick randomly among high probability candidates at each step. **Tempature** = controls the sharpness or smoothness of this probability distribution. A low temperature value results in a sharper distribution, meaning that the model is more confident in its predictions and tends to select the most likely word with higher probability. Conversely, a higher temperature value smooths out the distribution, making it more likely for lower probability words to be chosen, leading to more diverse and varied output.
    - When temperature is decreased, the distribution is more peaked around the most likely word. = Greedy Decoding
    - When temperature is increased, the distribution is flattened over all words. 
@@ -100,4 +107,76 @@ Reducing Hallucinations (no way to eliminate):
 ##==**OCI Generative Services**==
 
 ###Chat Models
+- *Tokens*: Language models understand tokens instead of characters and tokens can be a part of a word, an entire word or punctuation. 
+- For example a sentence with 10 words can have 15 tokens 
 
+Pretrained Chat Models
+
+1. *command r-plus*: used for q&a, info retrieval and sentiment analysis
+
+2. *command r-16k*: This is the smaller and more fast version of r and it used when speed and cost is important. 
+
+3. *llama-3.1-405b/70b instruct*: largest publically available LLM
+
+###Chat Model Parameters
+
+1. *Maximum Output Tokens*: The max number of tokens model generates per response. 
+
+2. *Premble Override*: Initial guideline message that can change the models overall chat behaviour and conversation style. 
+
+3. *Temperature*: Controls the randomness of the output. To generate the same output for a prompt you use 0 (highest probability answer). Lower values are more correct and used for Q&A and higher values are more random and used for creative. 
+
+4. *Top k*: Top K tells the model to pick the next token from the top 'k' tokens in the list sorted by probability
+
+5. *Top p*: Pick top tokens based on the sum of their probabilities (finds the combination of p tokens that yields the highes probabililty)
+
+6. *Frequency Penalty*: Used to get rid of repetition in your outputs. Frequency Penalty penalizes tokens that have already appeared in the preeceding text. 
+
+7. *Presence Penalty*: Also used to get rid of repetition by applying the penalty regardless of frequency so if the token has appeared once it will be penalized. 
+
+###Generative AI Inference API
+- Within the Oracle cloud if you go to the Generative AI module you can actually copy the code that is developed from the playground and then take that python code and run it in a Jupyter notebook.
+
+- inference API is the basically the endpoint you use within the Python script 
+
+- To setup the config file within the Oracle cloud you go to My Profile and within your details you will see `API keys`. When you create an API key make sure you download the private key file as well as adding the config file
+
+###==**Embedding Models**==
+
+- Translation is a sequence to sequence task
+
+1. *Word Embeddings*: Capture properties of the word. For example, the word is an animal so some properties could be size and age. But actual embeddings represent more properties than just two 
+
+2. *Semantic Similarity*: Cosine and Dot product similairity can be used to compute ==**numerical similarility**==
+   - embeddings that are numberically similair are also semantically similair
+
+3. *Sentence Embeddings*: Associates every sentence with a vector of numbers. 
+
+Embeddings use case:
+
+- *Retrieval Augmented Generation (RAG)*: take a large document and generate the embeddings of each paragraph and put it into a vector database to allow you to get semantic search. 
+
+Embedding Models in GenAI
+
+1. *cohere.embed-english*
+2. *cohere.ember-english-light*
+3. *cohere.emberd.multilingual*
+   -use cases: semantic search, text classification, and text clustering 
+   - 1024-dimensional vector for eaxch embedding and max 512 tokens. The light version only uses a 384 dimensionsal vector.
+
+- As you compress the embeddings to lower dimensions the information retained is less 
+
+###Prompt Engineering
+
+- LLMs are next word predictors they attempt to produce the next series of words that are most likely to follow from the previous text. 
+
+- *Reinforcement Learning from Human Feedback (RLHF)* is used to fine-tune LLMs to follow a broad class of written instructions.
+
+Prompt Formats:
+
+- large language models are trained on a specific prompt format. 
+- *Llama2 Prompt formatting*: They use a beginning and end [INST] tag. Instruction tags
+
+- *Zero Shot Chain-of-Thought*: apply chain of thought but you don't provide example so you just ask it a phrase like lets think step by step as opposed to chain of thought were you provide it the examples for reasoning. 
+
+###Customizing LLMs with Data
