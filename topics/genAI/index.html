@@ -627,6 +627,57 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="RAG using GenAI Service &amp; Oracle 23 ai Vector Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oci-genai-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI GenAI Integrations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAG
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversational-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversational RAG
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatbot-using-generative-ai-agent-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chatbot using Generative AI Agent Service
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oracle-generative-ai-agent-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Oracle Generative AI Agent Service
+    </span>
+  </a>
+  
 </li>
       
     </ul>
@@ -862,6 +913,57 @@
   <a href="#rag-using-genai-service-oracle-23-ai-vector-search" class="md-nav__link">
     <span class="md-ellipsis">
       RAG using GenAI Service &amp; Oracle 23 ai Vector Search
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RAG using GenAI Service &amp; Oracle 23 ai Vector Search">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oci-genai-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI GenAI Integrations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAG
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conversational-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversational RAG
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chatbot-using-generative-ai-agent-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chatbot using Generative AI Agent Service
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oracle-generative-ai-agent-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Oracle Generative AI Agent Service
     </span>
   </a>
   
@@ -1310,6 +1412,103 @@
 Explanation: Stop sequences, in the context of text generation, are special tokens or symbols used to signal the end of the generated text. These sequences serve as markers for the model to halt its generation process. Common stop sequences include punctuation marks such as periods (.), question marks (?), and exclamation marks (!), as they typically denote the end of sentences in natural language.</p>
 <h2 id="-the-main-advantage-of-using-few-shot-model-prompting-to-customize-a-large-language-model-llm-is-its-ability-to-adapt-the-model-quickly-and-effectively-to-new-tasks-or-domains-with-only-a-small-amount-of-training-data-instead-of-retraining-the-entire-model-from-scratch-which-can-be-time-consuming-and-resource-intensive-few-shot-prompting-leverages-the-models-pre-existing-knowledge">- The main advantage of using few-shot model prompting to customize a Large Language Model (LLM) is its ability to adapt the model quickly and effectively to new tasks or domains with only a small amount of training data. Instead of retraining the entire model from scratch, which can be time-consuming and resource-intensive, few-shot prompting leverages the model's pre-existing knowledge.</h2>
 <h2 id="rag-using-genai-service-oracle-23-ai-vector-search"><mark><strong>RAG using GenAI Service &amp; Oracle 23 ai Vector Search</strong></mark></h2>
+<h3 id="oci-genai-integrations">OCI GenAI Integrations</h3>
+<ul>
+<li>LangChain provides a wrapper class for using OCI GenAI with LangChain</li>
+<li><em>LangChain</em>: is a framework for developing apps powered by language models. </li>
+</ul>
+<p>To create a chatbot you need:
+1. LLM
+2. Prompts
+3. Memory
+4. Chains
+5. Vector Stores
+6. Document Loaders </p>
+<p>2 Main Tyes of LangChain Models:</p>
+<ol>
+<li><code>LLMs</code>: Pure text completion models</li>
+<li><code>Chatbots</code>: tuned specific for having conversations. </li>
+<li>the core element of a language model is the model</li>
+</ol>
+<p>LangChain Prompt Templates:
+- LangChain prompts can be created using 2 types of langchain prompt templates</p>
+<ol>
+<li><em>String Prompt Template</em>: created from a formatted python string and can have any number of variables and the output is a string. </li>
+<li>
+<p>Used for Generation Models</p>
+</li>
+<li>
+<p><em>Chat Prompt Template</em>: this type of prompt template supports a list of messages and is used for Chat Models. </p>
+</li>
+</ol>
+<p>LangChain Chains:
+- provides frameworks for creating chains of components including LLMs and other types. </p>
+<p>2 Ways to create Chains:
+1. <em>LCEL</em>: this creates chains declaratively (LangChain Expression Language). This is preferred. </p>
+<ol>
+<li>
+<p><em>Legacy</em>: creates chains using python classes like LLM Chain</p>
+</li>
+<li>
+<p>Using Chains is how you link between getting user input to generating the response </p>
+</li>
+</ol>
+<p>LangChain Memory
+- ability to store information about past interactions = <code>memory</code>
+- Chain interacts with the memory to pass the information along with the question. 
+-Oracle 23ai can be used a vector store and LangChain can use these vector stores. </p>
+<ul>
+<li><em>Oracle AI Vector Search</em> offers vector utilities to automatically generate vector embeddings from unstructure data</li>
+<li><em>Oracle Select AI</em> can generate sql from natural language. </li>
+</ul>
+<h3 id="rag">RAG</h3>
+<ul>
+<li>Mitigate bias in training data because its getting information from an external data source. </li>
+<li>Can overcome model limitations by feeding in only the top results from the document instead of the full document</li>
+<li>handle queries without new training.</li>
+</ul>
+<p>RAG Pipeline:
+1. <em>Ingestion</em>: Where you have documents that get broken into chunks and then they are turned into embeddings and then indexed into a database. 
+   - <code>Document Loaders</code> are reponsible for loading documents from a variety of sources
+   - <code>Chunking</code> - Text Splitters take a document and split it into chunks:</p>
+<p>a. <em>Chunk Size</em> - Many LLMs have max input size constraints so splitting allows us to process documents that would otherwise exceed the limits. But if chunks are too small they wont be semantically useful AND if its too big then it wont be semantically specific. </p>
+<ul>
+<li>Embeddings capture semantic relationship</li>
+<li>Embeddings of similair words are close in the multi-dimensional space</li>
+<li>Vector embeddings can be generated outside Oracle 23ai db by using 3rd party embedding models</li>
+<li>Vector embeddings generated inside oracle 23ai use <mark><strong>ONNX</strong></mark> format</li>
+</ul>
+<p>b. <em>Chunk Overlap</em> - is the number of overlapping characters between adjacent chunks. This helps preserve context between chunks. </p>
+<p>c. <em>Splitting Method</em> - split block of text based on seperators like new line. It tries to retain paragraphs and sentences. </p>
+<ol>
+<li><em>Retrieval</em>: There is a query which then gets searched within the index database and then the system selects the top K most relevant results. </li>
+<li>A users natural language question is encoded as a vector and sent to <strong>AI Vector Search</strong> </li>
+<li>Vector search uses dot product and cosine product (only cares about angle). </li>
+<li>Less angle means more similarity</li>
+<li><strong>Vector Indexes</strong> Are used for larger sets of data to speed up vector simialirty searches. Uses clustering, partioning, and neighbour graphs to group simialir vectors together. </li>
+<li>
+<p>AI Vector search supports HNSW and IVF</p>
+</li>
+<li>
+<p><em>Generation</em>: Using the top K results a response to the user is generated. </p>
+</li>
+</ol>
+<h3 id="conversational-rag">Conversational RAG</h3>
+<ul>
+<li>RAGs and the Chatbot both need to be conversational.</li>
+<li>
+<p>Dependence on memory which holds prior chat history to be inserted to the prompt as additional context. </p>
+</li>
+<li>
+<p>In the LangChain framework, memory serves as a dynamic repository for retaining and managing information throughout the system's operation. It allows the framework to maintain state and context, enabling chains to access, reference, and utilize past interactions and information in their decision-making processes.</p>
+</li>
+<li>
+<p>Large Language Models (LLMs) without Retrieval Augmented Generation (RAG) primarily rely on internal knowledge learned during pretraining on a large text corpus. These models are trained on vast amounts of text data, which enables them to learn complex patterns, structures, and relationships within language.</p>
+</li>
+</ul>
+<hr />
+<h2 id="chatbot-using-generative-ai-agent-service"><mark><strong>Chatbot using Generative AI Agent Service</strong></mark></h2>
+<h2 id="oracle-generative-ai-agent-service">Oracle Generative AI Agent Service</h2>
 
 
 
