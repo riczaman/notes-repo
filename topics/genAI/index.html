@@ -597,8 +597,35 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#oci-ai-generative-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Generative Security
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-the-main-advantage-of-using-few-shot-model-prompting-to-customize-a-large-language-model-llm-is-its-ability-to-adapt-the-model-quickly-and-effectively-to-new-tasks-or-domains-with-only-a-small-amount-of-training-data-instead-of-retraining-the-entire-model-from-scratch-which-can-be-time-consuming-and-resource-intensive-few-shot-prompting-leverages-the-models-pre-existing-knowledge" class="md-nav__link">
+    <span class="md-ellipsis">
+      - The main advantage of using few-shot model prompting to customize a Large Language Model (LLM) is its ability to adapt the model quickly and effectively to new tasks or domains with only a small amount of training data. Instead of retraining the entire model from scratch, which can be time-consuming and resource-intensive, few-shot prompting leverages the model's pre-existing knowledge.
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-using-genai-service-oracle-23-ai-vector-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAG using GenAI Service &amp; Oracle 23 ai Vector Search
+    </span>
+  </a>
   
 </li>
       
@@ -808,8 +835,35 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#oci-ai-generative-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      OCI AI Generative Security
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-the-main-advantage-of-using-few-shot-model-prompting-to-customize-a-large-language-model-llm-is-its-ability-to-adapt-the-model-quickly-and-effectively-to-new-tasks-or-domains-with-only-a-small-amount-of-training-data-instead-of-retraining-the-entire-model-from-scratch-which-can-be-time-consuming-and-resource-intensive-few-shot-prompting-leverages-the-models-pre-existing-knowledge" class="md-nav__link">
+    <span class="md-ellipsis">
+      - The main advantage of using few-shot model prompting to customize a Large Language Model (LLM) is its ability to adapt the model quickly and effectively to new tasks or domains with only a small amount of training data. Instead of retraining the entire model from scratch, which can be time-consuming and resource-intensive, few-shot prompting leverages the model's pre-existing knowledge.
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rag-using-genai-service-oracle-23-ai-vector-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      RAG using GenAI Service &amp; Oracle 23 ai Vector Search
+    </span>
+  </a>
   
 </li>
       
@@ -1195,6 +1249,67 @@
    - Fine tuning commitment = 1 unit-hour/fine tuning
    - So for hosting you have to pay for the month but fine tuning is on a per hour basis</p>
 <h3 id="fine-tuning-configuration">Fine-Tuning Configuration</h3>
+<p>2 Training Methods:
+  - <em>T-Few</em>
+  - <em>LoRA</em>: Low rank adaptation 
+  - Both of them are PEFT (parameter efficient fine tuning) ie. they fine tune only a subset parameters.</p>
+<p>Hyperparameters:
+   1. <em>Total Training Epochs</em>: the number of times the model is trained using the entire dataset. </p>
+<ol>
+<li>
+<p><em>Total Batch Size</em>: number of samples processed before updating the model parameters. Large batches speed up learning</p>
+</li>
+<li>
+<p><em>Learning Rate</em>: How fast the model adjusts it settings. </p>
+</li>
+<li>
+<p><em>Early Stopping Threshold</em>: When the machine should stop training if its not improving fast enough </p>
+</li>
+<li>
+<p><em>Early Stopping Patience</em>: How long the machine waits before its not learning.</p>
+</li>
+<li>
+<p><em>Log model metrics interval in steps</em>: Determines how frequently to log model metrics. </p>
+</li>
+</ol>
+<p>Evaluating Fine-Tuning:</p>
+<ol>
+<li>
+<p><em>Accuracy</em>: Measures whether the generated tokens match the annotated tokens (labelled output)</p>
+</li>
+<li>
+<p><em>Loss</em>: Tells you how many predictions the model got wrong. Loss decreases as the model icreases. A loss of 0 means all output was perfect. If the context is simialir then loss is low.
+ -<strong>Loss is the preferred metric because Gen AI doesn't always know what is right</strong></p>
+</li>
+<li>
+<p>Model training set needs to keys: the prompt and the completion.</p>
+</li>
+</ol>
+<h3 id="oci-ai-generative-security">OCI AI Generative Security</h3>
+<ul>
+<li>
+<p>GPUs allocated for a customers gen AI task are isolated from other GPUs</p>
+</li>
+<li>
+<p>dedicated GPU cluster only handles your base and fine-tuned models within your set of GPUs so there is data isolation.</p>
+</li>
+<li>
+<p>Customer data is restricted within the customers tenancy so one customers data cant be seen by another customer. </p>
+</li>
+<li>
+<p>Also uses <code>OCI IAM</code> for authentication and authorization. </p>
+</li>
+<li>
+<p><code>OCI Key Management</code> is used for secrets.</p>
+</li>
+<li>
+<p><code>OCI Object Storage buckets</code> for customer fine tuned models.</p>
+</li>
+</ul>
+<p>Question about periods as a stop sequence: The model stops generating text once it reaches the end of the first sentence, even if the token limit is much higher.
+Explanation: Stop sequences, in the context of text generation, are special tokens or symbols used to signal the end of the generated text. These sequences serve as markers for the model to halt its generation process. Common stop sequences include punctuation marks such as periods (.), question marks (?), and exclamation marks (!), as they typically denote the end of sentences in natural language.</p>
+<h2 id="-the-main-advantage-of-using-few-shot-model-prompting-to-customize-a-large-language-model-llm-is-its-ability-to-adapt-the-model-quickly-and-effectively-to-new-tasks-or-domains-with-only-a-small-amount-of-training-data-instead-of-retraining-the-entire-model-from-scratch-which-can-be-time-consuming-and-resource-intensive-few-shot-prompting-leverages-the-models-pre-existing-knowledge">- The main advantage of using few-shot model prompting to customize a Large Language Model (LLM) is its ability to adapt the model quickly and effectively to new tasks or domains with only a small amount of training data. Instead of retraining the entire model from scratch, which can be time-consuming and resource-intensive, few-shot prompting leverages the model's pre-existing knowledge.</h2>
+<h2 id="rag-using-genai-service-oracle-23-ai-vector-search"><mark><strong>RAG using GenAI Service &amp; Oracle 23 ai Vector Search</strong></mark></h2>
 
 
 
