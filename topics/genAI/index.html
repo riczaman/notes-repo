@@ -525,6 +525,51 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#chat-model-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chat Model Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generative-ai-inference-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generative AI Inference API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Embedding Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Engineering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-llms-with-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing LLMs with Data
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -664,6 +709,51 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#chat-model-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Chat Model Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generative-ai-inference-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generative AI Inference API
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#embedding-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      Embedding Models
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prompt-engineering" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prompt Engineering
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customizing-llms-with-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing LLMs with Data
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -725,9 +815,15 @@
 <ul>
 <li>LLMs typically only involve decoder only models</li>
 </ul>
-<p>==<strong>Prompting</strong>=:
-- Altering the content or structure of the input that you pass to the model: text provided to an LLM as input, sometimes containing instructions and/or examples.
-- Decoders have pre-training which is where they are trained on a large set of input</p>
+<p><mark><strong>Prompting</strong></mark></p>
+<ul>
+<li>
+<p>Altering the content or structure of the input that you pass to the model: text provided to an LLM as input, sometimes containing instructions and/or examples.</p>
+</li>
+<li>
+<p>Decoders have pre-training which is where they are trained on a large set of input</p>
+</li>
+</ul>
 <p><mark><strong>Prompt Engineering</strong></mark>
 - The process of iteratively refining a prompt for the purpose of eliciting a particular style of response. </p>
 <ol>
@@ -775,17 +871,29 @@
 </ul>
 <h3 id="decoding">Decoding</h3>
 <ul>
-<li>The process of generating text with an LLM</li>
-<li>It happens 1 word at a time and it is iterative </li>
-<li>Word is appended to the input and the new revised input is fed into the model to be decoded for the next word. </li>
+<li>
+<p>The process of generating text with an LLM</p>
+</li>
+<li>
+<p>It happens 1 word at a time and it is iterative </p>
+</li>
+<li>
+<p>Word is appended to the input and the new revised input is fed into the model to be decoded for the next word. </p>
+</li>
 </ul>
-<p>Types of Decoding:
-1. <em>Greedy Decoding</em>: pick the highest probability word at each step. 
-2. <em>Non-Deterministic Decoding</em>: Pick randomly among high probability candidates at each step. <strong>Tempature</strong> = controls the sharpness or smoothness of this probability distribution. A low temperature value results in a sharper distribution, meaning that the model is more confident in its predictions and tends to select the most likely word with higher probability. Conversely, a higher temperature value smooths out the distribution, making it more likely for lower probability words to be chosen, leading to more diverse and varied output.
-   - When temperature is decreased, the distribution is more peaked around the most likely word. = Greedy Decoding
-   - When temperature is increased, the distribution is flattened over all words. 
-   - But the probability in terms of the highest and lowest rated ones will always state that way. == Ordering of words is unaffected by temperature.</p>
+<p>Types of Decoding:</p>
 <ol>
+<li>
+<p><em>Greedy Decoding</em>: pick the highest probability word at each step. </p>
+</li>
+<li>
+<p><em>Non-Deterministic Decoding</em>: Pick randomly among high probability candidates at each step. <strong>Tempature</strong> = controls the sharpness or smoothness of this probability distribution. A low temperature value results in a sharper distribution, meaning that the model is more confident in its predictions and tends to select the most likely word with higher probability. Conversely, a higher temperature value smooths out the distribution, making it more likely for lower probability words to be chosen, leading to more diverse and varied output.</p>
+</li>
+<li>When temperature is decreased, the distribution is more peaked around the most likely word. = Greedy Decoding</li>
+<li>When temperature is increased, the distribution is flattened over all words. </li>
+<li>
+<p>But the probability in terms of the highest and lowest rated ones will always state that way. == Ordering of words is unaffected by temperature.</p>
+</li>
 <li>
 <p><em>Nucleus Sampling Decoding</em>: Precise what portion of the distrubtion words you can sample from</p>
 </li>
@@ -820,6 +928,113 @@
 </ol>
 <h2 id="oci-generative-services"><mark><strong>OCI Generative Services</strong></mark></h2>
 <h3 id="chat-models">Chat Models</h3>
+<ul>
+<li><em>Tokens</em>: Language models understand tokens instead of characters and tokens can be a part of a word, an entire word or punctuation. </li>
+<li>For example a sentence with 10 words can have 15 tokens </li>
+</ul>
+<p>Pretrained Chat Models</p>
+<ol>
+<li>
+<p><em>command r-plus</em>: used for q&amp;a, info retrieval and sentiment analysis</p>
+</li>
+<li>
+<p><em>command r-16k</em>: This is the smaller and more fast version of r and it used when speed and cost is important. </p>
+</li>
+<li>
+<p><em>llama-3.1-405b/70b instruct</em>: largest publically available LLM</p>
+</li>
+</ol>
+<h3 id="chat-model-parameters">Chat Model Parameters</h3>
+<ol>
+<li>
+<p><em>Maximum Output Tokens</em>: The max number of tokens model generates per response. </p>
+</li>
+<li>
+<p><em>Premble Override</em>: Initial guideline message that can change the models overall chat behaviour and conversation style. </p>
+</li>
+<li>
+<p><em>Temperature</em>: Controls the randomness of the output. To generate the same output for a prompt you use 0 (highest probability answer). Lower values are more correct and used for Q&amp;A and higher values are more random and used for creative. </p>
+</li>
+<li>
+<p><em>Top k</em>: Top K tells the model to pick the next token from the top 'k' tokens in the list sorted by probability</p>
+</li>
+<li>
+<p><em>Top p</em>: Pick top tokens based on the sum of their probabilities (finds the combination of p tokens that yields the highes probabililty)</p>
+</li>
+<li>
+<p><em>Frequency Penalty</em>: Used to get rid of repetition in your outputs. Frequency Penalty penalizes tokens that have already appeared in the preeceding text. </p>
+</li>
+<li>
+<p><em>Presence Penalty</em>: Also used to get rid of repetition by applying the penalty regardless of frequency so if the token has appeared once it will be penalized. </p>
+</li>
+</ol>
+<h3 id="generative-ai-inference-api">Generative AI Inference API</h3>
+<ul>
+<li>
+<p>Within the Oracle cloud if you go to the Generative AI module you can actually copy the code that is developed from the playground and then take that python code and run it in a Jupyter notebook.</p>
+</li>
+<li>
+<p>inference API is the basically the endpoint you use within the Python script </p>
+</li>
+<li>
+<p>To setup the config file within the Oracle cloud you go to My Profile and within your details you will see <code>API keys</code>. When you create an API key make sure you download the private key file as well as adding the config file</p>
+</li>
+</ul>
+<h3 id="embedding-models"><mark><strong>Embedding Models</strong></mark></h3>
+<ul>
+<li>
+<p>Translation is a sequence to sequence task</p>
+</li>
+<li>
+<p><em>Word Embeddings</em>: Capture properties of the word. For example, the word is an animal so some properties could be size and age. But actual embeddings represent more properties than just two </p>
+</li>
+<li>
+<p><em>Semantic Similarity</em>: Cosine and Dot product similairity can be used to compute <mark><strong>numerical similarility</strong></mark></p>
+</li>
+<li>
+<p>embeddings that are numberically similair are also semantically similair</p>
+</li>
+<li>
+<p><em>Sentence Embeddings</em>: Associates every sentence with a vector of numbers. </p>
+</li>
+</ul>
+<p>Embeddings use case:</p>
+<ul>
+<li><em>Retrieval Augmented Generation (RAG)</em>: take a large document and generate the embeddings of each paragraph and put it into a vector database to allow you to get semantic search. </li>
+</ul>
+<p>Embedding Models in GenAI</p>
+<ol>
+<li><em>cohere.embed-english</em></li>
+<li><em>cohere.ember-english-light</em></li>
+<li><em>cohere.emberd.multilingual</em>
+   -use cases: semantic search, text classification, and text clustering </li>
+<li>
+<p>1024-dimensional vector for eaxch embedding and max 512 tokens. The light version only uses a 384 dimensionsal vector.</p>
+</li>
+<li>
+<p>As you compress the embeddings to lower dimensions the information retained is less </p>
+</li>
+</ol>
+<h3 id="prompt-engineering">Prompt Engineering</h3>
+<ul>
+<li>
+<p>LLMs are next word predictors they attempt to produce the next series of words that are most likely to follow from the previous text. </p>
+</li>
+<li>
+<p><em>Reinforcement Learning from Human Feedback (RLHF)</em> is used to fine-tune LLMs to follow a broad class of written instructions.</p>
+</li>
+</ul>
+<p>Prompt Formats:</p>
+<ul>
+<li>large language models are trained on a specific prompt format. </li>
+<li>
+<p><em>Llama2 Prompt formatting</em>: They use a beginning and end [INST] tag. Instruction tags</p>
+</li>
+<li>
+<p><em>Zero Shot Chain-of-Thought</em>: apply chain of thought but you don't provide example so you just ask it a phrase like lets think step by step as opposed to chain of thought were you provide it the examples for reasoning. </p>
+</li>
+</ul>
+<h3 id="customizing-llms-with-data">Customizing LLMs with Data</h3>
 
 
 
