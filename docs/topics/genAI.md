@@ -269,3 +269,52 @@ Pricing Example:
    - So for hosting you have to pay for the month but fine tuning is on a per hour basis
 
 ###Fine-Tuning Configuration
+
+2 Training Methods:
+  - *T-Few*
+  - *LoRA*: Low rank adaptation 
+  - Both of them are PEFT (parameter efficient fine tuning) ie. they fine tune only a subset parameters.
+
+Hyperparameters:
+   1. *Total Training Epochs*: the number of times the model is trained using the entire dataset. 
+
+   2. *Total Batch Size*: number of samples processed before updating the model parameters. Large batches speed up learning
+
+   3. *Learning Rate*: How fast the model adjusts it settings. 
+   
+   4. *Early Stopping Threshold*: When the machine should stop training if its not improving fast enough 
+
+   5. *Early Stopping Patience*: How long the machine waits before its not learning.
+
+   6. *Log model metrics interval in steps*: Determines how frequently to log model metrics. 
+
+Evaluating Fine-Tuning:
+
+1. *Accuracy*: Measures whether the generated tokens match the annotated tokens (labelled output)
+
+2. *Loss*: Tells you how many predictions the model got wrong. Loss decreases as the model icreases. A loss of 0 means all output was perfect. If the context is simialir then loss is low.
+ -**Loss is the preferred metric because Gen AI doesn't always know what is right**
+
+- Model training set needs to keys: the prompt and the completion.
+
+###OCI AI Generative Security
+- GPUs allocated for a customers gen AI task are isolated from other GPUs
+
+- dedicated GPU cluster only handles your base and fine-tuned models within your set of GPUs so there is data isolation.
+
+- Customer data is restricted within the customers tenancy so one customers data cant be seen by another customer. 
+
+- Also uses `OCI IAM` for authentication and authorization. 
+
+- `OCI Key Management` is used for secrets.
+
+- `OCI Object Storage buckets` for customer fine tuned models.
+
+Question about periods as a stop sequence: The model stops generating text once it reaches the end of the first sentence, even if the token limit is much higher.
+Explanation: Stop sequences, in the context of text generation, are special tokens or symbols used to signal the end of the generated text. These sequences serve as markers for the model to halt its generation process. Common stop sequences include punctuation marks such as periods (.), question marks (?), and exclamation marks (!), as they typically denote the end of sentences in natural language.
+
+- The main advantage of using few-shot model prompting to customize a Large Language Model (LLM) is its ability to adapt the model quickly and effectively to new tasks or domains with only a small amount of training data. Instead of retraining the entire model from scratch, which can be time-consuming and resource-intensive, few-shot prompting leverages the model's pre-existing knowledge.
+---
+
+##==**RAG using GenAI Service & Oracle 23 ai Vector Search**==
+
