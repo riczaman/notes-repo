@@ -104,6 +104,8 @@ Reducing Hallucinations (no way to eliminate):
    - Toolformer: strings are replaced with calls to tools
    - Bootstrapped reasoningL emit rationalization of intermediate steps
 
+---
+
 ##==**OCI Generative Services**==
 
 ###Chat Models
@@ -180,3 +182,90 @@ Prompt Formats:
 - *Zero Shot Chain-of-Thought*: apply chain of thought but you don't provide example so you just ask it a phrase like lets think step by step as opposed to chain of thought were you provide it the examples for reasoning. 
 
 ###Customizing LLMs with Data
+
+Training LLMs from scratch Cons:
+
+1. *Cost*: Very expensive to train 
+2. *Data*: A lot of data is needed and you need to annotated data (labelled)
+3. *Expertise*: Pretraining is hard and you need to understand what model performance means
+
+3 Options to Customize LLMs:
+
+1. *In-context Learning/Few Shot Prompting*
+   - *Chain of Thought Prompting*: Breaking a model down into smaller chunks and give reasoning.
+   - Limitation of in context learning: ==**Model Context length**== (which is the number of tokens it can process)
+
+2. *Fine-tuning a pretrained model*: optimizinf a model on a smaller domain-specific dataset
+   - Benefits: a) Improve the model performance on specific tasks
+   - b) Improve the model efficiency - reduce the number of tokens needed for your model to perform well on your tasks. 
+
+3. *Retrieval Augmented Generation (RAG)*: language model is able to query enterprise knowledge bases and its grounded. These do not require Fine Tuning.
+
+- Few shot prompting its simple and no training cost but the con is it adds latency to each model. Fine Tuning is used when the LLM does not perform well on a particular task and its more efficient and better performance but the con is it requires a labelled dataset (expensive and time consuming.) RAG is used when the data changes rapidly and it accesses the latest data and grounds results but its complez to setup. 
+
+- Look at `LLM Optimization` vs `Context Optimization`:
+   - context is what the model needs to know and optimization is how the model needs to act. 
+   - Always start with prompt engineering and then if its a context issue you do RAG but if its an optimization issue then you do fine tuning. 
+
+###Fine Tuning and Inference in OCI Gen AI
+- Inference is using a trained ML to make predictions or decisions based on new input data.
+
+- *Custom Model* is on that you create by using a *pretrained model* as a base and using your own data set to fine-tune the model. 
+
+Fine-Tuning Workflow: 
+   1. Create a Dedicated AI Cluster for Fine Tuning
+   2. Gather training data
+   3. Kickstart fine tuning
+   4. Fine-tuned (custom) Model is created
+
+- *Model Endpoint*: is a designated point on an AI Cluster where a LLM can accept user request and send back responses 
+
+Inference Worflow:
+   1. Create Dedicated AI Cluster for Hosting
+   2. Create Endpoint
+   3. Serve the Model
+
+==**T-Few Fine Tuning**==
+- regular fine-tuning involves updating the weights of all layers in the model which takes longer training time and has more cost.
+- T-Few only updates a fraction of the models weights. (Few-Shot Parameter Efficient Fine Tuning = PEFT) and this reduce the training time and the cost. ~0.01% of the baselines model size
+
+Reducing Inference Costs:
+- usually inference is expensive 
+- Each hosting cluster can have 1 base model endpoint and N Fine-tuned custom models. So they share the same GPU resources. 
+- GPU memory is limited so if you switch between models it can cause alot of overhead since you have to reload the full GPU memory. 
+- `Parameter Sharing` reduces the total amount of memory and has minimal overheard. 
+
+###Dedicated AI Clusters
+- A single-tenant deployment where the GPU model is used to only host your custom models and since the endpoint is not shared the throughput is consistent
+
+- 2 types:
+   1. *Fine-Tuning*
+   2. *Hositng*
+
+Dedicated AI Clusters Sizing & Pricing:
+
+Different Cluster Unit Types:
+1. *Large Cohere Dedicated*: You can do both fine-tuning and hosting but its limited to the cohere R command family.
+
+2. *Small Cohere Dedicated*: Same as above but a smaller count
+
+3. *Embed Cohere Dedicated*: Used for embedding but no fine-tuning but you can still host. 
+
+4. *Large Meta Dedicated*: Used for both finetuning and hosting but uses Meta Llama models. 
+
+Unit Sizing:
+   1. Cohere Command R+ - Does not support Fine tuning and needs 2 units of large cohere dedicated units for hosting.
+
+   2. Cohere Command R - Supports fine tuning and needs 8 units of small cohere dedicated and for hosting it needs 1 unit of small cohere dedicated.
+
+   3. Meta Llmama - It neeeds 4 units of large meta dedicated for fine tuning and 1 unit large meta for hosting. 
+
+   4. Cohere English Embed - doesnt support fine tuning and needs 1 unit of embed dedicated for hosting. 
+
+Pricing Example:
+   - Cohere Command R 08-2024
+   - Min hosting commitment = 744unit-hours/cluster
+   - Fine tuning commitment = 1 unit-hour/fine tuning
+   - So for hosting you have to pay for the month but fine tuning is on a per hour basis
+
+###Fine-Tuning Configuration
