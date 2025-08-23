@@ -318,3 +318,91 @@ Explanation: Stop sequences, in the context of text generation, are special toke
 
 ##==**RAG using GenAI Service & Oracle 23 ai Vector Search**==
 
+###OCI GenAI Integrations
+
+- LangChain provides a wrapper class for using OCI GenAI with LangChain
+- *LangChain*: is a framework for developing apps powered by language models. 
+
+To create a chatbot you need:
+1. LLM
+2. Prompts
+3. Memory
+4. Chains
+5. Vector Stores
+6. Document Loaders 
+
+2 Main Tyes of LangChain Models:
+
+1. `LLMs`: Pure text completion models
+2. `Chatbots`: tuned specific for having conversations. 
+- the core element of a language model is the model
+
+LangChain Prompt Templates:
+- LangChain prompts can be created using 2 types of langchain prompt templates
+
+1. *String Prompt Template*: created from a formatted python string and can have any number of variables and the output is a string. 
+- Used for Generation Models
+
+2. *Chat Prompt Template*: this type of prompt template supports a list of messages and is used for Chat Models. 
+
+LangChain Chains:
+- provides frameworks for creating chains of components including LLMs and other types. 
+
+2 Ways to create Chains:
+1. *LCEL*: this creates chains declaratively (LangChain Expression Language). This is preferred. 
+
+2. *Legacy*: creates chains using python classes like LLM Chain
+
+- Using Chains is how you link between getting user input to generating the response 
+
+LangChain Memory
+- ability to store information about past interactions = `memory`
+- Chain interacts with the memory to pass the information along with the question. 
+-Oracle 23ai can be used a vector store and LangChain can use these vector stores. 
+
+- *Oracle AI Vector Search* offers vector utilities to automatically generate vector embeddings from unstructure data
+- *Oracle Select AI* can generate sql from natural language. 
+
+###RAG
+- Mitigate bias in training data because its getting information from an external data source. 
+- Can overcome model limitations by feeding in only the top results from the document instead of the full document
+- handle queries without new training.
+
+RAG Pipeline:
+1. *Ingestion*: Where you have documents that get broken into chunks and then they are turned into embeddings and then indexed into a database. 
+   - `Document Loaders` are reponsible for loading documents from a variety of sources
+   - `Chunking` - Text Splitters take a document and split it into chunks:
+
+   a. *Chunk Size* - Many LLMs have max input size constraints so splitting allows us to process documents that would otherwise exceed the limits. But if chunks are too small they wont be semantically useful AND if its too big then it wont be semantically specific. 
+
+   - Embeddings capture semantic relationship
+   - Embeddings of similair words are close in the multi-dimensional space
+   - Vector embeddings can be generated outside Oracle 23ai db by using 3rd party embedding models
+   - Vector embeddings generated inside oracle 23ai use ==**ONNX**== format
+
+   b. *Chunk Overlap* - is the number of overlapping characters between adjacent chunks. This helps preserve context between chunks. 
+
+   c. *Splitting Method* - split block of text based on seperators like new line. It tries to retain paragraphs and sentences. 
+
+2. *Retrieval*: There is a query which then gets searched within the index database and then the system selects the top K most relevant results. 
+   - A users natural language question is encoded as a vector and sent to **AI Vector Search** 
+   - Vector search uses dot product and cosine product (only cares about angle). 
+   - Less angle means more similarity
+   - **Vector Indexes** Are used for larger sets of data to speed up vector simialirty searches. Uses clustering, partioning, and neighbour graphs to group simialir vectors together. 
+   - AI Vector search supports HNSW and IVF
+
+3. *Generation*: Using the top K results a response to the user is generated. 
+
+###Conversational RAG
+- RAGs and the Chatbot both need to be conversational.
+- Dependence on memory which holds prior chat history to be inserted to the prompt as additional context. 
+
+- In the LangChain framework, memory serves as a dynamic repository for retaining and managing information throughout the system's operation. It allows the framework to maintain state and context, enabling chains to access, reference, and utilize past interactions and information in their decision-making processes.
+
+-  Large Language Models (LLMs) without Retrieval Augmented Generation (RAG) primarily rely on internal knowledge learned during pretraining on a large text corpus. These models are trained on vast amounts of text data, which enables them to learn complex patterns, structures, and relationships within language.
+
+---
+
+##==**Chatbot using Generative AI Agent Service**==
+
+##Oracle Generative AI Agent Service
