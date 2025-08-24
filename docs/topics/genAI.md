@@ -487,3 +487,8 @@ Creating Agents process:
 - 3 is the number of endpoints you can create for each agent.
 
 - If your data isn't available yet, create an empty folder for the data source and populate it later. This way, you can ingest data into the source after the folder is populated.
+
+---
+##Additional Notes
+- OCI Generative AI Service = ~40% of the exam
+- Increasing temperature flattens the distribution allowing for more varied words. 
