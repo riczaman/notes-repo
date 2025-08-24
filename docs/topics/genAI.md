@@ -406,3 +406,84 @@ RAG Pipeline:
 ##==**Chatbot using Generative AI Agent Service**==
 
 ##Oracle Generative AI Agent Service
+- Agents Fully managed service that combines LLM with an intelligent retrieval answers from a knowledge base
+
+Architecture:
+1. *Interface*: This is the starting point and this is where the user interacts with the AI agent like a web app or a chatbox
+
+2. *Inputs fed into LLM*: Can be `Short/Long Term Memory`, `Tools`, and then `prompts` and there is a knowledge database
+
+3. *Response Generation*
+
+Agent Concepts:
+
+- *Generative AI Model*: This is the LLM trained on large data 
+
+- *Agent*: Autonomous system based off the LLM that understands and generates himan like text with high answerability and groundness 
+
+- *Knowledge Base*: Agent connexts to a knowledge base which is vector based
+
+- *Data Source*: Data source provide connection to the data store
+
+- *Data Ingestion*: extract data from data source and convert it to a structure format and then store in a knowledege base. 
+
+- *Session*: A series of exchanges where the user sends queries or prompts and the agent responds with relevant information 
+
+- *Agent Endpoint*: Specific points of access in a network that agents use to interact with other systems or services 
+
+- *Trace*: Tracks and display the conversation history both the original and generated response 
+
+- *Citation*: Source of information that the agent uses to respond (ie. document id, page number, etc)
+
+- *Content Moderation*: Feature to help detect or filter out certain toxic, violent or abusive phrases from the generated responses and from prompts. 
+
+Object Storage Guideline:
+- Data sources: data for gen AI agents must be uploaded as files to an object storage bucket 
+- Only one bucket can be allowed per data source
+- Only pdf and txt files are supported no larger than 100mb
+- PDF files can have images and charts 
+- No need to format charts since they are already 2D
+- You can also use reference tables
+- Hyperlinks are also shown as clickable links in the chat reponses
+
+Oracle Database Guidelines: 
+- Gen AI Agents dont manage databases so they have to be created ahead of time and within the database you need the following:
+1. DOCID
+2. Body - is the actual content that you want the agent to search 
+3. Vector
+
+Optional:
+4. CHUNKID
+5. URL
+6. Title
+7. Page_Numbers 
+
+- The embedding model used in the query has to be the same as the embedding model that was used for the database. 
+
+###Chatbot using Object Store
+Creating Agents process:
+1. Create the knowledge Base
+   - Data Storage type can be:
+      a. *Object Storage*
+      b. *OCI OpenSearch*
+      c. *Oracle AI Vector Search*
+
+   - lexical search is key word
+   - semantic search is based on context. 
+   - When restarting the job it will ignore previously read in storage and will only focus on the new content.
+   - You can only delete a knowledge base if it is not being used by an agent. 
+   - Data sources can be deleted at any time.
+
+2. Create the Agent
+   - Within the endpoints option is where you create the endpoint to the knowledge base. 
+
+3. Test the agent
+
+###Chatbot using Oracle 23ai
+- Database Tools is used to create a connection to a database and then you can use this tool with the agent that you set up. 
+
+- When you restart a previously run ingestion job, the pipeline detects files that were successfully ingested earlier and skips them. It only ingests files that failed previously and have since been updated.
+
+- 3 is the number of endpoints you can create for each agent.
+
+- If your data isn't available yet, create an empty folder for the data source and populate it later. This way, you can ingest data into the source after the folder is populated.
