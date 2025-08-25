@@ -1,4 +1,4 @@
-```
+```python
 import requests
 import json
 from datetime import datetime, timedelta
@@ -153,12 +153,17 @@ class TeamCityBuildAnalyzer:
         
         build_type = build.get('buildType', {})
         project_name = build_type.get('projectName', '').lower()
-        project_id = build_type.get('projectId', '')
+        project_id = build_type.get('projectId', '').lower()
         build_type_name = build_type.get('name', '').lower()
         build_type_id = build.get('buildTypeId', '').lower()
         
-        # Get full project path for better matching
-        full_project_path = self._get_project_full_path(project_id, project_name).lower()
+        # Debug: Print build info for first few builds
+        if hasattr(self, '_debug_count') and self._debug_count < 3:
+            print(f"DEBUG Build {self._debug_count}: project_name='{build_type.get('projectName', '')}', project_id='{build_type.get('projectId', '')}', build_type='{build_type.get('name', '')}'")
+            self._debug_count += 1
+        elif not hasattr(self, '_debug_count'):
+            self._debug_count = 1
+            print(f"DEBUG Build 0: project_name='{build_type.get('projectName', '')}', project_id='{build_type.get('projectId', '')}', build_type='{build_type.get('name', '')}'")
         
         # Check project filters with enhanced matching logic
         project_match = True
@@ -171,38 +176,29 @@ class TeamCityBuildAnalyzer:
                 # Method 1: Exact project name match
                 if filter_lower == project_name:
                     project_match = True
+                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                        print(f"DEBUG: Matched project name '{project_name}' with filter '{filter_term}'")
                     break
                 
-                # Method 2: Full path contains the filter (for nested projects)
-                elif filter_lower in full_project_path:
+                # Method 2: Project name contains the filter (for partial matching)
+                elif filter_lower in project_name:
                     project_match = True
+                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                        print(f"DEBUG: Project name '{project_name}' contains filter '{filter_term}'")
                     break
                 
-                # Method 3: Path-like filter matching (e.g., "project1 > project1a")
-                elif ' > ' in filter_lower:
-                    # User specified a hierarchical path
-                    if filter_lower == full_project_path:
-                        project_match = True
-                        break
-                    # Also check if the full path ends with the specified path
-                    elif full_project_path.endswith(filter_lower):
-                        project_match = True
-                        break
-                
-                # Method 4: Slash-separated path matching (e.g., "project1/project1a")
-                elif '/' in filter_lower:
-                    # Convert slash format to hierarchy format
-                    hierarchy_filter = filter_lower.replace('/', ' > ')
-                    if hierarchy_filter == full_project_path:
-                        project_match = True
-                        break
-                    elif full_project_path.endswith(hierarchy_filter):
-                        project_match = True
-                        break
-                
-                # Method 5: Check if it's a direct child project reference
-                elif filter_lower == project_id.lower():
+                # Method 3: Project ID contains the filter
+                elif filter_lower in project_id:
                     project_match = True
+                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                        print(f"DEBUG: Project ID '{project_id}' contains filter '{filter_term}'")
+                    break
+                
+                # Method 4: For cd/tree format, try matching build type name
+                elif filter_lower in build_type_name:
+                    project_match = True
+                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                        print(f"DEBUG: Build type '{build_type_name}' contains filter '{filter_term}'")
                     break
         
         # Check build type filters  
@@ -222,7 +218,12 @@ class TeamCityBuildAnalyzer:
             )
         
         # Build must match ALL specified filter categories
-        return project_match and build_type_match and build_name_match
+        final_match = project_match and build_type_match and build_name_match
+        
+        if hasattr(self, '_debug_count') and self._debug_count <= 5 and final_match:
+            print(f"DEBUG: BUILD MATCHED! project_match={project_match}, build_type_match={build_type_match}, build_name_match={build_name_match}")
+        
+        return final_match
     
     def _get_matched_filter(self, build: Dict[str, Any]) -> str:
         """
@@ -236,19 +237,18 @@ class TeamCityBuildAnalyzer:
         """
         build_type = build.get('buildType', {})
         project_name = build_type.get('projectName', '').lower()
-        project_id = build_type.get('projectId', '')
-        full_project_path = self._get_project_full_path(project_id, project_name).lower()
+        project_id = build_type.get('projectId', '').lower()
+        build_type_name = build_type.get('name', '').lower()
         
-        # Check which project filter matched
+        # Check which project filter matched using the same logic as _matches_filters
         for i, filter_term in enumerate(self.project_filters):
             filter_lower = filter_term.lower()
             
-            # Check all the same matching logic as in _matches_filters
+            # Same matching logic as _matches_filters
             if (filter_lower == project_name or
-                filter_lower in full_project_path or
-                (' > ' in filter_lower and (filter_lower == full_project_path or full_project_path.endswith(filter_lower))) or
-                ('/' in filter_lower and (filter_lower.replace('/', ' > ') == full_project_path or full_project_path.endswith(filter_lower.replace('/', ' > ')))) or
-                filter_lower == project_id.lower()):
+                filter_lower in project_name or
+                filter_lower in project_id or
+                filter_lower in build_type_name):
                 # Return the original filter (not lowercased)
                 return self.original_project_filters[i] if i < len(self.original_project_filters) else filter_term
         
