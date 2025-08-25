@@ -722,6 +722,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#new-code-calculate-build-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      NEW CODE: Calculate build duration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-code-determine-which-filter-matched-this-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      NEW CODE: Determine which filter matched this build
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-sheets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create sheets
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1053,6 +1080,33 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#new-code-calculate-build-duration" class="md-nav__link">
+    <span class="md-ellipsis">
+      NEW CODE: Calculate build duration
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-code-determine-which-filter-matched-this-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      NEW CODE: Determine which filter matched this build
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#create-sheets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Create sheets
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1071,8 +1125,6 @@
   
   
 
-
-  <h1>Oracle Generative AI Professional</h1>
 
 <h2 id="fundamentals-of-large-language-models"><mark><strong>Fundamentals of Large Language Models</strong></mark></h2>
 <h3 id="basics-of-llms">Basics of LLMs</h3>
@@ -1773,6 +1825,189 @@ Explanation: Stop sequences, in the context of text generation, are special toke
 <p>A notification indicates that the endpoint resource is moved to the new compartment successfully. You might notice that the endpoint status changes to Updating. After the move is successful, the endpoint status changes back to Active.</p>
 </li>
 </ol>
+<hr />
+<h1 id="new-code-calculate-build-duration"><strong>NEW CODE: Calculate build duration</strong></h1>
+<p>if start_date and finish_date:
+    try:
+        start_dt = datetime.strptime(start_date[:15], '%Y%m%dT%H%M%S')
+        finish_dt = datetime.strptime(finish_date[:15], '%Y%m%dT%H%M%S')
+        duration = finish_dt - start_dt
+        build_duration_minutes = duration.total_seconds() / 60
+    except ValueError:
+        pass</p>
+<h1 id="new-code-determine-which-filter-matched-this-build"><strong>NEW CODE: Determine which filter matched this build</strong></h1>
+<p>matched_filter = self._get_matched_filter(build)</p>
+<hr />
+<p>'build_duration_minutes': build_duration_minutes,  # <strong>NEW</strong>
+'matched_filter': matched_filter  # <strong>NEW</strong></p>
+<hr />
+<p>def _get_matched_filter(self, build: Dict[str, Any]) -&gt; str:
+    """
+    <strong>NEW METHOD: Determine which specific filter matched this build</strong>
+    """
+    build_type = build.get('buildType', {})
+    project_name = build_type.get('projectName', '').lower()
+    project_id = build_type.get('projectId', '')
+    full_project_path = self._get_project_full_path(project_id, project_name).lower()</p>
+<div class="language-text highlight"><pre><span></span><code># Check which project filter matched
+for filter_term in self.project_filters:
+    filter_lower = filter_term.lower()
+
+    # Check all the same matching logic as in _matches_filters
+    if (filter_lower == project_name or
+        filter_lower in full_project_path or
+        (&#39; &gt; &#39; in filter_lower and (filter_lower == full_project_path or full_project_path.endswith(filter_lower))) or
+        (&#39;/&#39; in filter_lower and (filter_lower.replace(&#39;/&#39;, &#39; &gt; &#39;) == full_project_path or full_project_path.endswith(filter_lower.replace(&#39;/&#39;, &#39; &gt; &#39;)))) or
+        filter_lower == project_id.lower()):
+        return filter_term  # Return original filter (not lowercased)
+
+return &quot;Unknown Filter&quot;
+</code></pre></div>
+<hr />
+<h1 id="create-sheets">Create sheets</h1>
+<p>self._create_executive_summary_sheet(wb, df, summary)  # <strong>NEW: Make this first</strong>
+self._create_overview_sheet(wb, df, summary)</p>
+<hr />
+<p>def _create_executive_summary_sheet(self, wb: Workbook, df: pd.DataFrame, summary: pd.DataFrame):
+    """
+    <strong>NEW METHOD: Create executive summary sheet by project filter</strong>
+    """
+    ws = wb.create_sheet("🎯 Executive Summary", 0)  # Make it the first sheet (index 0)</p>
+<div class="language-text highlight"><pre><span></span><code># Title
+ws[&#39;A1&#39;] = &quot;Executive Summary - Build Analysis by Project Filter&quot;
+ws[&#39;A1&#39;].font = Font(size=18, bold=True, color=&quot;2E4057&quot;)
+ws[&#39;A2&#39;] = f&quot;Analysis Period: Last 30 Days ({datetime.now().strftime(&#39;%Y-%m-%d&#39;)})&quot;
+ws[&#39;A2&#39;].font = Font(size=12, italic=True)
+
+# Check if we have the required columns
+if &#39;matched_filter&#39; not in df.columns:
+    ws[&#39;A4&#39;] = &quot;Error: Build analysis data incomplete. Please regenerate the report.&quot;
+    ws[&#39;A4&#39;].font = Font(size=12, color=&quot;FF0000&quot;, bold=True)
+    return
+
+# Group by matched filter to get summary statistics
+filter_summary = df.groupby(&#39;matched_filter&#39;).agg({
+    &#39;build_id&#39;: &#39;count&#39;,  # Total builds
+    &#39;is_successful&#39;: &#39;sum&#39;,  # Successful builds
+    &#39;is_failed&#39;: &#39;sum&#39;,  # Failed builds
+    &#39;build_duration_minutes&#39;: [&#39;mean&#39;, &#39;median&#39;]  # Average build time
+}).round(2)
+
+# Flatten column names
+filter_summary.columns = [&#39;total_builds&#39;, &#39;successful_builds&#39;, &#39;failed_builds&#39;, &#39;avg_build_time_minutes&#39;, &#39;median_build_time_minutes&#39;]
+
+# Calculate rates
+filter_summary[&#39;success_rate&#39;] = (filter_summary[&#39;successful_builds&#39;] / filter_summary[&#39;total_builds&#39;] * 100).round(1)
+filter_summary[&#39;failure_rate&#39;] = (filter_summary[&#39;failed_builds&#39;] / filter_summary[&#39;total_builds&#39;] * 100).round(1)
+
+# Reset index to make matched_filter a regular column
+filter_summary = filter_summary.reset_index()
+
+# Sort by total builds (descending)
+filter_summary = filter_summary.sort_values(&#39;total_builds&#39;, ascending=False)
+
+# Create the table
+start_row = 5
+headers = [
+    &quot;Project Filter&quot;,
+    &quot;Total Builds&quot;, 
+    &quot;Successful&quot;,
+    &quot;Failed&quot;,
+    &quot;Success Rate (%)&quot;,
+    &quot;Failure Rate (%)&quot;,
+    &quot;Avg Build Time (min)&quot;,
+    &quot;Median Build Time (min)&quot;
+]
+
+# Write headers
+for j, header in enumerate(headers):
+    cell = ws.cell(row=start_row, column=j + 1, value=header)
+    cell.font = Font(bold=True, color=&quot;FFFFFF&quot;)
+    cell.fill = PatternFill(start_color=&quot;2E4057&quot;, end_color=&quot;2E4057&quot;, fill_type=&quot;solid&quot;)
+    cell.alignment = Alignment(horizontal=&#39;center&#39;, vertical=&#39;center&#39;)
+    cell.border = Border(
+        left=Side(style=&#39;thin&#39;),
+        right=Side(style=&#39;thin&#39;),
+        top=Side(style=&#39;thin&#39;),
+        bottom=Side(style=&#39;thin&#39;)
+    )
+
+# Write data rows
+for i, (_, row) in enumerate(filter_summary.iterrows()):
+    row_data = [
+        row[&#39;matched_filter&#39;],
+        row[&#39;total_builds&#39;],
+        row[&#39;successful_builds&#39;],
+        row[&#39;failed_builds&#39;],
+        f&quot;{row[&#39;success_rate&#39;]:.1f}%&quot;,
+        f&quot;{row[&#39;failure_rate&#39;]:.1f}%&quot;,
+        f&quot;{row[&#39;avg_build_time_minutes&#39;]:.1f}&quot; if pd.notna(row[&#39;avg_build_time_minutes&#39;]) else &quot;N/A&quot;,
+        f&quot;{row[&#39;median_build_time_minutes&#39;]:.1f}&quot; if pd.notna(row[&#39;median_build_time_minutes&#39;]) else &quot;N/A&quot;
+    ]
+
+    for j, value in enumerate(row_data):
+        cell = ws.cell(row=start_row + 1 + i, column=j + 1, value=value)
+        cell.border = Border(
+            left=Side(style=&#39;thin&#39;),
+            right=Side(style=&#39;thin&#39;),
+            top=Side(style=&#39;thin&#39;),
+            bottom=Side(style=&#39;thin&#39;)
+        )
+        cell.alignment = Alignment(horizontal=&#39;center&#39;, vertical=&#39;center&#39;)
+
+        # Color code success rate column
+        if j == 4:  # Success rate column
+            success_rate = row[&#39;success_rate&#39;]
+            if success_rate &gt;= 90:
+                cell.fill = PatternFill(start_color=&quot;C6EFCE&quot;, end_color=&quot;C6EFCE&quot;, fill_type=&quot;solid&quot;)
+            elif success_rate &gt;= 70:
+                cell.fill = PatternFill(start_color=&quot;FFEB9C&quot;, end_color=&quot;FFEB9C&quot;, fill_type=&quot;solid&quot;)
+            else:
+                cell.fill = PatternFill(start_color=&quot;FFC7CE&quot;, end_color=&quot;FFC7CE&quot;, fill_type=&quot;solid&quot;)
+
+# Add summary totals at the bottom
+total_row = start_row + len(filter_summary) + 2
+ws.cell(row=total_row, column=1, value=&quot;OVERALL TOTALS:&quot;).font = Font(bold=True, size=12)
+
+overall_total_builds = filter_summary[&#39;total_builds&#39;].sum()
+overall_successful = filter_summary[&#39;successful_builds&#39;].sum()
+overall_failed = filter_summary[&#39;failed_builds&#39;].sum()
+overall_success_rate = (overall_successful / overall_total_builds * 100) if overall_total_builds &gt; 0 else 0
+
+# Calculate weighted average build time
+total_build_time = 0
+total_builds_with_time = 0
+for _, row in filter_summary.iterrows():
+    if pd.notna(row[&#39;avg_build_time_minutes&#39;]):
+        total_build_time += row[&#39;avg_build_time_minutes&#39;] * row[&#39;total_builds&#39;]
+        total_builds_with_time += row[&#39;total_builds&#39;]
+
+overall_avg_build_time = total_build_time / total_builds_with_time if total_builds_with_time &gt; 0 else 0
+
+totals_data = [
+    [&quot;Total Builds:&quot;, overall_total_builds],
+    [&quot;Total Successful:&quot;, f&quot;{overall_successful} ({overall_success_rate:.1f}%)&quot;],
+    [&quot;Total Failed:&quot;, f&quot;{overall_failed} ({100-overall_success_rate:.1f}%)&quot;],
+    [&quot;Overall Avg Build Time:&quot;, f&quot;{overall_avg_build_time:.1f} minutes&quot; if overall_avg_build_time &gt; 0 else &quot;N/A&quot;]
+]
+
+for i, (label, value) in enumerate(totals_data):
+    ws.cell(row=total_row + 1 + i, column=1, value=label).font = Font(bold=True)
+    ws.cell(row=total_row + 1 + i, column=2, value=value)
+
+# Auto-adjust column widths
+for column in ws.columns:
+    max_length = 0
+    column_letter = column[0].column_letter
+    for cell in column:
+        try:
+            if len(str(cell.value)) &gt; max_length:
+                max_length = len(str(cell.value))
+        except:
+            pass
+    adjusted_width = min(max_length + 2, 50)
+    ws.column_dimensions[column_letter].width = adjusted_width
+</code></pre></div>
 
 
 
