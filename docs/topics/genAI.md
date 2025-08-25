@@ -195,7 +195,7 @@ Training LLMs from scratch Cons:
    - *Chain of Thought Prompting*: Breaking a model down into smaller chunks and give reasoning.
    - Limitation of in context learning: ==**Model Context length**== (which is the number of tokens it can process)
 
-2. *Fine-tuning a pretrained model*: optimizinf a model on a smaller domain-specific dataset
+2. *Fine-tuning a pretrained model*: optimizing a model on a smaller domain-specific dataset
    - Benefits: a) Improve the model performance on specific tasks
    - b) Improve the model efficiency - reduce the number of tokens needed for your model to perform well on your tasks. 
 
@@ -419,7 +419,7 @@ Agent Concepts:
 
 - *Generative AI Model*: This is the LLM trained on large data 
 
-- *Agent*: Autonomous system based off the LLM that understands and generates himan like text with high answerability and groundness 
+- *Agent*: Autonomous system based off the LLM that understands and generates human like text with high answerability and groundness 
 
 - *Knowledge Base*: Agent connexts to a knowledge base which is vector based
 
@@ -492,3 +492,50 @@ Creating Agents process:
 ##Additional Notes
 - OCI Generative AI Service = ~40% of the exam
 - Increasing temperature flattens the distribution allowing for more varied words. 
+
+---
+
+##Sample Question Study Guide:
+
+1. The OCI Generative AI Agents service retains customer-provided queries and retrieved context used for chatting with Large Language Models (LLMs) during the user's session. However, this data isn't stored beyond the session. Also, the service doesn't use customer chat data or knowledge base data for model training. = Permanently Deleted 
+
+2. When a model is deprecated, it remains available for use temporarily. The company should plan to migrate to another model before the deprecation period ends and the model is retired.
+
+3. The OnDemandServingMode is used to configure the Generative AI model to handle requests on-demand, which is suitable for use cases where requests are sporadic or less frequent.
+
+4. Cosine distance (or cosine similarity) measures the angle between two vectors in a high-dimensional space. A cosine distance of 0 (which corresponds to a cosine similarity of 1) means that the vectors are identical in direction, indicating strong semantic similarity between the two embeddings. This is crucial in vector search and retrieval systems, where similar meanings are identified based on direction rather than magnitude.
+
+5. Multi-modal parsing is used to parse and include information from charts and graphs in the documents.
+
+6. In Retrieval-Augmented Generation (RAG), Groundedness ensures that the model s response is factually correct and traceable to retrieved sources, minimizing hallucinations. Answer Relevance, on the other hand, evaluates how well the response aligns with the user s query, ensuring that the retrieved and generated content is contextually appropriate rather than just factually correct. Both are essential for high-quality AI-generated responses.
+
+7. The endpoint variable stores the URL where requests to Oracle's Generative AI inference service are sent. This endpoint acts as the gateway to communicate with the AI model hosted in the specified region.
+
+8. You can only delete knowledge bases that aren't used by agents. Before you delete a knowledge base, you must delete the data sources in that knowledge base and delete the agents using that data source. The delete action permanently deletes the knowledge base. This action can't be undone.
+
+9. If a seed value is provided, the model generates deterministic responses (same input leads to the same output). However, if no seed is specified, the model behaves non-deterministically, producing diverse responses each time it processes the same input.
+
+10. In Retrieval-Augmented Generation (RAG), the ranker evaluates and prioritizes the retrieved information to ensure that the most relevant and high-quality data is passed to the generator. It refines the initial retrieval results by scoring and reordering them based on relevance, improving the accuracy and contextual appropriateness of the generated response. This step is crucial for minimizing irrelevant or misleading outputs.
+
+11. Fine-tuning helps improve model efficiency by adapting a pre-trained model to a specific task or domain, allowing it to generate more relevant responses with fewer input tokens. This reduces computational costs and inference time while maintaining or improving accuracy. By refining the model's knowledge, fine-tuning enhances performance without requiring excessive amounts of new training data.
+
+12. The seed parameter ensures that the model generates deterministic outputs. By setting a fixed seed value (e.g., 123), the model will consistently produce the same response for the same input prompt and parameters. Leaving it as None allows the model to generate varied responses each time. temperature, frequency_penalty, and top_p control aspects of the text generation process, but they do not enforce consistency across multiple runs.
+
+13. Oracle Database typically uses port 1521 for SQL*Net (also known as Oracle Net) connections, which facilitate communication between clients and the database server. Some configurations may also use port 1522 for additional services or failover. When setting up ingress rules in an OCI subnet security list, allowing traffic over ports 1521-1522 ensures that Oracle Database can be accessed properly within the Generative AI Agents environment.
+
+14. Retrieval-Augmented Generation (RAG) is a non-parametric approach because it retrieves relevant information from external data sources at inference time rather than relying solely on pre-trained parameters. This allows RAG to dynamically answer questions based on any corpus without requiring a separate fine-tuned model for each dataset.
+
+15. The cohere.command-r-08-2024 model supports the T-Few and LoRA fine-tuning methods. NOT Vanilla.
+
+16. For on-demand inferencing, the total number of billable characters is the sum of the prompt and response length.
+
+17. In the LangChain framework, a chain typically interacts with memory at two specific points during a run. The first interaction occurs after user input but before chain execution begins. At this stage, the chain may access and retrieve relevant information or context stored in memory to inform its processing or decision-making process. The second interaction with memory occurs after the core logic of the chain has been executed but before generating the final output. At this stage, the chain may update or modify the memory based on the results of its processing, storing any relevant information or intermediate results for future reference or use.
+
+18. Soft prompting involves learning a small set of continuous embeddings that guide the model's behavior without modifying its original parameters. Unlike traditional fine-tuning, soft prompts require no task-specific training of the full model and are efficient in adapting LLMs to different tasks with minimal computational overhead. This makes it ideal for scenarios where full fine-tuning is impractical but some level of customization is needed.
+
+19. The totalTrainingSteps parameter is calculated as: totalTrainingSteps = (totalTrainingEpochs * size(trainingDataset)) / trainingBatchSize This formula determines the total number of training steps based on the number of epochs, the size of the training dataset, and the batch size.
+
+20. A hosting dedicated AI cluster can have up to 50 endpoints.
+
+21. A notification indicates that the endpoint resource is moved to the new compartment successfully. You might notice that the endpoint status changes to Updating. After the move is successful, the endpoint status changes back to Active.
+
