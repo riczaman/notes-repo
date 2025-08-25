@@ -173,33 +173,31 @@ class TeamCityBuildAnalyzer:
             for filter_term in self.project_filters:
                 filter_lower = filter_term.lower()
                 
-                # Method 1: Exact project name match
-                if filter_lower == project_name:
-                    project_match = True
-                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
-                        print(f"DEBUG: Matched project name '{project_name}' with filter '{filter_term}'")
-                    break
+                # Handle filters with "/" separator (e.g., "RED/Builds")
+                if '/' in filter_lower:
+                    project_part, build_part = filter_lower.split('/', 1)
+                    
+                    # Check if project name or ID contains the project part
+                    # AND the project name or build type contains the build part
+                    if ((project_part in project_name or project_part in project_id) and 
+                        (build_part in project_name or build_part in build_type_name)):
+                        project_match = True
+                        if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                            print(f"DEBUG: Matched '{project_name}' with filter '{filter_term}' (project='{project_part}', build='{build_part}')")
+                        break
                 
-                # Method 2: Project name contains the filter (for partial matching)
-                elif filter_lower in project_name:
-                    project_match = True
-                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
-                        print(f"DEBUG: Project name '{project_name}' contains filter '{filter_term}'")
-                    break
-                
-                # Method 3: Project ID contains the filter
-                elif filter_lower in project_id:
-                    project_match = True
-                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
-                        print(f"DEBUG: Project ID '{project_id}' contains filter '{filter_term}'")
-                    break
-                
-                # Method 4: For cd/tree format, try matching build type name
-                elif filter_lower in build_type_name:
-                    project_match = True
-                    if hasattr(self, '_debug_count') and self._debug_count <= 3:
-                        print(f"DEBUG: Build type '{build_type_name}' contains filter '{filter_term}'")
-                    break
+                # Handle filters without "/" - these should be exact or very specific matches
+                else:
+                    # For filters without "/", be more restrictive to avoid cross-contamination
+                    # Only match if it's an exact match or the project name starts with the filter
+                    if (filter_lower == project_name or 
+                        project_name.startswith(filter_lower) or
+                        filter_lower == project_id or
+                        project_id.startswith(filter_lower)):
+                        project_match = True
+                        if hasattr(self, '_debug_count') and self._debug_count <= 3:
+                            print(f"DEBUG: Matched project '{project_name}' with exact/prefix filter '{filter_term}'")
+                        break
         
         # Check build type filters  
         build_type_match = True
@@ -244,13 +242,23 @@ class TeamCityBuildAnalyzer:
         for i, filter_term in enumerate(self.project_filters):
             filter_lower = filter_term.lower()
             
-            # Same matching logic as _matches_filters
-            if (filter_lower == project_name or
-                filter_lower in project_name or
-                filter_lower in project_id or
-                filter_lower in build_type_name):
-                # Return the original filter (not lowercased)
-                return self.original_project_filters[i] if i < len(self.original_project_filters) else filter_term
+            # Handle filters with "/" separator (e.g., "RED/Builds")
+            if '/' in filter_lower:
+                project_part, build_part = filter_lower.split('/', 1)
+                
+                # Check if project name or ID contains the project part
+                # AND the project name or build type contains the build part
+                if ((project_part in project_name or project_part in project_id) and 
+                    (build_part in project_name or build_part in build_type_name)):
+                    return self.original_project_filters[i] if i < len(self.original_project_filters) else filter_term
+            
+            # Handle filters without "/" - exact or prefix matches only
+            else:
+                if (filter_lower == project_name or 
+                    project_name.startswith(filter_lower) or
+                    filter_lower == project_id or
+                    project_id.startswith(filter_lower)):
+                    return self.original_project_filters[i] if i < len(self.original_project_filters) else filter_term
         
         return "Unknown Filter"
     
