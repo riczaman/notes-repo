@@ -1,4 +1,5 @@
 ```
+python
 import requests
 import json
 from datetime import datetime, timedelta
@@ -45,6 +46,9 @@ class TeamCityBuildAnalyzer:
         self.build_type_filters = [f.lower() for f in build_type_filters] if build_type_filters else []
         self.build_name_filters = [f.lower() for f in build_name_filters] if build_name_filters else []
         
+        # Store original filters for display purposes
+        self.original_project_filters = project_filters if project_filters else []
+        
         # Test connection
         self._test_connection()
     
@@ -61,7 +65,7 @@ class TeamCityBuildAnalyzer:
                 raise Exception(f"Connection failed with status code: {response.status_code}")
             
             server_info = response.json()
-            print(f"✅ Connected to TeamCity {server_info.get('version', 'Unknown')} successfully!")
+            print(f"Connected to TeamCity {server_info.get('version', 'Unknown')} successfully!")
             
         except requests.exceptions.Timeout:
             raise Exception("Connection timeout. Please check your TeamCity URL and network connection.")
@@ -223,7 +227,7 @@ class TeamCityBuildAnalyzer:
     
     def _get_matched_filter(self, build: Dict[str, Any]) -> str:
         """
-        **NEW METHOD: Determine which specific filter matched this build**
+        Determine which specific filter matched this build
         
         Args:
             build: Build dictionary from TeamCity API
@@ -237,7 +241,7 @@ class TeamCityBuildAnalyzer:
         full_project_path = self._get_project_full_path(project_id, project_name).lower()
         
         # Check which project filter matched
-        for filter_term in self.project_filters:
+        for i, filter_term in enumerate(self.project_filters):
             filter_lower = filter_term.lower()
             
             # Check all the same matching logic as in _matches_filters
@@ -246,56 +250,11 @@ class TeamCityBuildAnalyzer:
                 (' > ' in filter_lower and (filter_lower == full_project_path or full_project_path.endswith(filter_lower))) or
                 ('/' in filter_lower and (filter_lower.replace('/', ' > ') == full_project_path or full_project_path.endswith(filter_lower.replace('/', ' > ')))) or
                 filter_lower == project_id.lower()):
-                return filter_term  # Return original filter (not lowercased)
+                # Return the original filter (not lowercased)
+                return self.original_project_filters[i] if i < len(self.original_project_filters) else filter_term
         
         return "Unknown Filter"
     
-    def _matches_filters(self, build: Dict[str, Any]) -> bool:
-        """
-        Check if a build matches the specified filters
-        
-        Args:
-            build: Build dictionary from TeamCity API
-            
-        Returns:
-            True if build matches filters, False otherwise
-        """
-        # If no filters are specified, include all builds
-        if not self.project_filters and not self.build_type_filters and not self.build_name_filters:
-            return True
-        
-        build_type = build.get('buildType', {})
-        project_name = build_type.get('projectName', '').lower()
-        project_id = build_type.get('projectId', '').lower()
-        build_type_name = build_type.get('name', '').lower()
-        build_type_id = build.get('buildTypeId', '').lower()
-        
-        # Check project filters
-        project_match = True
-        if self.project_filters:
-            project_match = any(
-                filter_term in project_name or filter_term in project_id
-                for filter_term in self.project_filters
-            )
-        
-        # Check build type filters  
-        build_type_match = True
-        if self.build_type_filters:
-            build_type_match = any(
-                filter_term in build_type_name or filter_term in build_type_id
-                for filter_term in self.build_type_filters
-            )
-        
-        # Check build name filters
-        build_name_match = True
-        if self.build_name_filters:
-            build_name_match = any(
-                filter_term in build_type_name
-                for filter_term in self.build_name_filters
-            )
-        
-        # Build must match ALL specified filter categories
-        return project_match and build_type_match and build_name_match
     def get_builds_last_month(self) -> List[Dict[str, Any]]:
         """
         Fetch all builds from the last month, filtered by specified criteria
@@ -317,7 +276,7 @@ class TeamCityBuildAnalyzer:
             if self.project_filters or self.build_type_filters or self.build_name_filters:
                 print("Active filters:")
                 if self.project_filters:
-                    print(f"  - Project/Folder filters: {', '.join(self.project_filters)}")
+                    print(f"  - Project/Folder filters: {', '.join(self.original_project_filters)}")
                 if self.build_type_filters:
                     print(f"  - Build type filters: {', '.join(self.build_type_filters)}")
                 if self.build_name_filters:
@@ -366,10 +325,10 @@ class TeamCityBuildAnalyzer:
                     start += count
                     
                 except requests.exceptions.Timeout:
-                    print(f"⚠️  Request timeout while fetching builds. Retrying...")
+                    print(f"Request timeout while fetching builds. Retrying...")
                     continue
                 except requests.exceptions.RequestException as e:
-                    print(f"❌ Error fetching builds (batch starting at {start}): {e}")
+                    print(f"Error fetching builds (batch starting at {start}): {e}")
                     if "401" in str(e):
                         raise Exception("Authentication failed. Please check your credentials.")
                     elif "403" in str(e):
@@ -383,7 +342,7 @@ class TeamCityBuildAnalyzer:
             
             if filtered_builds:
                 # Show sample of filtered builds for verification
-                print("\n🔍 Sample of filtered builds:")
+                print("\nSample of filtered builds:")
                 for i, build in enumerate(filtered_builds[:5]):
                     build_type = build.get('buildType', {})
                     project_path = self._get_project_full_path(
@@ -398,7 +357,7 @@ class TeamCityBuildAnalyzer:
             return filtered_builds
             
         except Exception as e:
-            print(f"❌ Critical error in get_builds_last_month: {e}")
+            print(f"Critical error in get_builds_last_month: {e}")
             raise
     
     def extract_application_code(self, build_type_name: str, project_name: str) -> str:
@@ -466,7 +425,7 @@ class TeamCityBuildAnalyzer:
                     except ValueError:
                         pass
                 
-                # **NEW CODE: Calculate build duration**
+                # Calculate build duration
                 if start_date and finish_date:
                     try:
                         start_dt = datetime.strptime(start_date[:15], '%Y%m%dT%H%M%S')
@@ -508,7 +467,7 @@ class TeamCityBuildAnalyzer:
                     else:
                         triggered_by = f"{trigger_type.title()} Trigger"
                 
-                # **NEW CODE: Determine which filter matched this build**
+                # Determine which filter matched this build
                 matched_filter = self._get_matched_filter(build)
                 
                 analysis_data.append({
@@ -532,12 +491,12 @@ class TeamCityBuildAnalyzer:
                     'triggered_by': triggered_by,
                     'trigger_type': trigger_type,
                     'trigger_date': trigger_date,
-                    'build_duration_minutes': build_duration_minutes,  # **NEW**
-                    'matched_filter': matched_filter  # **NEW**
+                    'build_duration_minutes': build_duration_minutes,
+                    'matched_filter': matched_filter
                 })
                 
             except Exception as e:
-                print(f"⚠️  Error processing build {build.get('id', 'unknown')}: {e}")
+                print(f"Error processing build {build.get('id', 'unknown')}: {e}")
                 continue
         
         return pd.DataFrame(analysis_data)
@@ -618,20 +577,20 @@ class TeamCityBuildAnalyzer:
         wb.remove(wb.active)
         
         # Create sheets
-        self._create_executive_summary_sheet(wb, df, summary)  # **NEW: Make this first**
+        self._create_executive_summary_sheet(wb, df, summary)  # Make this first
         self._create_overview_sheet(wb, df, summary)
         self._create_summary_sheet(wb, summary)
         self._create_detailed_sheet(wb, df)
-        self._create_charts_sheet(wb, summary)
+        self._create_charts_sheet(wb, df)
         
         # Save workbook
         wb.save(filename)
     
     def _create_executive_summary_sheet(self, wb: Workbook, df: pd.DataFrame, summary: pd.DataFrame):
         """
-        **NEW METHOD: Create executive summary sheet by project filter**
+        Create executive summary sheet by project filter
         """
-        ws = wb.create_sheet("🎯 Executive Summary", 0)  # Make it the first sheet (index 0)
+        ws = wb.create_sheet("Executive Summary", 0)  # Make it the first sheet (index 0)
         
         # Title
         ws['A1'] = "Executive Summary - Build Analysis by Project Filter"
@@ -645,26 +604,58 @@ class TeamCityBuildAnalyzer:
             ws['A4'].font = Font(size=12, color="FF0000", bold=True)
             return
         
-        # Group by matched filter to get summary statistics
-        filter_summary = df.groupby('matched_filter').agg({
-            'build_id': 'count',  # Total builds
-            'is_successful': 'sum',  # Successful builds
-            'is_failed': 'sum',  # Failed builds
-            'build_duration_minutes': ['mean', 'median']  # Average build time
-        }).round(2)
+        # Create summary for each project filter
+        filter_summaries = []
         
-        # Flatten column names
-        filter_summary.columns = ['total_builds', 'successful_builds', 'failed_builds', 'avg_build_time_minutes', 'median_build_time_minutes']
-        
-        # Calculate rates
-        filter_summary['success_rate'] = (filter_summary['successful_builds'] / filter_summary['total_builds'] * 100).round(1)
-        filter_summary['failure_rate'] = (filter_summary['failed_builds'] / filter_summary['total_builds'] * 100).round(1)
-        
-        # Reset index to make matched_filter a regular column
-        filter_summary = filter_summary.reset_index()
-        
-        # Sort by total builds (descending)
-        filter_summary = filter_summary.sort_values('total_builds', ascending=False)
+        for project_filter in self.original_project_filters:
+            # Filter data for this specific project filter
+            filtered_data = df[df['matched_filter'] == project_filter]
+            
+            if len(filtered_data) > 0:
+                total_builds = len(filtered_data)
+                successful_builds = filtered_data['is_successful'].sum()
+                failed_builds = filtered_data['is_failed'].sum()
+                success_rate = (successful_builds / total_builds * 100) if total_builds > 0 else 0
+                failure_rate = (failed_builds / total_builds * 100) if total_builds > 0 else 0
+                
+                # Calculate average build time
+                avg_build_time = filtered_data['build_duration_minutes'].mean() if 'build_duration_minutes' in filtered_data.columns else None
+                
+                # Find most active user
+                most_active_user = 'Unknown'
+                if 'triggered_by' in filtered_data.columns:
+                    # Count occurrences of each user, excluding system triggers
+                    user_counts = filtered_data[
+                        (~filtered_data['triggered_by'].str.contains('VCS|Scheduled|Dependency|Trigger', na=False))
+                    ]['triggered_by'].value_counts()
+                    
+                    if len(user_counts) > 0:
+                        most_active_user = user_counts.index[0]
+                
+                filter_summaries.append({
+                    'Project Filter': project_filter,
+                    'Total Builds': total_builds,
+                    'Successful': successful_builds,
+                    'Failed': failed_builds,
+                    'Success Rate (%)': f"{success_rate:.1f}%",
+                    'Failure Rate (%)': f"{failure_rate:.1f}%",
+                    'Avg Build Time (min)': f"{avg_build_time:.1f}" if pd.notna(avg_build_time) else "N/A",
+                    'Most Active User': most_active_user,
+                    'success_rate_numeric': success_rate  # For coloring
+                })
+            else:
+                # No builds found for this filter
+                filter_summaries.append({
+                    'Project Filter': project_filter,
+                    'Total Builds': 0,
+                    'Successful': 0,
+                    'Failed': 0,
+                    'Success Rate (%)': "N/A",
+                    'Failure Rate (%)': "N/A",
+                    'Avg Build Time (min)': "N/A",
+                    'Most Active User': "N/A",
+                    'success_rate_numeric': 0
+                })
         
         # Create the table
         start_row = 5
@@ -676,7 +667,7 @@ class TeamCityBuildAnalyzer:
             "Success Rate (%)",
             "Failure Rate (%)",
             "Avg Build Time (min)",
-            "Median Build Time (min)"
+            "Most Active User"
         ]
         
         # Write headers
@@ -693,19 +684,19 @@ class TeamCityBuildAnalyzer:
             )
         
         # Write data rows
-        for i, (_, row) in enumerate(filter_summary.iterrows()):
-            row_data = [
-                row['matched_filter'],
-                row['total_builds'],
-                row['successful_builds'],
-                row['failed_builds'],
-                f"{row['success_rate']:.1f}%",
-                f"{row['failure_rate']:.1f}%",
-                f"{row['avg_build_time_minutes']:.1f}" if pd.notna(row['avg_build_time_minutes']) else "N/A",
-                f"{row['median_build_time_minutes']:.1f}" if pd.notna(row['median_build_time_minutes']) else "N/A"
+        for i, row_data in enumerate(filter_summaries):
+            data_values = [
+                row_data['Project Filter'],
+                row_data['Total Builds'],
+                row_data['Successful'],
+                row_data['Failed'],
+                row_data['Success Rate (%)'],
+                row_data['Failure Rate (%)'],
+                row_data['Avg Build Time (min)'],
+                row_data['Most Active User']
             ]
             
-            for j, value in enumerate(row_data):
+            for j, value in enumerate(data_values):
                 cell = ws.cell(row=start_row + 1 + i, column=j + 1, value=value)
                 cell.border = Border(
                     left=Side(style='thin'),
@@ -716,8 +707,8 @@ class TeamCityBuildAnalyzer:
                 cell.alignment = Alignment(horizontal='center', vertical='center')
                 
                 # Color code success rate column
-                if j == 4:  # Success rate column
-                    success_rate = row['success_rate']
+                if j == 4 and row_data['Total Builds'] > 0:  # Success rate column
+                    success_rate = row_data['success_rate_numeric']
                     if success_rate >= 90:
                         cell.fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")
                     elif success_rate >= 70:
@@ -726,21 +717,25 @@ class TeamCityBuildAnalyzer:
                         cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
         
         # Add summary totals at the bottom
-        total_row = start_row + len(filter_summary) + 2
+        total_row = start_row + len(filter_summaries) + 2
         ws.cell(row=total_row, column=1, value="OVERALL TOTALS:").font = Font(bold=True, size=12)
         
-        overall_total_builds = filter_summary['total_builds'].sum()
-        overall_successful = filter_summary['successful_builds'].sum()
-        overall_failed = filter_summary['failed_builds'].sum()
+        overall_total_builds = sum([row['Total Builds'] for row in filter_summaries])
+        overall_successful = sum([row['Successful'] for row in filter_summaries])
+        overall_failed = sum([row['Failed'] for row in filter_summaries])
         overall_success_rate = (overall_successful / overall_total_builds * 100) if overall_total_builds > 0 else 0
         
         # Calculate weighted average build time
         total_build_time = 0
         total_builds_with_time = 0
-        for _, row in filter_summary.iterrows():
-            if pd.notna(row['avg_build_time_minutes']):
-                total_build_time += row['avg_build_time_minutes'] * row['total_builds']
-                total_builds_with_time += row['total_builds']
+        for row in filter_summaries:
+            if row['Avg Build Time (min)'] != "N/A" and row['Total Builds'] > 0:
+                try:
+                    avg_time = float(row['Avg Build Time (min)'])
+                    total_build_time += avg_time * row['Total Builds']
+                    total_builds_with_time += row['Total Builds']
+                except ValueError:
+                    pass
         
         overall_avg_build_time = total_build_time / total_builds_with_time if total_builds_with_time > 0 else 0
         
@@ -770,7 +765,7 @@ class TeamCityBuildAnalyzer:
     
     def _create_overview_sheet(self, wb: Workbook, df: pd.DataFrame, summary: pd.DataFrame):
         """Create overview sheet with key metrics"""
-        ws = wb.create_sheet("📊 Overview", 0)
+        ws = wb.create_sheet("Overview")
         
         # Title
         ws['A1'] = "TeamCity Build Analysis Report"
@@ -887,7 +882,7 @@ class TeamCityBuildAnalyzer:
     
     def _create_summary_sheet(self, wb: Workbook, summary: pd.DataFrame):
         """Create formatted summary sheet"""
-        ws = wb.create_sheet("📋 Summary by Build Type")
+        ws = wb.create_sheet("Summary by Build Type")
         
         # Title
         ws['A1'] = "Build Summary by Application and Build Type"
@@ -947,7 +942,7 @@ class TeamCityBuildAnalyzer:
     
     def _create_detailed_sheet(self, wb: Workbook, df: pd.DataFrame):
         """Create detailed data sheet"""
-        ws = wb.create_sheet("📝 Detailed Build Data")
+        ws = wb.create_sheet("Detailed Build Data")
         
         # Title
         ws['A1'] = "Detailed Build Information"
@@ -955,7 +950,7 @@ class TeamCityBuildAnalyzer:
         
         # Select and reorder columns for better readability
         columns_to_show = [
-            'project_path', 'build_type_name', 'build_number', 'status', 
+            'project_name', 'build_type_name', 'build_number', 'status', 
             'timestamp', 'branch', 'triggered_by', 'trigger_type', 'status_text'
         ]
         
@@ -1015,63 +1010,57 @@ class TeamCityBuildAnalyzer:
                 except:
                     pass
             adjusted_width = min(max_length + 2, 50)
-            ws.column_dimensions[column_letter].width = adjusted_width7CE", end_color="FFC7CE", fill_type="solid")
-                    else:
-                        cell.fill = PatternFill(start_color="FFEB9C", end_color="FFEB9C", fill_type="solid")
-        
-        # Auto-adjust column widths
-        for column in ws.columns:
-            max_length = 0
-            column_letter = column[0].column_letter
-            for cell in column:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            adjusted_width = min(max_length + 2, 50)
             ws.column_dimensions[column_letter].width = adjusted_width
     
-    def _create_charts_sheet(self, wb: Workbook, summary: pd.DataFrame):
+    def _create_charts_sheet(self, wb: Workbook, df: pd.DataFrame):
         """Create charts and visualizations sheet"""
-        ws = wb.create_sheet("📊 Charts & Analytics")
+        ws = wb.create_sheet("Charts & Analytics")
         
         # Title
         ws['A1'] = "Build Analytics Dashboard"
         ws['A1'].font = Font(size=16, bold=True, color="2E4057")
         
-        # Prepare data for charts
-        app_summary = summary.groupby('application_code').agg({
-            'total_builds': 'sum',
-            'successful_builds': 'sum',
-            'failed_builds': 'sum'
-        }).reset_index()
-        app_summary = app_summary.sort_values('total_builds', ascending=False).head(10)
+        # Prepare data for charts based on project filters
+        filter_summaries = []
+        for project_filter in self.original_project_filters:
+            filtered_data = df[df['matched_filter'] == project_filter]
+            
+            if len(filtered_data) > 0:
+                total_builds = len(filtered_data)
+                successful_builds = filtered_data['is_successful'].sum()
+                failed_builds = filtered_data['is_failed'].sum()
+                
+                filter_summaries.append({
+                    'project_filter': project_filter,
+                    'total_builds': total_builds,
+                    'successful_builds': successful_builds,
+                    'failed_builds': failed_builds
+                })
         
         # Create data table for chart
         chart_start_row = 3
-        ws.cell(row=chart_start_row, column=1, value="Application")
+        ws.cell(row=chart_start_row, column=1, value="Project Filter")
         ws.cell(row=chart_start_row, column=2, value="Total Builds")
         ws.cell(row=chart_start_row, column=3, value="Successful")
         ws.cell(row=chart_start_row, column=4, value="Failed")
         
-        for i, (_, row) in enumerate(app_summary.iterrows()):
-            ws.cell(row=chart_start_row + 1 + i, column=1, value=row['application_code'])
-            ws.cell(row=chart_start_row + 1 + i, column=2, value=row['total_builds'])
-            ws.cell(row=chart_start_row + 1 + i, column=3, value=row['successful_builds'])
-            ws.cell(row=chart_start_row + 1 + i, column=4, value=row['failed_builds'])
+        for i, summary in enumerate(filter_summaries):
+            ws.cell(row=chart_start_row + 1 + i, column=1, value=summary['project_filter'])
+            ws.cell(row=chart_start_row + 1 + i, column=2, value=summary['total_builds'])
+            ws.cell(row=chart_start_row + 1 + i, column=3, value=summary['successful_builds'])
+            ws.cell(row=chart_start_row + 1 + i, column=4, value=summary['failed_builds'])
         
         # Create bar chart
         chart = BarChart()
         chart.type = "col"
         chart.style = 10
-        chart.title = "Build Volume by Application"
+        chart.title = "Build Volume by Project Filter"
         chart.y_axis.title = 'Number of Builds'
-        chart.x_axis.title = 'Applications'
+        chart.x_axis.title = 'Project Filters'
         
         # Define data ranges
-        data = Reference(ws, min_col=2, min_row=chart_start_row, max_row=chart_start_row + len(app_summary), max_col=4)
-        cats = Reference(ws, min_col=1, min_row=chart_start_row + 1, max_row=chart_start_row + len(app_summary))
+        data = Reference(ws, min_col=2, min_row=chart_start_row, max_row=chart_start_row + len(filter_summaries), max_col=4)
+        cats = Reference(ws, min_col=1, min_row=chart_start_row + 1, max_row=chart_start_row + len(filter_summaries))
         
         chart.add_data(data, titles_from_data=True)
         chart.set_categories(cats)
@@ -1227,7 +1216,7 @@ def main():
         analyzer.print_summary_report(summary)
         
         print("\n" + "="*60)
-        print("📊 ANALYSIS COMPLETE!")
+        print("ANALYSIS COMPLETE!")
         print("Files generated:")
         print("  - CSV files for detailed and summary data")
         print("  - Formatted Excel report with multiple sheets")
@@ -1239,5 +1228,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
