@@ -541,6 +541,7 @@ Creating Agents process:
 
 ---
 
+```
 # **NEW CODE: Calculate build duration**
 if start_date and finish_date:
     try:
@@ -550,15 +551,18 @@ if start_date and finish_date:
         build_duration_minutes = duration.total_seconds() / 60
     except ValueError:
         pass
-
+```
+```
 # **NEW CODE: Determine which filter matched this build**
 matched_filter = self._get_matched_filter(build)
-
+```
 ---
+```
 'build_duration_minutes': build_duration_minutes,  # **NEW**
 'matched_filter': matched_filter  # **NEW**
-
+```
 ---
+```
 def _get_matched_filter(self, build: Dict[str, Any]) -> str:
     """
     **NEW METHOD: Determine which specific filter matched this build**
@@ -581,15 +585,15 @@ def _get_matched_filter(self, build: Dict[str, Any]) -> str:
             return filter_term  # Return original filter (not lowercased)
     
     return "Unknown Filter"
-
+```
 ---
-
+```
 # Create sheets
 self._create_executive_summary_sheet(wb, df, summary)  # **NEW: Make this first**
 self._create_overview_sheet(wb, df, summary)
-
+```
 ---
-
+```
 def _create_executive_summary_sheet(self, wb: Workbook, df: pd.DataFrame, summary: pd.DataFrame):
     """
     **NEW METHOD: Create executive summary sheet by project filter**
@@ -730,3 +734,4 @@ def _create_executive_summary_sheet(self, wb: Workbook, df: pd.DataFrame, summar
                 pass
         adjusted_width = min(max_length + 2, 50)
         ws.column_dimensions[column_letter].width = adjusted_width
+```
