@@ -45,20 +45,106 @@ def get_github_files(owner, repo, branch_version):
         github_token = os.getenv('GITHUB_TOKEN')
         headers = {}
         if github_token:
-            headers['Authorization'] = f'token {github_token}'
-            print("Debug: Using GitHub token for authentication")
+            # Use 'token' for classic tokens, 'Bearer' for fine-grained tokens
+            if github_token.startswith('github_pat_'):
+                headers['Authorization'] = f'Bearer {github_token}'
+                print("Debug: Using fine-grained token (Bearer)")
+            else:
+                headers['Authorization'] = f'token {github_token}'
+                print("Debug: Using classic token")
+            print(f"Debug: Token length: {len(github_token)} characters")
         else:
             print("Debug: No GitHub token found - only public repos will work")
 
         print(f"Debug: Making request to GitHub API...")
+        print(f"Debug: URL being requested: {branches_url}")
+        
+        # First test basic repo access
+        repo_test_url = f"https://api.github.com/repos/{owner}/{repo}"
+        print(f"Debug: Testing basic repo access: {repo_test_url}")
+        test_response = requests.get(repo_test_url, headers=headers, timeout=30, verify=False)
+        print(f"Debug: Basic repo access status: {test_response.status_code}")
+        
+        if test_response.status_code == 200:
+            print("Debug: Basic repo access successful")
+            repo_data = test_response.json()
+            print(f"Debug: Repo name: {repo_data.get('name', 'unknown')}")
+            print(f"Debug: Repo private: {repo_data.get('private', 'unknown')}")
+            print(f"Debug: Default branch: {repo_data.get('default_branch', 'unknown')}")
+        elif test_response.status_code == 404:
+            print("Debug: Repository not found - check if the repository path is correct")
+            print(f"Debug: Make sure you can access: https://github.com/{owner}/{repo}")
+            print("Debug: Response body:", test_response.text[:200])
+            return [], "unknown"
+        elif test_response.status_code == 403:
+            print("Debug: Access forbidden - token may not have proper permissions")
+            print("Debug: Response body:", test_response.text[:200])
+            return [], "unknown"
+        else:
+            print(f"Debug: Unexpected status code: {test_response.status_code}")
+            print("Debug: Response body:", test_response.text[:200])
+        
+        # Now try to get branches
         response = requests.get(branches_url, headers=headers, timeout=30, verify=False)
-        print(f"Debug: Response status code: {response.status_code}")
+        print(f"Debug: Branches request status code: {response.status_code}")
+        
+        if response.status_code != 200:
+            print("Debug: Branches request failed")
+            print("Debug: Response body:", response.text[:500])
+            print("Debug: Response headers:", dict(response.headers))
+            
+            # Try alternative approach - get branches from repo info
+            if test_response.status_code == 200:
+                print("Debug: Trying to work with default branch only...")
+                repo_data = test_response.json()
+                default_branch = repo_data.get('default_branch', 'main')
+                print(f"Debug: Using default branch: {default_branch}")
+                
+                # Try to get contents from default branch
+                default_api_url = f"https://api.github.com/repos/{owner}/{repo}/contents"
+                params = {'ref': default_branch}
+                contents_response = requests.get(default_api_url, params=params, headers=headers, timeout=30, verify=False)
+                
+                if contents_response.status_code == 200:
+                    print("Debug: Successfully got contents from default branch")
+                    files_data = contents_response.json()
+                    
+                    # Extract file names, remove extensions, and filter
+                    file_names = set()
+                    for item in files_data:
+                        if item['type'] == 'file':
+                            filename = item['name']
+                            # Skip README files
+                            if filename.lower().startswith('readme'):
+                                continue
+                            
+                            # Remove extension
+                            name_without_ext = filename.split('.')[0]
+                            if name_without_ext:  # Only add non-empty names
+                                file_names.add(name_without_ext)
+                    
+                    return list(file_names), default_branch
+                else:
+                    print(f"Debug: Contents request also failed: {contents_response.status_code}")
+                    print("Debug: Contents response:", contents_response.text[:200])
+            
+            return [], "unknown"
+        
         if response.status_code == 404:
             print("Debug: 404 error - Repository not found. Possible causes:")
             print("1. Repository doesn't exist")
             print("2. Repository is private (requires authentication)")
             print("3. Repository name is incorrect")
             print(f"Debug: Please verify the repository exists at: https://github.com/{owner}/{repo}")
+        elif response.status_code == 403:
+            print("Debug: 403 Forbidden error. Possible causes:")
+            print("1. GitHub token doesn't have 'repo' scope")
+            print("2. Token is expired or invalid")
+            print("3. Rate limit exceeded")
+            print("4. Repository access denied")
+            if 'X-RateLimit-Remaining' in response.headers:
+                print(f"Debug: Rate limit remaining: {response.headers['X-RateLimit-Remaining']}")
+        
         response.raise_for_status()
         branches = response.json()
         
