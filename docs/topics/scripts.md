@@ -1,3 +1,6 @@
+##==**Useful Python Scripts**==
+
+###TeamCity Report
 ```python
 import requests
 import json
@@ -319,11 +322,21 @@ class TeamCityBuildAnalyzer:
                     builds.extend(batch_builds)
                     
                     # Apply filters to this batch
+                    matched_in_batch = 0
                     for build in batch_builds:
                         if self._matches_filters(build):
                             filtered_builds.append(build)
+                            matched_in_batch += 1
                     
-                    print(f"Fetched {len(builds)} total builds, {len(filtered_builds)} match filters...")
+                    print(f"Fetched {len(builds)} total builds, {len(filtered_builds)} match filters (this batch: {matched_in_batch})...")
+                    
+                    # Show breakdown every 500 builds
+                    if len(builds) % 500 == 0 and len(builds) > 0:
+                        print(f"\n--- Build Matching Breakdown (after {len(builds)} builds) ---")
+                        for filter_name in self.original_project_filters:
+                            filter_matches = sum(1 for b in filtered_builds if self._get_matched_filter(b) == filter_name)
+                            print(f"  '{filter_name}': {filter_matches} matches")
+                        print(f"--- End Breakdown ---\n")
                     
                     # Check if we got fewer builds than requested (end of results)
                     if len(batch_builds) < count:
@@ -1043,39 +1056,119 @@ class TeamCityBuildAnalyzer:
                     'successful_builds': successful_builds,
                     'failed_builds': failed_builds
                 })
+            else:
+                # Include zero data for completeness
+                filter_summaries.append({
+                    'project_filter': project_filter,
+                    'total_builds': 0,
+                    'successful_builds': 0,
+                    'failed_builds': 0
+                })
         
-        # Create data table for chart
-        chart_start_row = 3
-        ws.cell(row=chart_start_row, column=1, value="Project Filter")
-        ws.cell(row=chart_start_row, column=2, value="Total Builds")
-        ws.cell(row=chart_start_row, column=3, value="Successful")
-        ws.cell(row=chart_start_row, column=4, value="Failed")
+        # Create data table for chart (starting at row 3, leaving space for title)
+        chart_start_row = 4
         
+        # Headers with better formatting
+        headers = ["Project Filter", "Total Builds", "Successful", "Failed"]
+        for j, header in enumerate(headers):
+            cell = ws.cell(row=chart_start_row, column=j + 1, value=header)
+            cell.font = Font(bold=True, color="FFFFFF")
+            cell.fill = PatternFill(start_color="2E4057", end_color="2E4057", fill_type="solid")
+            cell.alignment = Alignment(horizontal='center', vertical='center')
+            cell.border = Border(
+                left=Side(style='thin'),
+                right=Side(style='thin'),
+                top=Side(style='thin'),
+                bottom=Side(style='thin')
+            )
+        
+        # Data rows with formatting
         for i, summary in enumerate(filter_summaries):
-            ws.cell(row=chart_start_row + 1 + i, column=1, value=summary['project_filter'])
-            ws.cell(row=chart_start_row + 1 + i, column=2, value=summary['total_builds'])
-            ws.cell(row=chart_start_row + 1 + i, column=3, value=summary['successful_builds'])
-            ws.cell(row=chart_start_row + 1 + i, column=4, value=summary['failed_builds'])
+            data_values = [
+                summary['project_filter'],
+                summary['total_builds'],
+                summary['successful_builds'],
+                summary['failed_builds']
+            ]
+            
+            for j, value in enumerate(data_values):
+                cell = ws.cell(row=chart_start_row + 1 + i, column=j + 1, value=value)
+                cell.border = Border(
+                    left=Side(style='thin'),
+                    right=Side(style='thin'),
+                    top=Side(style='thin'),
+                    bottom=Side(style='thin')
+                )
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+                
+                # Alternate row coloring
+                if i % 2 == 1:
+                    cell.fill = PatternFill(start_color="F2F2F2", end_color="F2F2F2", fill_type="solid")
         
-        # Create bar chart
+        # Create improved bar chart
         chart = BarChart()
         chart.type = "col"
         chart.style = 10
+        
+        # Chart title and axis labels
         chart.title = "Build Volume by Project Filter"
+        chart.title.overlay = False
         chart.y_axis.title = 'Number of Builds'
         chart.x_axis.title = 'Project Filters'
         
+        # Improve axis appearance
+        chart.y_axis.majorGridlines = None  # Remove major gridlines
+        chart.y_axis.minorGridlines = None  # Remove minor gridlines
+        chart.x_axis.majorGridlines = None
+        chart.x_axis.minorGridlines = None
+        
         # Define data ranges
-        data = Reference(ws, min_col=2, min_row=chart_start_row, max_row=chart_start_row + len(filter_summaries), max_col=4)
-        cats = Reference(ws, min_col=1, min_row=chart_start_row + 1, max_row=chart_start_row + len(filter_summaries))
+        data_end_row = chart_start_row + len(filter_summaries)
+        data = Reference(ws, min_col=2, min_row=chart_start_row, max_row=data_end_row, max_col=4)
+        cats = Reference(ws, min_col=1, min_row=chart_start_row + 1, max_row=data_end_row)
         
         chart.add_data(data, titles_from_data=True)
         chart.set_categories(cats)
-        chart.height = 10
-        chart.width = 15
         
-        # Add chart to worksheet
-        ws.add_chart(chart, "F3")
+        # Improve chart size and positioning
+        chart.height = 12  # Taller chart
+        chart.width = 18   # Wider chart
+        
+        # Position legend in white space (top right area)
+        chart.legend.position = 'r'  # Right side
+        chart.legend.overlay = False  # Don't overlay on chart area
+        
+        # Add data labels to bars
+        chart.dLbls = None  # Remove default data labels for cleaner look
+        
+        # Position chart in white space (column G onwards, leaving space for legend)
+        ws.add_chart(chart, "G4")
+        
+        # Add summary statistics below the data table
+        summary_start_row = chart_start_row + len(filter_summaries) + 3
+        
+        ws.cell(row=summary_start_row, column=1, value="Summary Statistics").font = Font(size=14, bold=True, color="2E4057")
+        
+        total_all_builds = sum([s['total_builds'] for s in filter_summaries])
+        total_all_successful = sum([s['successful_builds'] for s in filter_summaries])
+        total_all_failed = sum([s['failed_builds'] for s in filter_summaries])
+        overall_success_rate = (total_all_successful / total_all_builds * 100) if total_all_builds > 0 else 0
+        
+        stats_data = [
+            ["Total Builds Across All Filters:", total_all_builds],
+            ["Total Successful:", f"{total_all_successful} ({overall_success_rate:.1f}%)"],
+            ["Total Failed:", f"{total_all_failed} ({100-overall_success_rate:.1f}%)"],
+            ["Number of Active Filters:", len([s for s in filter_summaries if s['total_builds'] > 0])]
+        ]
+        
+        for i, (label, value) in enumerate(stats_data):
+            ws.cell(row=summary_start_row + 1 + i, column=1, value=label).font = Font(bold=True)
+            ws.cell(row=summary_start_row + 1 + i, column=2, value=value)
+        
+        # Auto-adjust column widths
+        for column_cells in ws.columns:
+            length = max(len(str(cell.value) or '') for cell in column_cells)
+            ws.column_dimensions[column_cells[0].column_letter].width = min(length + 2, 30)
     
     def print_summary_report(self, summary: pd.DataFrame):
         """
@@ -1234,5 +1327,239 @@ def main():
         raise
 
 if __name__ == "__main__":
+    main()
+```
+---
+
+###GitHub Extract Report
+```
+#!/usr/bin/env python3
+"""
+GitHub Runbook Generator
+Creates a formatted Word document runbook based on GitHub repository contents.
+"""
+
+import requests
+import re
+from urllib.parse import urlparse
+from docx import Document
+from docx.shared import Inches
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+from docx.enum.style import WD_STYLE_TYPE
+import sys
+import argparse
+
+def extract_repo_info(github_url):
+    """Extract owner and repo name from GitHub URL"""
+    # Handle different GitHub URL formats
+    patterns = [
+        r'github\.com/([^/]+)/([^/]+?)(?:\.git)?/?$',
+        r'github\.com/([^/]+)/([^/]+?)/.*',
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, github_url)
+        if match:
+            return match.group(1), match.group(2)
+    
+    raise ValueError("Invalid GitHub URL format")
+
+def get_github_files(owner, repo, branch_number):
+    """Fetch file names from specified GitHub branch"""
+    # GitHub API endpoint for repository contents
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/contents"
+    
+    # First, get all branches to find the one matching our number
+    branches_url = f"https://api.github.com/repos/{owner}/{repo}/branches"
+    
+    try:
+        # Get branches
+        response = requests.get(branches_url)
+        response.raise_for_status()
+        branches = response.json()
+        
+        # Find branch by number (assuming branch names contain numbers)
+        target_branch = None
+        for branch in branches:
+            if str(branch_number) in branch['name']:
+                target_branch = branch['name']
+                break
+        
+        if not target_branch:
+            # If no branch found with the number, try using the number directly
+            target_branch = str(branch_number)
+        
+        # Get files from the target branch
+        params = {'ref': target_branch}
+        response = requests.get(api_url, params=params)
+        response.raise_for_status()
+        
+        files_data = response.json()
+        
+        # Extract file names, remove extensions, and filter
+        file_names = set()
+        for item in files_data:
+            if item['type'] == 'file':
+                filename = item['name']
+                # Skip README files
+                if filename.lower().startswith('readme'):
+                    continue
+                
+                # Remove extension
+                name_without_ext = filename.split('.')[0]
+                if name_without_ext:  # Only add non-empty names
+                    file_names.add(name_without_ext)
+        
+        return list(file_names), target_branch
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching from GitHub API: {e}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"Error processing GitHub data: {e}")
+        sys.exit(1)
+
+def create_runbook_document(repo_name, file_names):
+    """Create a professionally formatted Word document"""
+    doc = Document()
+    
+    # Set up document styles
+    styles = doc.styles
+    
+    # Title style
+    title_style = styles.add_style('CustomTitle', WD_STYLE_TYPE.PARAGRAPH)
+    title_style.font.size = Inches(0.25)
+    title_style.font.bold = True
+    title_style.font.name = 'Arial'
+    
+    # Section heading style
+    heading_style = styles.add_style('CustomHeading', WD_STYLE_TYPE.PARAGRAPH)
+    heading_style.font.size = Inches(0.18)
+    heading_style.font.bold = True
+    heading_style.font.name = 'Arial'
+    
+    # Normal text style
+    normal_style = styles.add_style('CustomNormal', WD_STYLE_TYPE.PARAGRAPH)
+    normal_style.font.size = Inches(0.14)
+    normal_style.font.name = 'Arial'
+    
+    # Document Title
+    title = doc.add_paragraph('RUNBOOK', style='CustomTitle')
+    title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    doc.add_paragraph()  # Add space
+    
+    # Section 1: Scope
+    scope_heading = doc.add_paragraph('1. Scope', style='CustomHeading')
+    scope_desc = doc.add_paragraph(
+        'This runbook provides step-by-step procedures for deployment, configuration, '
+        'and maintenance operations. It covers the complete workflow from initial setup '
+        'through final deployment and includes rollback procedures for emergency situations.',
+        style='CustomNormal'
+    )
+    doc.add_paragraph()
+    
+    # Add file names list
+    if file_names:
+        doc.add_paragraph('Components included in this runbook:', style='CustomNormal')
+        for name in sorted(file_names):
+            doc.add_paragraph(f'• {name}', style='CustomNormal')
+    doc.add_paragraph()
+    
+    # Section 2: Login
+    login_heading = doc.add_paragraph('2. Login', style='CustomHeading')
+    doc.add_paragraph('ssh test', style='CustomNormal')
+    doc.add_paragraph('sudo ss', style='CustomNormal')
+    doc.add_paragraph()
+    
+    # Section 3: Export
+    export_heading = doc.add_paragraph('3. Export', style='CustomHeading')
+    doc.add_paragraph('export test', style='CustomNormal')
+    doc.add_paragraph('export test2', style='CustomNormal')
+    doc.add_paragraph(f'export test/{repo_name}', style='CustomNormal')
+    doc.add_paragraph()
+    
+    # Section 4: Download
+    download_heading = doc.add_paragraph('4. Download', style='CustomHeading')
+    doc.add_paragraph('cd test', style='CustomNormal')
+    doc.add_paragraph('downlod', style='CustomNormal')  # Keeping the typo as specified
+    doc.add_paragraph()
+    
+    # Section 5: Upload
+    upload_heading = doc.add_paragraph('5. Upload', style='CustomHeading')
+    doc.add_paragraph('upload.sh', style='CustomNormal')
+    doc.add_paragraph()
+    
+    # Section 6: Release
+    release_heading = doc.add_paragraph('6. Release', style='CustomHeading')
+    if file_names:
+        for name in sorted(file_names):
+            doc.add_paragraph(f'test.sh {name}', style='CustomNormal')
+    doc.add_paragraph()
+    
+    # Section 7: Rollback
+    rollback_heading = doc.add_paragraph('7. Rollback', style='CustomHeading')
+    doc.add_paragraph('cd test', style='CustomNormal')
+    doc.add_paragraph('export=1', style='CustomNormal')
+    doc.add_paragraph('cd test2', style='CustomNormal')
+    doc.add_paragraph()
+    
+    if file_names:
+        # First list with roll.sh
+        for name in sorted(file_names):
+            doc.add_paragraph(f'roll.sh {name}', style='CustomNormal')
+        doc.add_paragraph()
+        
+        # Second list with st.sh
+        for name in sorted(file_names):
+            doc.add_paragraph(f'st.sh {name}', style='CustomNormal')
+    
+    return doc
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate runbook from GitHub repository')
+    parser.add_argument('github_url', help='GitHub repository URL')
+    parser.add_argument('branch_number', type=int, help='Branch number to process')
+    parser.add_argument('-o', '--output', default='runbook.docx', help='Output filename (default: runbook.docx)')
+    
+    args = parser.parse_args()
+    
+    try:
+        # Extract repository information
+        owner, repo_name = extract_repo_info(args.github_url)
+        print(f"Processing repository: {owner}/{repo_name}")
+        
+        # Get files from GitHub
+        print(f"Fetching files from branch {args.branch_number}...")
+        file_names, branch_used = get_github_files(owner, repo_name, args.branch_number)
+        print(f"Found {len(file_names)} files in branch '{branch_used}'")
+        
+        if file_names:
+            print("Files found:", ", ".join(sorted(file_names)))
+        else:
+            print("No files found (excluding README files)")
+        
+        # Create the Word document
+        print("Creating runbook document...")
+        doc = create_runbook_document(repo_name, file_names)
+        
+        # Save the document
+        doc.save(args.output)
+        print(f"Runbook saved as: {args.output}")
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    # If running without command line arguments, show usage
+    if len(sys.argv) == 1:
+        print("GitHub Runbook Generator")
+        print("Usage: python script.py <github_url> <branch_number> [-o output_file]")
+        print()
+        print("Example:")
+        print("python script.py https://github.com/user/repo 1")
+        print("python script.py https://github.com/user/repo 2 -o my_runbook.docx")
+        sys.exit(1)
+    
     main()
 ```

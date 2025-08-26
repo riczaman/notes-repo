@@ -35,7 +35,7 @@ nav:
       - GitHub Actions: topics/actions.md
       - Oracle AI Foundations: topics/aiFoundations.md
       - Oracle Generative AI Professional: topics/genAI.md
-      - Test: topics/test.md
+      - Scripts: topics/scripts.md
 
 # Ensure proper URL handling
 strict: false
