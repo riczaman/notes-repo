@@ -12,7 +12,6 @@ from docx import Document
 from docx.shared import Inches, RGBColor, Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.enum.style import WD_STYLE_TYPE
-from docx.oxml.shared import OxmlElement, qn
 import sys
 import argparse
 from dotenv import load_dotenv
@@ -144,29 +143,25 @@ def get_github_files(owner, repo, branch_version):
         return [], "unknown"
 
 def add_command_paragraph(doc, command_text, centered=False):
-    """Add a formatted command paragraph with dark background and monospace font"""
+    """Add a formatted command paragraph with monospace font and highlighting"""
     paragraph = doc.add_paragraph()
     run = paragraph.add_run(command_text)
     
     # Set font to monospace
     run.font.name = 'Consolas'
     run.font.size = Pt(11)
-    run.font.color.rgb = RGBColor(255, 255, 255)  # White text
+    run.font.color.rgb = RGBColor(0, 0, 0)  # Black text for better compatibility
     
-    # Add shading (background color)
-    shading_elm = OxmlElement(qn('w:shd'))
-    shading_elm.set(qn('w:val'), 'clear')
-    shading_elm.set(qn('w:color'), 'auto')
-    shading_elm.set(qn('w:fill'), '2F2F2F')  # Dark gray background
-    run._element.get_or_add_rPr().append(shading_elm)
+    # Use highlight instead of shading for better compatibility
+    run.font.highlight_color = 7  # Light gray highlight (built-in Word color)
     
     # Center the text if requested
     if centered:
         paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     
     # Add some spacing
-    paragraph.space_after = Pt(6)
-    paragraph.space_before = Pt(6)
+    paragraph.paragraph_format.space_after = Pt(6)
+    paragraph.paragraph_format.space_before = Pt(6)
     
     return paragraph
 
@@ -270,7 +265,7 @@ def create_runbook_document(repo_name, file_names):
     # Section 6: Release
     release_heading = doc.add_heading('6. Release', level=1)
     for run in release_heading.runs:
-        run.font.color.rb = dark_green
+        run.font.color.rgb = dark_green
     
     doc.add_paragraph('Execute release commands for each component:')
     if file_names:
