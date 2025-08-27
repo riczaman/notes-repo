@@ -1,4 +1,4 @@
-```
+```python
 #!/usr/bin/env python3
 """
 GitHub Runbook Generator
@@ -9,9 +9,10 @@ import requests
 import re
 import os
 from docx import Document
-from docx.shared import Inches
+from docx.shared import Inches, RGBColor, Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.enum.style import WD_STYLE_TYPE
+from docx.oxml.shared import OxmlElement, qn
 import sys
 import argparse
 from dotenv import load_dotenv
@@ -142,17 +143,67 @@ def get_github_files(owner, repo, branch_version):
         print(f"Error: {e}")
         return [], "unknown"
 
+def add_command_paragraph(doc, command_text, centered=False):
+    """Add a formatted command paragraph with dark background and monospace font"""
+    paragraph = doc.add_paragraph()
+    run = paragraph.add_run(command_text)
+    
+    # Set font to monospace
+    run.font.name = 'Consolas'
+    run.font.size = Pt(11)
+    run.font.color.rgb = RGBColor(255, 255, 255)  # White text
+    
+    # Add shading (background color)
+    shading_elm = OxmlElement(qn('w:shd'))
+    shading_elm.set(qn('w:val'), 'clear')
+    shading_elm.set(qn('w:color'), 'auto')
+    shading_elm.set(qn('w:fill'), '2F2F2F')  # Dark gray background
+    run._element.get_or_add_rPr().append(shading_elm)
+    
+    # Center the text if requested
+    if centered:
+        paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    
+    # Add some spacing
+    paragraph.space_after = Pt(6)
+    paragraph.space_before = Pt(6)
+    
+    return paragraph
+
+def add_section_separator(doc):
+    """Add a visual separator between sections"""
+    # Add some spacing
+    doc.add_paragraph()
+    
+    # Add a horizontal line (using border)
+    paragraph = doc.add_paragraph()
+    paragraph.paragraph_format.border_top.color.rgb = RGBColor(34, 139, 34)  # Forest Green
+    paragraph.paragraph_format.border_top.line_width = Pt(1)
+    paragraph.space_after = Pt(12)
+    paragraph.space_before = Pt(12)
+
 def create_runbook_document(repo_name, file_names):
     """Create a professionally formatted Word document"""
     doc = Document()
     
+    # Define dark green color
+    dark_green = RGBColor(34, 139, 34)  # Forest Green
+    
     # Document Title
     title = doc.add_heading('RUNBOOK', 0)
     title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    # Set title color to dark green
+    for run in title.runs:
+        run.font.color.rgb = dark_green
+        run.font.size = Pt(24)
+    
     doc.add_paragraph()
     
     # Section 1: Scope
-    doc.add_heading('1. Scope', level=1)
+    scope_heading = doc.add_heading('1. Scope', level=1)
+    for run in scope_heading.runs:
+        run.font.color.rgb = dark_green
+    
     doc.add_paragraph(
         'This runbook provides step-by-step procedures for deployment, configuration, '
         'and maintenance operations. It covers the complete workflow from initial setup '
@@ -162,71 +213,126 @@ def create_runbook_document(repo_name, file_names):
     if file_names:
         doc.add_paragraph('Components included in this runbook:')
         for name in sorted(file_names):
-            doc.add_paragraph(f'• {name}')
-    doc.add_paragraph()
+            bullet_para = doc.add_paragraph(f'• {name}')
+            bullet_para.paragraph_format.left_indent = Inches(0.25)
+    
+    add_section_separator(doc)
     
     # Section 2: Login
-    doc.add_heading('2. Login', level=1)
-    doc.add_paragraph('ssh test')
-    doc.add_paragraph('sudo ss')
-    doc.add_paragraph()
+    login_heading = doc.add_heading('2. Login', level=1)
+    for run in login_heading.runs:
+        run.font.color.rgb = dark_green
+    
+    doc.add_paragraph('Execute the following commands to establish connection:')
+    add_command_paragraph(doc, 'ssh test')
+    add_command_paragraph(doc, 'sudo ss')
+    
+    add_section_separator(doc)
     
     # Section 3: Export
-    doc.add_heading('3. Export', level=1)
-    doc.add_paragraph('export test')
-    doc.add_paragraph('export test2')
-    doc.add_paragraph(f'export test/{repo_name}')
-    doc.add_paragraph()
+    export_heading = doc.add_heading('3. Export', level=1)
+    for run in export_heading.runs:
+        run.font.color.rgb = dark_green
+    
+    doc.add_paragraph('Run the following export commands:')
+    add_command_paragraph(doc, 'export test', centered=True)
+    add_command_paragraph(doc, 'export test2', centered=True)
+    add_command_paragraph(doc, f'export test/{repo_name}', centered=True)
+    
+    add_section_separator(doc)
     
     # Section 4: Download
-    doc.add_heading('4. Download', level=1)
-    doc.add_paragraph('cd test')
-    doc.add_paragraph('downlod')
-    doc.add_paragraph()
+    download_heading = doc.add_heading('4. Download', level=1)
+    for run in download_heading.runs:
+        run.font.color.rgb = dark_green
+    
+    doc.add_paragraph('Execute the download sequence:')
+    add_command_paragraph(doc, 'cd test', centered=True)
+    add_command_paragraph(doc, 'downlod', centered=True)
+    
+    add_section_separator(doc)
     
     # Section 5: Upload
-    doc.add_heading('5. Upload', level=1)
-    doc.add_paragraph('upload.sh')
-    doc.add_paragraph()
+    upload_heading = doc.add_heading('5. Upload', level=1)
+    for run in upload_heading.runs:
+        run.font.color.rgb = dark_green
+    
+    doc.add_paragraph('Run the upload script:')
+    add_command_paragraph(doc, 'upload.sh', centered=True)
+    
+    add_section_separator(doc)
     
     # Section 6: Release
-    doc.add_heading('6. Release', level=1)
+    release_heading = doc.add_heading('6. Release', level=1)
+    for run in release_heading.runs:
+        run.font.color.rb = dark_green
+    
+    doc.add_paragraph('Execute release commands for each component:')
     if file_names:
         for name in sorted(file_names):
-            doc.add_paragraph(f'test.sh {name}')
-    doc.add_paragraph()
+            bullet_para = doc.add_paragraph(f'test.sh {name}')
+            bullet_para.paragraph_format.left_indent = Inches(0.25)
+    
+    add_section_separator(doc)
     
     # Section 7: Rollback
-    doc.add_heading('7. Rollback', level=1)
-    doc.add_paragraph('cd test')
-    doc.add_paragraph('export=1')
-    doc.add_paragraph('cd test2')
+    rollback_heading = doc.add_heading('7. Rollback', level=1)
+    for run in rollback_heading.runs:
+        run.font.color.rgb = dark_green
+    
+    doc.add_paragraph('Emergency rollback procedure:')
+    doc.add_paragraph('Step 1: Navigate and prepare environment')
+    add_command_paragraph(doc, 'cd test')
+    add_command_paragraph(doc, 'export=1')
+    add_command_paragraph(doc, 'cd test2')
+    
     doc.add_paragraph()
     
     if file_names:
-        # First list with roll.sh
+        # First rollback sequence
+        doc.add_paragraph('Step 2: Execute rollback scripts')
         for name in sorted(file_names):
-            doc.add_paragraph(f'roll.sh {name}')
+            bullet_para = doc.add_paragraph(f'roll.sh {name}')
+            bullet_para.paragraph_format.left_indent = Inches(0.25)
+        
         doc.add_paragraph()
         
-        # Second list with st.sh
+        # Second rollback sequence  
+        doc.add_paragraph('Step 3: Execute status check scripts')
         for name in sorted(file_names):
-            doc.add_paragraph(f'st.sh {name}')
+            bullet_para = doc.add_paragraph(f'st.sh {name}')
+            bullet_para.paragraph_format.left_indent = Inches(0.25)
     
     return doc
+
+def generate_filename(repo_name, branch_version, custom_output=None):
+    """Generate filename in format: {last_word_after_dash}ProdRunbook_{branch_version}-Tdot.docx"""
+    if custom_output:
+        return custom_output
+    
+    # Extract the last word after dashes
+    if '-' in repo_name:
+        last_word = repo_name.split('-')[-1]
+    else:
+        last_word = repo_name
+    
+    # Create filename in the specified format
+    filename = f"{last_word}ProdRunbook_{branch_version}-Tdot.docx"
+    return filename
 
 def main():
     parser = argparse.ArgumentParser(description='Generate runbook from GitHub repository')
     parser.add_argument('github_url', help='GitHub repository URL')
     parser.add_argument('branch_version', help='Branch version to process (e.g., 1.11.0)')
-    parser.add_argument('-o', '--output', default='runbook.docx', help='Output filename (default: runbook.docx)')
+    parser.add_argument('-o', '--output', help='Output filename (default: auto-generated based on repo name)')
     
     if len(sys.argv) == 1:
         print("GitHub Runbook Generator")
         print("Usage: python script.py <github_url> <branch_version> [-o output_file]")
         print()
         print("Example:")
-        print("python script.py https://github.com/myorg/proj1 2.22.0")
+        print("python script.py https://github.com/myorg/test-test1-test2 2.22.0")
+        print("Will generate: test2ProdRunbook_2.22.0-Tdot.docx")
         sys.exit(1)
     
     args = parser.parse_args()
@@ -235,6 +341,10 @@ def main():
         # Extract repository information
         owner, repo_name = extract_repo_info(args.github_url)
         print(f"Processing repository: {owner}/{repo_name}")
+        
+        # Generate output filename
+        output_filename = generate_filename(repo_name, args.branch_version, args.output)
+        print(f"Output filename will be: {output_filename}")
         
         # Get files from GitHub
         print(f"Fetching files from branch: {args.branch_version}")
@@ -250,8 +360,8 @@ def main():
         doc = create_runbook_document(repo_name, file_names)
         
         # Save the document
-        doc.save(args.output)
-        print(f"Runbook saved as: {args.output}")
+        doc.save(output_filename)
+        print(f"Runbook saved as: {output_filename}")
         
     except Exception as e:
         print(f"Error: {e}")
