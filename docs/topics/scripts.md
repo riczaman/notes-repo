@@ -175,12 +175,17 @@ def add_section_separator(doc):
     # Add some spacing
     doc.add_paragraph()
     
-    # Add a horizontal line (using border)
-    paragraph = doc.add_paragraph()
-    paragraph.paragraph_format.border_top.color.rgb = RGBColor(34, 139, 34)  # Forest Green
-    paragraph.paragraph_format.border_top.line_width = Pt(1)
-    paragraph.space_after = Pt(12)
-    paragraph.space_before = Pt(12)
+    # Add a visual separator using a paragraph with special formatting
+    separator_paragraph = doc.add_paragraph('─' * 50)  # Unicode horizontal line characters
+    separator_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
+    
+    # Style the separator line
+    for run in separator_paragraph.runs:
+        run.font.color.rgb = RGBColor(34, 139, 34)  # Forest Green
+        run.font.size = Pt(8)
+    
+    separator_paragraph.paragraph_format.space_after = Pt(12)
+    separator_paragraph.paragraph_format.space_before = Pt(12)
 
 def create_runbook_document(repo_name, file_names):
     """Create a professionally formatted Word document"""
