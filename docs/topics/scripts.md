@@ -192,10 +192,11 @@ def create_runbook_document(repo_name, file_names):
     # Document Title
     title = doc.add_heading('RUNBOOK', 0)
     title.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-    # Set title color to dark green
+    # Set title color to dark green and remove underline
     for run in title.runs:
         run.font.color.rgb = dark_green
         run.font.size = Pt(24)
+        run.font.underline = False
     
     doc.add_paragraph()
     
@@ -211,10 +212,10 @@ def create_runbook_document(repo_name, file_names):
     )
     
     if file_names:
-        doc.add_paragraph('Components included in this runbook:')
-        for name in sorted(file_names):
-            bullet_para = doc.add_paragraph(f'• {name}')
-            bullet_para.paragraph_format.left_indent = Inches(0.25)
+        components_para = doc.add_paragraph('Components included in this runbook: ')
+        # Add components as inline text instead of bullet points
+        components_text = ', '.join(sorted(file_names))
+        components_para.add_run(components_text).font.bold = True
     
     add_section_separator(doc)
     
@@ -224,8 +225,8 @@ def create_runbook_document(repo_name, file_names):
         run.font.color.rgb = dark_green
     
     doc.add_paragraph('Execute the following commands to establish connection:')
-    add_command_paragraph(doc, 'ssh test')
-    add_command_paragraph(doc, 'sudo ss')
+    add_command_paragraph(doc, 'ssh test', centered=True)
+    add_command_paragraph(doc, 'sudo ss', centered=True)
     
     add_section_separator(doc)
     
@@ -282,9 +283,9 @@ def create_runbook_document(repo_name, file_names):
     
     doc.add_paragraph('Emergency rollback procedure:')
     doc.add_paragraph('Step 1: Navigate and prepare environment')
-    add_command_paragraph(doc, 'cd test')
-    add_command_paragraph(doc, 'export=1')
-    add_command_paragraph(doc, 'cd test2')
+    add_command_paragraph(doc, 'cd test', centered=True)
+    add_command_paragraph(doc, 'export=1', centered=True)
+    add_command_paragraph(doc, 'cd test2', centered=True)
     
     doc.add_paragraph()
     
