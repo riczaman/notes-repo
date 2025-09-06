@@ -7,15 +7,14 @@
   <title>Applied AI/ML Hub - Banner</title>
   <style>
     /* Safe, self-contained styles. Works inside Confluence HTML macro. */
-    .ai-banner-link{ text-decoration: none; display: block; }
+    .ai-banner-link{ text-decoration: none; display: block; width:100%; }
     .ai-banner{
       box-sizing: border-box;
       width: 100%;
-      max-width: 1200px;
-      margin: 12px auto;
+      margin: 0;
       padding: 18px 24px;
-      border-radius: 10px;
-      background: linear-gradient(180deg,#012048 0%, #002d6a 100%); /* navy-blue gradient */
+      border-radius: 0;
+      background: linear-gradient(180deg,#012048 0%, #002d6a 100%);
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       display: flex;
@@ -23,7 +22,8 @@
       justify-content: space-between;
       gap: 16px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
     }
     .ai-banner__left{
       display:flex;
@@ -69,7 +69,6 @@
     .ai-banner__cta:active{ transform: translateY(1px); }
     .ai-banner-link:focus .ai-banner, .ai-banner-link:hover .ai-banner{ box-shadow: 0 10px 28px rgba(0,0,0,0.25); transform: translateY(-2px); }
 
-    /* Responsive tweaks */
     @media (max-width:720px){
       .ai-banner{ flex-direction: column; align-items:flex-start; padding:14px; }
       .ai-banner__left{ gap:12px; }
@@ -93,8 +92,6 @@
       <div class="ai-banner__cta" role="button" aria-hidden="true">Open Sandbox</div>
     </div>
   </a>
-
-  <!-- Minimal script-free file. Confluence may strip <script> tags; this banner is pure HTML/CSS. -->
 </body>
 </html>
 ```
