@@ -36,6 +36,7 @@ nav:
       - Oracle AI Foundations: topics/aiFoundations.md
       - Oracle Generative AI Professional: topics/genAI.md
       - Scripts: topics/scripts.md
+      - ADF: topics/adf.md
 
 # Ensure proper URL handling
 strict: false
