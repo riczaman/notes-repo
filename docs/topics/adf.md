@@ -107,3 +107,85 @@ Execute Pipeline
 This activity lets you execute multiple pipelines together
 
 ```
+---
+```
+ADF with GitHub Actions as the CD
+Within ADF you can setup your git connection from either the live mode option at the top or from the management tab
+Just need to provide the base GitHub repo name and then it will connect and you select what branch you want to start off with. 
+You can create a new branch from within ADF 
+Also allows you to create PRs from ADF
+In Azure Portal
+Go to managed identities 
+Create a new one
+In the resource group go to the IAM (access control) and add a role assignment and go to job function roles and search for data factory contributor.
+In role assignments you can see the different roles in the resource group
+On the new identity you created click into it 
+Then go to federated credentials
+Within here select the configure a GitHub issued token to impersonate this app and deploy to azure
+Creating the CI/CD 
+In the GitHub repo
+Create a folder called 
+Build
+Then within here create a package.json
+Here is the script copied from the Microsoft documentation specifically for ADF
+Within the GitHub repo go to settings to setup the credentials to connect to Azure
+Go to security and then secrets and variables
+Then go to Actions
+Create the new repository secrets 
+You need to add the azure subscription id to connect the deployments with action and your azure tenant
+The Azure subscription ID is provided from the managed ID
+Azure client ID is also within the managed ID
+Azure Tenant ID is found by searching for the entra ID within azure portal
+Go to GitHub Actions
+Setup the workflow - if you do it through the UI it will create the empty yml file for you if not then you will need to create a repo called workflows within the .github folder (don’t forget the period) and then create a main.yml file
+Then create the workflow and embed the secrets that you need - you can get this from Microsoft documentation 
+One of the first steps need to be to create the ARM template as that is what we want to use to do the deployments using actions to azure. 
+Then go to GitHub actions and run the build for the first time
+The deployment will deploy onto another ADF resource usually the one you create for PAT/PROD
+
+Azure App Services
+Fully managed service to deploy web apps and APIs without the need to manage infrastructure
+PaaS
+Your web app is stored in a index file and folder and this is served to the end user by the app service plan
+App service plan vs app service
+The plan provides the infra that the app service needs. The app service is your actual application
+In Azure Portal
+Create app service plan first and here you will use the resource group you have for app services
+Now go to app services within azure portal and create a new app service
+There’s. Web app, static web app, web app and data base ,and Wordpress
+After you input the base info you can go ahead and create it 
+Once the app service resource is created click on it
+Then you can see the default domain as well as other high level info
+Within the rescue search advanced tools and then click on go
+It launches the KUDU environment and here is where you can use the console to add your code
+Go to debug console and go to CMD and then from within here go to home\site and go to the wwwroot folder and then copy all of your code files into thes repo 
+Go back to overview and check the default domain 
+
+Kafka
+When your micro service architecture can’t handle load is where we introduce the need for Kafka
+Type coupling occurs when one service depends on other services so if it one goes down it causes the other services to fail
+Kafka sits in the middle of the services and collects events from services and then makes these events available to the other services that need them
+Events are key value pairs and have metadata in them
+Producers create the events
+When producers create events they give them to Kafka and these events get saved in topics which group the same type of events together
+You create the topics and decide how to group the events together
+Microservices subscribe to topics so Kafka will notify subscribed micro services to updates that happen in topics. 
+When a service updates into the database and produces an event and this event and status is captured by Kafka
+One event creates a chain of events
+Kafka also allows for real time analytics 
+Kafka uses stream APIs for real time analytics
+Kafka has partition capabilities that allow for scaling possible especially for large amounts of data
+Partitions add more workers per topic to help process 
+Producers can write into partitions and consumer groups can all consume from Kafka partitions 
+Data in topics are saved on Kafka servers called brokers 
+Regular message queues delete messages after message consumption but in Kafka you can store messages for as long as you need for later analysis 
+Kafka uses zookeeper 
+But now they use Kraft for centralized control and coordination 
+
+TIBCO
+Used for file transfers
+Platform server allows you to transfer files between different server environments 
+Also has event driven interactions
+Internet Server allows for file transfers in and out of the organization 
+Command Center is the centralized control over everything that is happening in regards to file transfers
+```
