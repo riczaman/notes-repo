@@ -189,3 +189,208 @@ Also has event driven interactions
 Internet Server allows for file transfers in and out of the organization 
 Command Center is the centralized control over everything that is happening in regards to file transfers
 ```
+---
+
+```
+I have a set of raw notes exported from Notepad++. The notes contain request numbers, action items, descriptions, dates, statuses, owners, and other related details.
+
+Please analyze the entire dataset and transform it into a properly structured Excel workbook with the following requirements:
+
+1. Main Sheet – “Request Tracker”
+
+Extract and organize all identifiable requests into rows.
+
+Each request should have its own row.
+
+Create columns for:
+
+Request Number
+
+Title / Summary
+
+Description
+
+Action Items
+
+Owner (if present)
+
+Status (if present)
+
+Priority (if present)
+
+Created Date (if present)
+
+Due Date (if present)
+
+Other Relevant Dates
+
+Notes / Additional Context
+
+Ensure all request numbers are captured and no duplicates are created unless clearly separate entries.
+
+If multiple action items exist for a single request, separate them clearly within the same cell using bullet formatting.
+
+2. Formatting & Organization
+
+Convert the dataset into an Excel Table.
+
+Apply color coding:
+
+Red for Overdue items (based on Due Date)
+
+Yellow for Due within 7 days
+
+Green for Completed items
+
+Blue for In Progress
+
+Freeze the header row.
+
+Enable filters on all columns.
+
+Auto-adjust column widths for readability.
+
+Sort by Due Date (earliest first).
+
+3. Summary Sheet – “Dashboard”
+Create a second sheet that includes:
+
+Total number of requests
+
+Number of Open / In Progress / Completed
+
+Number of Overdue items
+
+Upcoming items due in next 7 days
+
+A simple pivot summary by Status
+
+4. Unstructured / Ungrouped Data Sheet
+
+If there is any data that cannot confidently be grouped into a specific request,
+
+Place it into a separate sheet named “Uncategorized Data”
+
+Include a column explaining why it could not be grouped (e.g., missing request number, unclear association, duplicate ambiguity, etc.)
+
+5. Data Validation & Integrity
+
+Flag any rows missing a Request Number.
+
+Highlight missing Due Dates where action items exist.
+
+Identify possible duplicate request numbers in a separate section.
+
+Ensure the final Excel file is clean, professional, easy to maintain, and suitable for tracking operational or project work.
+
+If You Want an Even More Advanced Version
+
+If your notes are messy and inconsistent, use this upgraded version:
+
+The notes may contain inconsistent formatting, shorthand references, and mixed paragraph structures.
+Please intelligently infer relationships between request numbers, dates, and action items.
+If multiple entries refer to the same request number, merge them logically.
+Do not lose any data during transformation.
+Prioritize accuracy over assumptions and clearly flag any inferred associations.```
+----
+Copilot Prompt – Outlook + Teams Action Intelligence
+
+Analyze all my Outlook emails and Microsoft Teams chats from the past 14 days.
+
+I only want communications that:
+
+Were sent directly to me, mentioned me, or assigned me work
+
+Require an action, follow-up, response, or decision from me
+
+Please perform the following:
+
+1. Identify and Extract Action Items
+
+Extract clear action items assigned to me.
+
+Infer action items where the expectation is implied (e.g., “Can you review…”, “Let me know…”, “We need your approval…”).
+
+Include:
+
+Action Description
+
+Source (Email or Teams)
+
+Sender
+
+Date
+
+Due Date (if mentioned or inferred)
+
+Related Project / Topic
+
+2. Intelligently Group by Topic
+
+Group conversations that relate to the same subject into a single cohesive block.
+
+For example, if there are emails and Teams chats about “PETL pipeline,” group them together regardless of platform.
+
+Merge overlapping discussions into one comprehensive summary.
+
+Ensure no duplicated action items appear across groups.
+
+3. Provide Structured Output
+Organize the response into:
+
+Topic / Project Name
+
+Summary of what happened in the last 2 weeks
+
+Key decisions made
+
+Current status
+
+All action items assigned to me
+
+Outstanding risks or blockers
+
+Relevant links to emails or Teams threads
+
+4. Prioritization
+
+Identify overdue items
+
+Highlight urgent or time-sensitive actions
+
+Call out items with unclear expectations or missing due dates
+
+5. Executive Summary
+At the top, provide:
+
+Total number of active topics
+
+Total number of action items
+
+Number of high-priority or overdue items
+
+Top 3 themes consuming most discussion time
+
+6. Deduplication and Intelligence
+
+Do not list the same action twice if it appears in both email and Teams.
+
+If discussions evolved, provide the most up-to-date context.
+
+Flag ambiguous or unclear tasks separately under “Needs Clarification.”
+
+The final output should read like a structured operational brief that helps me quickly understand everything I am accountable for and what requires attention next.
+
+More Advanced Version (If You Want Strategic Insight)
+
+Add this at the end:
+
+Additionally, identify patterns in the last 2 weeks:
+
+Recurring bottlenecks
+
+Stakeholders who frequently require follow-ups
+
+Topics that may need a formal meeting instead of fragmented chat/email discussion
+
+Suggest how I can improve communication flow or reduce reactive workload.
