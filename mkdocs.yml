@@ -12,8 +12,9 @@ theme:
     text: Raleway
     code: Fira Code
   palette:
-    primary: deep orange
-    accent: green
+    scheme: slate
+    primary: yellow
+    accent: cyan
 
   features:
      - content.code.copy
