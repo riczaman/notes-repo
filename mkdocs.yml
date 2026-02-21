@@ -30,6 +30,7 @@ theme:
 nav:
   - Home: index.md
   - Topics:
+      - Prompts: topics/prompts.md
       - Jenkins: topics/jenkins.md
       - Docker: topics/docker.md
       - GitHub Actions: topics/actions.md
