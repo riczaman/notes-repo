@@ -316,3 +316,9 @@ sign-off from the security team.
 - [ ] Follow up with security team re: review outcome
 - [ ] Confirm Q2 start date with [Name]
 ```
+---
+```
+I want you to analyze my writing style by looking at my sent emails in Outlook and my messages in Microsoft Teams. Go through as many as you can access and identify patterns in how I write — things like my tone, sentence length, how formal or casual I am, punctuation habits, common phrases I use, how I open and close messages, and anything else that makes my writing sound like me.
+Once you've done that, summarize the style you've identified so I can confirm it sounds right.
+From that point on, whenever I ask you to draft a reply or write a message for me, use MY style — not a generic AI tone. It should sound like I wrote it myself.
+```
