@@ -2342,6 +2342,18 @@ Post-deployment monitoring</p>
 <hr />
 <p>After this prompt I will provide the exact deployment steps, approvals, tools, environments, and pipeline stages used in our organization.</p>
 <p>Use that information to generate the final diagrams and documentation.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>---
+</span></code></pre></div>
+Create a PowerPoint slide with a flowchart using only basic shapes and connectors that are fully compatible with PowerPoint's native renderer. Follow these rules strictly:</p>
+<p>Use only built-in PowerPoint shapes — rectangles for process steps, diamonds for decision points, and rounded rectangles for start/end terminals. Do NOT use any custom or complex shape types.
+Use only straight-line connectors (not curved or elbow connectors) with standard arrowheads. Attach each connector directly to the shape's connection point — do not free-float any connector endpoints.
+Do not group shapes and do not nest shapes inside other shapes or text boxes.
+Keep all shapes and connectors within the slide boundary — nothing should overflow or be partially off-slide.
+Do not use SmartArt — build the flowchart manually using individual shape and connector objects only.
+Do not use any third-party add-ins, embedded objects, or linked content.
+Label each shape with short text (under 5 words) using the shape's built-in text, not separate floating text boxes.
+Use a white background with high-contrast shape fill colors (e.g. light blue for process, yellow for decision, green for start/end).</p>
+<p>Output this as a valid .pptx file using python-pptx with no repair needed on open.
 ```</p>
 
 
