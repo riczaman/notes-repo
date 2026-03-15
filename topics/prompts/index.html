@@ -2218,6 +2218,130 @@ Approval Gates = Orange</p>
 • Production approval workflow</p>
 <p>After this prompt I will provide the exact deployment process, approvals, environments, and tools used in our organization.</p>
 <p>Use that information to generate the final deployment flowchart.
+<div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>---
+</span></code></pre></div>
+Act as an enterprise DevOps architect and technical documentation expert specializing in UiPath automation platforms and Centers of Excellence (CoE).</p>
+<p>Your goal is to generate complete deployment documentation and visual diagrams that explain the full lifecycle of deploying UiPath automations from development to production.</p>
+<p>The documentation will be used to help new team members understand how code and features move through the pipeline and what approvals are required before reaching production.</p>
+<p>The final output must be structured for a Confluence documentation page and include visual diagrams that can also be imported into draw.io.</p>
+<p>The documentation must be professional, concise, and structured according to enterprise DevOps best practices.</p>
+<p>The audience includes:
+• Engineers new to the team
+• DevOps engineers
+• Managers
+• Platform administrators
+• Auditors</p>
+<hr />
+<p>SECTION 1 — Executive Overview</p>
+<p>Provide a short executive summary explaining:</p>
+<p>• What the UiPath deployment pipeline is
+• Why the approval stages exist
+• How environments are separated
+• How governance and change control are enforced</p>
+<p>Keep this section concise and suitable for managers.</p>
+<hr />
+<p>SECTION 2 — Enterprise UiPath Deployment Architecture</p>
+<p>Create a high-level architecture diagram that visually explains the automation deployment lifecycle.</p>
+<p>The diagram should include the following major components:</p>
+<p>Developer Workstation<br />
+Source Control Repository (Git / Azure DevOps / GitHub)<br />
+CI/CD Pipeline<br />
+Package Build Process<br />
+Artifact Repository<br />
+Environment Promotion<br />
+UiPath Orchestrator Deployment  </p>
+<p>Separate the following environments visually:</p>
+<p>Development<br />
+Testing / QA<br />
+User Acceptance Testing (UAT)<br />
+Production</p>
+<p>Clearly show how packages move between environments.</p>
+<hr />
+<p>SECTION 3 — Deployment Flowchart</p>
+<p>Create a step-by-step flowchart that shows the lifecycle of a UiPath automation from initial development to production release.</p>
+<p>The flowchart must include:</p>
+<p>Development
+Code Commit
+Code Review
+Pipeline Build
+Package Creation
+Deployment to Dev
+Testing
+Promotion to UAT
+Business Acceptance Testing
+Production Approval
+Production Deployment</p>
+<p>Include decision points such as:</p>
+<p>Test Passed / Failed<br />
+UAT Approved / Rejected<br />
+Production Approval Granted / Denied  </p>
+<p>Also include feedback loops if deployments fail.</p>
+<hr />
+<p>SECTION 4 — Mermaid Diagram Version</p>
+<p>Generate a Mermaid diagram version of the deployment flow so it can easily be rendered in documentation tools.</p>
+<hr />
+<p>SECTION 5 — draw.io Diagram Layout</p>
+<p>Generate a structured layout that could be imported into draw.io including:</p>
+<p>Nodes (steps in the deployment process)
+Edges (connections between steps)
+Decision diamonds
+Environment swimlanes</p>
+<p>Separate swimlanes for:</p>
+<p>Developer
+DevOps / CI Pipeline
+QA / Testing
+Business Stakeholders
+Platform Administration</p>
+<hr />
+<p>SECTION 6 — Deployment Phase Breakdown</p>
+<p>For each phase include:</p>
+<p>Stage Name<br />
+Purpose<br />
+Responsible Role<br />
+Inputs Required<br />
+Actions Performed<br />
+Approval Required<br />
+Outputs</p>
+<hr />
+<p>SECTION 7 — Approval Workflow Table</p>
+<p>Create a table describing:</p>
+<p>Stage<br />
+Approver<br />
+Approval Tool (Jira / ServiceNow / Email / Pipeline approval)<br />
+Validation Criteria  </p>
+<hr />
+<p>SECTION 8 — Environment Promotion Model</p>
+<p>Explain the promotion path for packages between environments:</p>
+<p>DEV<br />
+TEST / QA<br />
+UAT<br />
+PROD</p>
+<p>Describe what validations must occur before promotion.</p>
+<hr />
+<p>SECTION 9 — Deployment Checklist</p>
+<p>Create a checklist for production deployment including:</p>
+<p>Pre-deployment validation
+Environment checks
+Approval confirmation
+Post-deployment monitoring</p>
+<hr />
+<p>SECTION 10 — Rollback Process</p>
+<p>Describe a clear rollback procedure if production deployment fails.</p>
+<hr />
+<p>SECTION 11 — Quick Visual Summary for New Engineers</p>
+<p>Provide a simplified step-by-step visual summary that helps new engineers understand the deployment lifecycle in under 60 seconds.</p>
+<hr />
+<p>IMPORTANT INSTRUCTIONS</p>
+<ol>
+<li>The documentation must be easy to understand for new team members.</li>
+<li>Diagrams must be structured so they can easily be recreated in draw.io or rendered in Confluence.</li>
+<li>Clearly label environments and approval gates.</li>
+<li>Use enterprise DevOps terminology appropriate for a UiPath Center of Excellence.</li>
+<li>Keep explanations concise but structured.</li>
+</ol>
+<hr />
+<p>After this prompt I will provide the exact deployment steps, approvals, tools, environments, and pipeline stages used in our organization.</p>
+<p>Use that information to generate the final diagrams and documentation.
 ```</p>
 
 
