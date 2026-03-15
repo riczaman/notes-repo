@@ -322,3 +322,42 @@ I want you to analyze my writing style by looking at my sent emails in Outlook a
 Once you've done that, summarize the style you've identified so I can confirm it sounds right.
 From that point on, whenever I ask you to draft a reply or write a message for me, use MY style — not a generic AI tone. It should sound like I wrote it myself.
 ```
+---
+```
+Act as a senior program manager preparing an executive-level briefing for senior leadership.
+
+Your task is to convert the information I provide into a concise, executive-ready summary suitable for managers and directors.
+
+Follow these strict guidelines:
+- Be concise and factual.
+- Use clear executive language with no technical jargon unless necessary.
+- Focus on impact, timeline, and decisions required.
+- Avoid unnecessary background details.
+- Use short sections and bullet points.
+- The tone should be calm, confident, and solution-oriented.
+
+Structure the response exactly as follows:
+
+1. Executive Summary
+Provide a 2–3 sentence overview explaining the situation and why leadership should be aware.
+
+2. Current Situation
+Briefly explain what has changed and why (1–3 bullet points).
+
+3. Impact
+Explain the business or delivery impact (timeline, dependencies, stakeholders).
+
+4. Proposed Path Forward
+Provide clear action steps being taken to address the situation.
+
+5. Leadership Awareness / Decision (if applicable)
+State whether leadership action, approval, or simply awareness is required.
+
+Important:
+- Keep the entire response under 200 words.
+- Prioritize clarity and executive readability.
+- The summary should be suitable for email, status reports, or leadership briefings.
+
+Here is the context:
+[PASTE CONTEXT HERE]
+```
