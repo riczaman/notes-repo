@@ -361,3 +361,199 @@ Important:
 Here is the context:
 [PASTE CONTEXT HERE]
 ```
+---
+```
+Act as a senior DevOps architect and technical documentation expert responsible for creating onboarding documentation for a UiPath Center of Excellence (CoE).
+
+Your task is to generate a clear and visually structured deployment process for UiPath automations moving from Development to Production.
+
+The output should be formatted as a Confluence documentation page that includes:
+
+1. A high-level deployment flowchart
+2. A clear breakdown of each stage in the pipeline
+3. Approval gates and responsible roles
+4. Environment progression
+5. Links placeholders for documentation, pipelines, and approvals
+6. Expandable sections for deeper explanations
+7. A diagram structure that can easily be recreated using draw.io / diagrams.net inside Confluence
+
+The documentation should prioritize clarity for **new team members onboarding to the UiPath CoE**.
+
+Structure the output as follows:
+
+SECTION 1 — Executive Overview
+Provide a short explanation of how UiPath deployments work in this organization and the purpose of the pipeline.
+
+SECTION 2 — Deployment Flow Diagram
+Create a logical flowchart showing the full lifecycle of a deployment including:
+
+Development Environment  
+Code Review  
+Package Creation  
+Orchestrator Deployment  
+User Acceptance Testing  
+Business Approval  
+Production Release
+
+Clearly show:
+
+• Decision points  
+• Approval gates  
+• Feedback loops if testing fails  
+• Responsible roles (Developer, DevOps, Business Owner, QA, etc.)
+
+Also provide a **Mermaid diagram version of the flowchart** so it can easily be rendered in documentation tools.
+
+SECTION 3 — Detailed Phase Breakdown
+For each stage include:
+
+Stage Name  
+Purpose  
+Responsible Role  
+Inputs Required  
+Actions Performed  
+Approval Required  
+Outputs / Deliverables
+
+SECTION 4 — Approval Workflow
+Create a table showing:
+
+Stage  
+Approver  
+Approval Tool (Jira / ServiceNow / Email etc.)  
+What is validated before approval
+
+SECTION 5 — Environment Promotion Model
+Describe the environment progression including:
+
+DEV  
+TEST / UAT  
+PROD
+
+Explain what happens in each environment and the rules for promotion between them.
+
+SECTION 6 — Expandable Operational Details
+Create expandable sections for:
+
+Developer Deployment Steps  
+UAT Validation Process  
+Production Deployment Checklist  
+Rollback Process
+
+SECTION 7 — Quick Visual Deployment Summary
+Provide a simplified step-by-step visual summary that could be used as a quick reference for new engineers.
+
+Important:
+The documentation must be concise, professional, and structured for enterprise DevOps practices in a UiPath automation environment.
+
+After this prompt I will provide the exact deployment steps, approvals, and tools used in our organization. Use that information to build the final flowchart and documentation.
+```
+---
+```Act as a senior DevOps architect and enterprise automation engineer designing documentation for a UiPath Center of Excellence (CoE).
+
+Your task is to generate a professional deployment flowchart showing how UiPath automations move from development to production.
+
+The diagram will be recreated in draw.io / diagrams.net inside Confluence, so structure the output in a way that makes it easy to visually build.
+
+The diagram must include:
+
+ENVIRONMENTS
+• Development
+• Code Repository / Version Control
+• CI Build / Package Creation
+• Test / UAT Environment
+• Production Environment
+
+ROLES
+• UiPath Developer
+• Code Reviewer
+• DevOps / Automation Platform Team
+• Business UAT Tester
+• Release Manager
+
+APPROVAL GATES
+• Code Review Approval
+• QA / Testing Approval
+• Business UAT Approval
+• Production Release Approval
+
+The output should contain three sections.
+
+SECTION 1 — Diagram Layout Blueprint
+
+Provide a structured blueprint describing exactly how the flowchart should be drawn including:
+
+• Shape type (process, decision, start/end)
+• Shape text
+• Direction of arrows
+• Swimlanes by role if helpful
+• Environment boundaries
+• Feedback loops for failed testing
+
+Example format:
+
+START → Developer completes automation in DEV  
+↓  
+Process → Commit code to repository  
+↓  
+Decision → Code review approved?  
+→ YES → Build package  
+→ NO → Return to developer
+
+Continue until production deployment is complete.
+
+SECTION 2 — Draw.io Diagram Structure
+
+Provide the diagram in **Mermaid flowchart format** so it can easily be recreated or converted to diagrams.
+
+Example structure:
+
+flowchart TD
+DEV[Developer Builds Automation]
+COMMIT[Commit to Repo]
+REVIEW{Code Review Approved?}
+BUILD[Build UiPath Package]
+UAT[Deploy to UAT]
+TEST{UAT Successful?}
+PROD[Deploy to Production]
+
+DEV --> COMMIT
+COMMIT --> REVIEW
+REVIEW -->|Yes| BUILD
+REVIEW -->|No| DEV
+BUILD --> UAT
+UAT --> TEST
+TEST -->|Yes| PROD
+TEST -->|No| DEV
+
+SECTION 3 — Recommended Diagram Styling
+
+Provide best practice suggestions for the diagram including:
+
+Environment grouping boxes:
+DEV
+UAT
+PROD
+
+Color suggestions:
+Development = Blue  
+Testing = Yellow  
+Production = Green  
+Approval Gates = Orange
+
+Use clear directional flow from left → right.
+
+SECTION 4 — Suggested Clickable Links
+
+Provide placeholder nodes where links could be added for:
+
+• Deployment runbook
+• Release checklist
+• UiPath packaging guide
+• Rollback process
+• Production approval workflow
+
+After this prompt I will provide the exact deployment process, approvals, environments, and tools used in our organization.
+
+Use that information to generate the final deployment flowchart.
+```
