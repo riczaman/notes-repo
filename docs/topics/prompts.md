@@ -759,3 +759,14 @@ Use a white background with high-contrast shape fill colors (e.g. light blue for
 
 Output this as a valid .pptx file using python-pptx with no repair needed on open.
 ```
+---
+```
+Write a Python script using python-pptx to create a flowchart slide. Follow these rules:
+
+Use only individual Shape objects — no SmartArt, no grouped shapes, no embedded objects.
+Use only straight-line connectors with standard arrowheads, and connect them using begin_connect() and end_connect() to snap to shape connection points — never leave connector endpoints floating.
+All shapes and connectors must stay within the slide dimensions (no overflow).
+Label shapes using the shape's built-in text frame — no separate floating text boxes.
+Do not use add_group_shape() anywhere.
+Save the file with prs.save() and make sure the output opens in PowerPoint without any repair prompt.
+```
