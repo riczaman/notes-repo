@@ -95,3 +95,141 @@
 </body>
 </html>
 ```
+---
+```
+# ============================================================
+# Check-ADUserStatus.ps1
+#
+# Reads a CSV/Excel file with columns: ID, Email
+# Queries Active Directory for each user's enabled/disabled status
+# Outputs the same file with an added "Account Status" column
+# ============================================================
+
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$InputFile,
+
+    [Parameter(Mandatory = $false)]
+    [string]$OutputFile
+)
+
+# --- Resolve output path ---
+if (-not $OutputFile) {
+    $baseName  = [System.IO.Path]::GetFileNameWithoutExtension($InputFile)
+    $extension = [System.IO.Path]::GetExtension($InputFile)
+    $directory = [System.IO.Path]::GetDirectoryName($InputFile)
+    $OutputFile = Join-Path $directory ($baseName + "_ADStatus" + $extension)
+}
+
+# --- Load input file (supports .csv, .xlsx via Export-Excel or plain CSV) ---
+$extension = [System.IO.Path]::GetExtension($InputFile).ToLower()
+
+if ($extension -eq ".csv") {
+    $users = Import-Csv -Path $InputFile
+} elseif ($extension -in @(".xlsx", ".xls")) {
+    # Requires the ImportExcel module: Install-Module -Name ImportExcel
+    if (-not (Get-Module -ListAvailable -Name ImportExcel)) {
+        Write-Error "The 'ImportExcel' module is required for .xlsx files. Install it with: Install-Module -Name ImportExcel"
+        exit 1
+    }
+    Import-Module ImportExcel
+    $users = Import-Excel -Path $InputFile
+} else {
+    Write-Error "Unsupported file type '$extension'. Please provide a .csv or .xlsx file."
+    exit 1
+}
+
+# --- Detect column names flexibly (case-insensitive) ---
+$allColumns = $users[0].PSObject.Properties.Name
+
+$idColumn = $allColumns | Where-Object { $_ -match '^id$|^user.?id$|^employee.?id$|^username$|^sam' } | Select-Object -First 1
+$emailColumn = $allColumns | Where-Object { $_ -match '^email$|^mail$|^e.?mail' } | Select-Object -First 1
+
+if (-not $idColumn) {
+    Write-Warning "Could not auto-detect the ID column. Falling back to first column: '$($allColumns[0])'"
+    $idColumn = $allColumns[0]
+}
+if (-not $emailColumn) {
+    Write-Warning "Could not auto-detect the Email column. Falling back to second column: '$($allColumns[1])'"
+    $emailColumn = $allColumns[1]
+}
+
+Write-Host "Using ID column     : $idColumn"
+Write-Host "Using Email column  : $emailColumn"
+Write-Host "Processing $($users.Count) users..."
+Write-Host ""
+
+# --- Process each user ---
+$results = foreach ($user in $users) {
+    $userId = $user.$idColumn
+    $email  = $user.$emailColumn
+
+    $status = "Unknown"
+
+    if ([string]::IsNullOrWhiteSpace($userId)) {
+        $status = "No ID Provided"
+    } else {
+        try {
+            # Same approach as your working command:
+            # Get-ADUser personID -Properties PrimaryGroup
+            $adUser = Get-ADUser $userId -Properties Enabled -ErrorAction Stop
+
+            if ($adUser.Enabled -eq $true) {
+                $status = "Active"
+            } else {
+                $status = "Disabled"
+            }
+        } catch [Microsoft.ActiveDirectory.Management.ADIdentityNotFoundException] {
+            $status = "Not Found in AD"
+        } catch {
+            $status = "Error: $($_.Exception.Message)"
+        }
+    }
+
+    Write-Host "  $userId | $email | $status"
+
+    # Build output row preserving all original columns
+    $row = [ordered]@{}
+    foreach ($col in $allColumns) {
+        $row[$col] = $user.$col
+    }
+    $row["Account Status"] = $status
+
+    [PSCustomObject]$row
+}
+
+Write-Host ""
+Write-Host "Writing output to: $OutputFile"
+
+# --- Export results ---
+if ($extension -eq ".csv") {
+    $results | Export-Csv -Path $OutputFile -NoTypeInformation -Encoding UTF8
+} else {
+    $results | Export-Excel -Path $OutputFile -AutoSize -AutoFilter -WorksheetName "AD Status" `
+        -TableName "UserStatus" -TableStyle Medium2 `
+        -ConditionalText $(
+            New-ConditionalText -Text "Active"          -BackgroundColor "#C6EFCE" -ConditionalTextColor "#276221"
+            New-ConditionalText -Text "Disabled"        -BackgroundColor "#FFCCCC" -ConditionalTextColor "#9C0006"
+            New-ConditionalText -Text "Not Found in AD" -BackgroundColor "#FFEB9C" -ConditionalTextColor "#9C5700"
+        )
+}
+
+Write-Host "Done."
+
+# --- Summary ---
+$summary = $results | Group-Object "Account Status" | Select-Object Name, Count
+Write-Host ""
+Write-Host "=== Summary ==="
+$summary | Format-Table -AutoSize
+```
+---
+# For a CSV input:
+.\Check-ADUserStatus.ps1 -InputFile "C:\users\people.csv"
+
+# For an Excel input:
+.\Check-ADUserStatus.ps1 -InputFile "C:\users\people.xlsx"
+
+# With a custom output path:
+.\Check-ADUserStatus.ps1 -InputFile "people.csv" -OutputFile "C:\output\results.csv"
+---
+Get-ADUser personID -Properties Enabled | Select-Object SamAccountName, Enabled
