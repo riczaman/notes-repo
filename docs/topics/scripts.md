@@ -233,3 +233,123 @@ $summary | Format-Table -AutoSize
 .\Check-ADUserStatus.ps1 -InputFile "people.csv" -OutputFile "C:\output\results.csv"
 ---
 Get-ADUser personID -Properties Enabled | Select-Object SamAccountName, Enabled
+----------------------
+
+```
+<!DOCTYPE html>
+<html>
+<body style="margin:0; padding:0; background-color:#f4f5f7; font-family: Arial, sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f5f7; padding: 40px 0;">
+    <tr>
+      <td align="center">
+
+        <!-- Email Card -->
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff; border-radius:8px; overflow:hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+          <!-- Header Banner -->
+          <tr>
+            <td style="background-color:#0052CC; padding: 32px 40px; text-align:center;">
+              <h1 style="color:#ffffff; margin:0; font-size:22px; font-weight:700;">
+                🛠️ New Support Request
+              </h1>
+              <p style="color:#B3D4FF; margin:8px 0 0 0; font-size:14px;">
+                A new issue has been submitted and requires attention
+              </p>
+            </td>
+          </tr>
+
+          <!-- Submitted By Banner -->
+          <tr>
+            <td style="background-color:#DEEBFF; padding: 12px 40px;">
+              <p style="margin:0; font-size:13px; color:#0052CC;">
+                <strong>Submitted by:</strong> [entry._creator] &nbsp;|&nbsp;
+                <strong>Date:</strong> [entry._created]
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 32px 40px;">
+
+              <!-- Issue Title -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="border-left: 4px solid #0052CC; padding-left:12px;">
+                    <p style="margin:0 0 4px 0; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#6B778C;">Issue Title</p>
+                    <p style="margin:0; font-size:18px; font-weight:700; color:#172B4D;">[entry.title]</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Priority Badge -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                <tr>
+                  <td>
+                    <p style="margin:0 0 8px 0; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#6B778C;">Priority</p>
+                    <span style="display:inline-block; background-color:#FF5630; color:#ffffff; padding:4px 16px; border-radius:20px; font-size:13px; font-weight:700;">[entry.priority]</span>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="border:none; border-top:1px solid #EBECF0; margin: 0 0 24px 0;" />
+
+              <!-- Description -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="background-color:#F4F5F7; border-radius:6px; padding:16px;">
+                    <p style="margin:0 0 8px 0; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#6B778C;">Issue Description</p>
+                    <p style="margin:0; font-size:14px; color:#172B4D; line-height:1.6;">[entry.message]</p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Department and any other fields -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; border:1px solid #EBECF0; border-radius:6px; overflow:hidden;">
+                <tr style="background-color:#F4F5F7;">
+                  <td width="40%" style="padding:10px 16px; font-size:12px; font-weight:700; color:#6B778C; text-transform:uppercase;">Field</td>
+                  <td width="60%" style="padding:10px 16px; font-size:12px; font-weight:700; color:#6B778C; text-transform:uppercase;">Value</td>
+                </tr>
+                <tr style="border-top:1px solid #EBECF0;">
+                  <td style="padding:12px 16px; font-size:13px; color:#6B778C;">Department</td>
+                  <td style="padding:12px 16px; font-size:13px; color:#172B4D; font-weight:600;">[entry.department]</td>
+                </tr>
+                <tr style="border-top:1px solid #EBECF0; background-color:#FAFBFC;">
+                  <td style="padding:12px 16px; font-size:13px; color:#6B778C;">Steps to Reproduce</td>
+                  <td style="padding:12px 16px; font-size:13px; color:#172B4D;">[entry.steps]</td>
+                </tr>
+                <tr style="border-top:1px solid #EBECF0;">
+                  <td style="padding:12px 16px; font-size:13px; color:#6B778C;">Expected Behaviour</td>
+                  <td style="padding:12px 16px; font-size:13px; color:#172B4D;">[entry.expected]</td>
+                </tr>
+                <tr style="border-top:1px solid #EBECF0; background-color:#FAFBFC;">
+                  <td style="padding:12px 16px; font-size:13px; color:#6B778C;">Actual Behaviour</td>
+                  <td style="padding:12px 16px; font-size:13px; color:#172B4D;">[entry.actual]</td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#F4F5F7; padding:20px 40px; text-align:center; border-top:1px solid #EBECF0;">
+              <p style="margin:0; font-size:12px; color:#6B778C;">
+                This is an automated notification from your IT Support Form.<br/>
+                Please do not reply to this email directly.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Email Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+```
