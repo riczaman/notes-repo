@@ -679,4 +679,38 @@ RULES:
 
 ---
 
-*Last updated: 2025*
+## Crash Course for New Topics
+
+### Personal Knowledge Assistant (For New Topics)
+
+> Set up a structured knowledge guide on learning new topics.
+
+```text
+I am an engineering manager who has just been handed ownership of a new initiative I have no prior context on. I need you to act as my technical onboarding coach and strategic advisor. Below I will paste all of the raw material I have been given — Jira tickets, an architectural blueprint, a requirements document, and Confluence page content. Your job is to help me get fully up to speed and ready to contribute immediately.
+Once you have read everything, please give me the following:
+1. Executive Summary (Plain English)
+Explain what this initiative is, what problem it solves, who it affects, and where it currently stands. Write this as if I have never heard of it. Use no jargon without explaining it.
+2. My Jira Tickets — Ticket-by-Ticket Breakdown
+For each ticket: tell me what it is asking me to do, what "done" looks like, what decisions or dependencies I need to be aware of, and what questions I should be asking before I can make progress. Flag any tickets that seem blocked, unclear, or dependent on others.
+3. What Has Already Been Done
+Based on the materials, summarize the prework and decisions that have already been made so I don't re-open closed doors or duplicate effort.
+4. What Still Needs to Happen
+Give me a prioritized list of what needs to happen next for this initiative to move forward, and where my role fits into that.
+5. Risks and Gaps I Should Know About
+Based on what you see in the documents, call out anything that looks incomplete, conflicting, or risky. I want to know where the landmines are before I step on them.
+6. Questions to Ask My Lead Engineer on Monday
+I am meeting the engineer who was previously leading this initiative. Give me a prioritized list of questions I should ask him — focused on: filling gaps in the documentation, understanding decisions that were made and why, identifying what he is worried about, clarifying my tickets, and understanding what he needs from me to keep momentum going. Make these questions sharp and specific, not generic.
+7. Meeting Prioritization Guide
+I still manage my original team and cannot attend every meeting. Based on the initiative, tell me what types of meetings I absolutely must be in (decision-making, architecture, stakeholder alignment) versus which ones I can get notes from or send a delegate to.
+8. My 30-Day Cheat Sheet
+Give me a simple week-by-week focus guide for my first 30 days so I know where to put my energy to make the biggest impact without dropping anything.
+Here is all of my source material:
+[PASTE YOUR JIRA TICKETS HERE — label each one]
+[PASTE YOUR ARCHITECTURAL BLUEPRINT TEXT OR DESCRIBE THE DIAGRAM HERE]
+[PASTE YOUR REQUIREMENTS DOCUMENT HERE]
+[PASTE YOUR CONFLUENCE PAGE CONTENT HERE — label each page]
+```
+
+---
+
+*Last updated: 2026*
