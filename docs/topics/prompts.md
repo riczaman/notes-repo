@@ -709,6 +709,22 @@ Here is all of my source material:
 [PASTE YOUR ARCHITECTURAL BLUEPRINT TEXT OR DESCRIBE THE DIAGRAM HERE]
 [PASTE YOUR REQUIREMENTS DOCUMENT HERE]
 [PASTE YOUR CONFLUENCE PAGE CONTENT HERE — label each page]
+
+
+The summary you gave me is a good starting point but I need you to go much deeper. I am going to ask you to redo several sections with far more specificity. Do not give me bullet points — write everything out in full sentences and paragraphs as if you are briefing a smart person who needs to actually act on this, not just read it.
+1. Deep Dive on My Tickets — One Section Per Ticket
+For each of my Jira tickets, give me a dedicated section that covers:
+
+What this ticket is actually asking me to do in plain language, including the full scope of the work
+Which specific part of the requirements document or architectural blueprint this ticket maps to — quote or reference the exact section, requirement ID, or diagram element by name so I can find it
+What the logical steps are to complete this ticket from start to finish, written as a mini execution plan
+What decisions I will need to make or get approved before I can close it
+Who I likely need to involve or get input from based on what the documents say
+What done looks like — give me a clear definition of completion so I know when to mark it closed
+Any dependencies on other tickets and in what order things need to happen
+
+2. Rebuilt 30-Day Plan — Day by Day, Not Week by Week
+Rebuild the 30-day cheat sheet as a daily task list. Every single day should have between two and four specific, named tasks I can actually check off. Each task must reference a specific ticket number, a section of the requirements document, or a part of the architectural blueprint by name so
 ```
 
 ---
