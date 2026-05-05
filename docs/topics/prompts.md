@@ -728,5 +728,136 @@ Rebuild the 30-day cheat sheet as a daily task list. Every single day should hav
 ```
 
 ---
+```
+You are a professional Business Analyst and Onboarding Coach. Your task is to generate a polished, well-structured, and visually aesthetic Microsoft Word onboarding handbook for a new co-op joining our team. The co-op's name is Fiona.
 
+DOCUMENT DESIGN & FORMATTING REQUIREMENTS:
+
+Create a professional Title Page personalized for Fiona with the title: "Welcome to the Team, Fiona! — Co-op Onboarding Handbook", the team name (which I will provide below), and today's date
+Use a cohesive, modern colour scheme — a deep navy or slate blue for headings with light grey/white accents
+Include a Table of Contents with hyperlinked sections immediately after the title page
+Use Heading 1 for major sections and Heading 2/3 for subsections
+Each major application section should begin on a new page
+Use callout boxes (shaded table cells or bordered text boxes) for important notes, tips, or warnings
+Use clean tables for contacts, request numbers, and links — with alternating row shading for readability
+Add subtle section dividers between major sections
+Include a page footer on every page (except the title page) with: section name on the left, "Confidential — Internal Use Only" in the center, and page number on the right
+Font: Use Calibri or Segoe UI throughout; headings bold, body text regular
+
+
+DOCUMENT STRUCTURE:
+Generate the following sections in order. I will fill in the bracketed placeholders with real information.
+
+TITLE PAGE
+
+Title: Welcome to the Team, Fiona! — Co-op Onboarding Handbook
+Team Name: [INSERT TEAM NAME]
+Department: [INSERT DEPARTMENT]
+Manager / Buddy: [INSERT NAME]
+Date: [INSERT DATE]
+A brief one-line welcome message in italics underneath the title
+
+
+SECTION 1 — GENERAL TEAM INFORMATION
+1.1 Welcome & Introduction
+Write a warm, professional 2–3 sentence welcome message for a new co-op student joining a corporate procurement/technology team. Keep it encouraging and human.
+1.2 Team Contacts & Key Stakeholders
+Insert a formatted table with the following columns:
+| Name | Role | Email | Notes |
+Fill in: [INSERT TEAM CONTACTS]
+1.3 General Access Requests
+These are IT/access request ticket numbers not tied to a specific application.
+Insert a formatted table:
+| Request # | Description | Status | Notes |
+Fill in: [INSERT GENERAL REQUEST NUMBERS]
+1.4 Important Links & Resources
+Bullet list of general team links (SharePoint, org chart, HR portal, etc.)
+Fill in: [INSERT GENERAL LINKS]
+1.5 Tools & Accounts Setup Checklist
+A checklist table for Fiona to track her general onboarding setup:
+| Task | Done? | Notes |
+Fill in as appropriate based on the contacts and requests I provide.
+
+SECTION 2 — S2P: ARIBA
+2.1 Overview
+High-level description of the Source-to-Pay (S2P) process and the SAP Ariba platform — what it does, why it matters, and Fiona's exposure to it. (Write 3–5 professional sentences; I will refine as needed.)
+2.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT ARIBA REQUEST NUMBERS]
+2.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT ARIBA LINKS]
+
+SECTION 3 — USFF CURRENT GEN (PowerApps & Power Automate)
+3.1 Overview
+High-level description of the USFF Current Generation solution built on Microsoft PowerApps and Power Automate — purpose, key workflows, and scope. (Write 3–5 professional sentences.)
+3.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT USFF CURRENT GEN REQUEST NUMBERS]
+3.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT USFF CURRENT GEN LINKS]
+
+SECTION 4 — IATLK: UiPath Integration for USFF Current Gen
+4.1 Overview
+High-level description of the IATLK UiPath robotic process automation (RPA) integration that supports USFF Current Gen — what it automates, how it connects, and its business value. (Write 3–5 professional sentences.)
+4.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT IATLK REQUEST NUMBERS]
+4.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT IATLK LINKS]
+
+SECTION 5 — USFF NEXT GEN (React Web App & AI)
+5.1 Overview
+High-level description of the USFF Next Generation platform — a modern React-based web application with AI capabilities — including its vision, current development stage, and key differentiators from Current Gen. (Write 3–5 professional sentences.)
+5.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT USFF NEXT GEN REQUEST NUMBERS]
+5.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT USFF NEXT GEN LINKS]
+
+SECTION 6 — PROCUREMENT TRACKER (Power BI Dashboard)
+6.1 Overview
+High-level description of the Procurement Tracker Power BI dashboard — what metrics it tracks, who the primary users are, and how it supports procurement decision-making. (Write 3–5 professional sentences.)
+6.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT PROCUREMENT TRACKER REQUEST NUMBERS]
+6.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT PROCUREMENT TRACKER LINKS]
+
+SECTION 7 — AZURE DATA PIPELINE (PETL)
+7.1 Overview
+High-level description of the Azure-based data pipeline (PETL — Procurement ETL) — its role in data ingestion, transformation, and loading, and how it supports the broader procurement ecosystem. (Write 3–5 professional sentences.)
+7.2 Access Requests
+| Request # | Description | Status | Notes |
+Fill in: [INSERT AZURE PETL REQUEST NUMBERS]
+7.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT AZURE PETL LINKS]
+
+SECTION 8 — VULNERABILITIES
+8.1 Overview
+A professional, high-level overview of how the team manages application and infrastructure vulnerabilities — covering the general process, tools used, and Fiona's expected involvement or awareness. (Write 3–5 professional sentences.)
+8.2 Active / Tracked Vulnerabilities
+| Vulnerability ID | Application | Severity | Description | Status | Notes |
+Fill in: [INSERT VULNERABILITY DETAILS]
+8.3 Key Links & Resources
+| Resource Name | URL | Notes |
+Fill in: [INSERT VULNERABILITY LINKS]
+
+CLOSING PAGE — YOU'RE ALL SET, FIONA! 🎉
+Write a short, warm closing paragraph (3–4 sentences) encouraging Fiona, pointing her to her manager and team if she has questions, and wishing her a great co-op term. Keep it professional but human and upbeat.
+
+FINAL INSTRUCTIONS:
+
+Wherever you see [INSERT ...], leave a clearly visible placeholder in the document using highlighted text or square brackets so I can fill them in easily
+Do not fabricate any request numbers, names, links, or technical details — only write the framing, overview descriptions, and structure
+Apply all formatting, styles, and table designs as specified above
+Make this document something Fiona would genuinely enjoy reading on her first day
+```
+
+---
 *Last updated: 2026*
