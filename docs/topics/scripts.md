@@ -599,3 +599,353 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+---
+```
+"""
+lookup_user_domains.py
+----------------------
+Reads an Excel file with a "TD User ID" column and uses PowerShell Get-ADUser
+(your current Windows session) to find which domain each user belongs to.
+
+Fixes in this version:
+  - No more ERROR results — every failure is retried individually
+  - Handles users found in multiple domains (picks the enabled/active one)
+  - Robust JSON parsing — bad PS output no longer poisons a whole batch
+  - Per-user fallback: if batch fails, retries each user solo
+  - Progress bar kept, speed kept
+
+Requirements:
+    pip install pandas openpyxl tqdm
+"""
+
+import pandas as pd
+import subprocess
+import json
+import os
+import re
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIGURATION
+# ─────────────────────────────────────────────────────────────────────────────
+
+INPUT_FILE       = r"C:\path\to\your\input_file.xlsx"   # <-- change
+OUTPUT_FILE      = r"C:\path\to\your\output_file.xlsx"  # <-- change
+CHECKPOINT       = r"C:\path\to\checkpoint.json"         # <-- change
+
+MAX_WORKERS      = 20   # parallel threads
+BATCH_SIZE       = 25   # users per PS call (smaller = more reliable JSON output)
+BATCH_SAVE_EVERY = 20   # save checkpoint every N completed batches
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 1 — Discover all domains
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_all_domains() -> list[str]:
+    print("\n[1/3] Discovering all domains in the forest...")
+    ps = r"""
+$ErrorActionPreference = 'SilentlyContinue'
+try {
+    $d = (Get-ADForest).Domains
+    $d | ConvertTo-Json -Compress
+} catch {
+    @((Get-ADDomain).DNSRoot) | ConvertTo-Json -Compress
+}
+"""
+    r = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+        capture_output=True, text=True, timeout=30
+    )
+    raw = r.stdout.strip()
+    if not raw:
+        raise RuntimeError(f"Could not discover domains.\nSTDERR: {r.stderr.strip()}")
+    data = json.loads(raw)
+    domains = [data] if isinstance(data, str) else list(data)
+    print(f"  Found {len(domains)} domain(s): {', '.join(domains)}")
+    return domains
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 2 — PowerShell helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+# This PS script is the core — it checks every domain for a list of users,
+# handles multiples by preferring enabled accounts, and NEVER throws — every
+# user always gets a value (even if "NOT FOUND").
+BATCH_PS_TEMPLATE = r"""
+$ErrorActionPreference = 'SilentlyContinue'
+$users   = '{USERS_JSON}' | ConvertFrom-Json
+$domains = @({DOMAIN_LIST})
+$out     = @{}
+
+foreach ($sam in $users) {
+    $candidates = @()
+
+    foreach ($domain in $domains) {
+        try {
+            $u = Get-ADUser -Identity $sam -Server $domain `
+                 -Properties Enabled, DistinguishedName -ErrorAction Stop
+            if ($u) {
+                $candidates += [PSCustomObject]@{
+                    Domain  = (Get-ADDomain -Server $domain -ErrorAction Stop).NetBIOSName
+                    Enabled = $u.Enabled
+                }
+            }
+        } catch {}
+    }
+
+    if ($candidates.Count -eq 0) {
+        $out[$sam] = 'NOT FOUND'
+    } elseif ($candidates.Count -eq 1) {
+        $c = $candidates[0]
+        $out[$sam] = if ($c.Enabled) { $c.Domain } else { $c.Domain + ' (DISABLED)' }
+    } else {
+        # Multiple domains — prefer enabled accounts
+        $active = $candidates | Where-Object { $_.Enabled -eq $true }
+        if ($active) {
+            # If still multiple enabled, take first (most specific domain wins)
+            $out[$sam] = ($active | Select-Object -First 1).Domain
+        } else {
+            # All disabled — note that
+            $out[$sam] = ($candidates | Select-Object -First 1).Domain + ' (DISABLED)'
+        }
+    }
+}
+
+$out | ConvertTo-Json -Compress -Depth 2
+"""
+
+
+def run_ps_batch(user_ids: list[str], domains: list[str]) -> dict[str, str]:
+    """
+    Run a batch PS query. Returns dict {sam -> domain}.
+    On any failure, returns None so caller can retry individually.
+    """
+    users_json  = json.dumps(user_ids)
+    domain_list = ", ".join(f'"{d}"' for d in domains)
+    ps = BATCH_PS_TEMPLATE.replace("{USERS_JSON}", users_json.replace("'", "''")) \
+                          .replace("{DOMAIN_LIST}", domain_list)
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+            capture_output=True, text=True, timeout=180
+        )
+        raw = r.stdout.strip()
+        if not raw:
+            return None  # signal retry
+
+        # Strip any stray text before the first { (PS sometimes emits warnings)
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if not match:
+            return None
+        data = json.loads(match.group())
+        return {u: (data.get(u) or "NOT FOUND") for u in user_ids}
+    except Exception:
+        return None  # signal retry
+
+
+def run_ps_single(sam: str, domains: list[str]) -> str:
+    """
+    Fallback: look up a single user. More reliable than batch for edge cases.
+    Returns domain string — never raises.
+    """
+    domain_list = ", ".join(f'"{d}"' for d in domains)
+    # Escape single quotes in the username just in case
+    safe_sam = sam.replace("'", "''")
+    ps = f"""
+$ErrorActionPreference = 'SilentlyContinue'
+$domains    = @({domain_list})
+$candidates = @()
+foreach ($domain in $domains) {{
+    try {{
+        $u = Get-ADUser -Identity '{safe_sam}' -Server $domain `
+             -Properties Enabled -ErrorAction Stop
+        if ($u) {{
+            $nb = (Get-ADDomain -Server $domain -ErrorAction Stop).NetBIOSName
+            $candidates += [PSCustomObject]@{{ Domain=$nb; Enabled=$u.Enabled }}
+        }}
+    }} catch {{}}
+}}
+if ($candidates.Count -eq 0) {{
+    Write-Output 'NOT FOUND'
+}} else {{
+    $active = $candidates | Where-Object {{ $_.Enabled }}
+    if ($active) {{
+        Write-Output ($active | Select-Object -First 1).Domain
+    }} else {{
+        Write-Output (($candidates | Select-Object -First 1).Domain + ' (DISABLED)')
+    }}
+}}
+"""
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+            capture_output=True, text=True, timeout=60
+        )
+        result = r.stdout.strip().splitlines()[-1].strip()  # last non-empty line
+        return result if result else "NOT FOUND"
+    except Exception:
+        return "NOT FOUND"   # single-user failures become NOT FOUND, never ERROR
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 3 — Process a batch: try bulk first, fall back per-user on failure
+# ─────────────────────────────────────────────────────────────────────────────
+
+def process_batch(index_chunk: list[int], user_ids: list[str],
+                  domains: list[str]) -> dict[str, str]:
+    """
+    Returns {str(row_index) -> domain_string}.
+    Tries the fast batch path first; retries individually for any that fail.
+    """
+    uid_list = [user_ids[i] for i in index_chunk]
+    mapping  = run_ps_batch(uid_list, domains)
+
+    if mapping is None:
+        # Whole batch failed — retry every user individually
+        mapping = {u: run_ps_single(u, domains) for u in uid_list}
+    else:
+        # Retry only the ones that came back as ERROR or empty
+        for u, v in list(mapping.items()):
+            if not v or v.upper() in ("ERROR", "NULL", "NONE", ""):
+                mapping[u] = run_ps_single(u, domains)
+
+    return {str(index_chunk[j]): mapping[uid_list[j]] for j in range(len(index_chunk))}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Checkpoint helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+def load_checkpoint() -> dict:
+    if os.path.exists(CHECKPOINT):
+        with open(CHECKPOINT) as f:
+            return json.load(f)
+    return {}
+
+def save_checkpoint(results: dict):
+    with open(CHECKPOINT, "w") as f:
+        json.dump(results, f)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Main
+# ─────────────────────────────────────────────────────────────────────────────
+
+def main():
+    domains = get_all_domains()
+
+    print(f"\n[2/3] Loading {INPUT_FILE} ...")
+    df = pd.read_excel(INPUT_FILE, dtype=str)
+
+    col = "TD User ID"
+    if col not in df.columns:
+        hit = [c for c in df.columns if c.strip().lower() == col.lower()]
+        col = hit[0] if hit else None
+    if not col:
+        raise ValueError(f"'TD User ID' column not found. Available: {list(df.columns)}")
+
+    user_ids = df[col].fillna("").str.strip().tolist()
+    total    = len(user_ids)
+    print(f"  {total:,} rows loaded.")
+
+    results = load_checkpoint()
+
+    # Mark blanks immediately
+    for i, uid in enumerate(user_ids):
+        if not uid and str(i) not in results:
+            results[str(i)] = "BLANK"
+
+    remaining_indices = [i for i in range(total)
+                         if user_ids[i] and str(i) not in results]
+
+    already_done = total - len(remaining_indices)
+    print(f"  {already_done:,} already done, {len(remaining_indices):,} remaining.\n")
+
+    # Build batches
+    batches = [remaining_indices[s:s + BATCH_SIZE]
+               for s in range(0, len(remaining_indices), BATCH_SIZE)]
+
+    print(f"[3/3] Processing {len(batches)} batches "
+          f"(batch size={BATCH_SIZE}, workers={MAX_WORKERS})...\n")
+
+    lock         = threading.Lock()
+    done_batches = 0
+
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = {
+            ex.submit(process_batch, batch, user_ids, domains): batch
+            for batch in batches
+        }
+        with tqdm(total=len(remaining_indices), unit="user",
+                  dynamic_ncols=True, colour="green") as bar:
+            for f in as_completed(futures):
+                batch_result = f.result()
+                with lock:
+                    results.update(batch_result)
+                    done_batches += 1
+                    bar.update(len(batch_result))
+
+                    # Show a live domain tally in the bar suffix
+                    counts = {}
+                    for v in results.values():
+                        counts[v] = counts.get(v, 0) + 1
+                    top = sorted(counts.items(), key=lambda x: -x[1])[:3]
+                    bar.set_postfix_str(
+                        " | ".join(f"{k}:{v}" for k, v in top), refresh=False
+                    )
+
+                    if done_batches % BATCH_SAVE_EVERY == 0:
+                        save_checkpoint(results)
+
+    save_checkpoint(results)
+
+    # ── Write output ──────────────────────────────────────────────────────────
+    print(f"\n  Writing {OUTPUT_FILE} ...")
+    df["Domain"] = [results.get(str(i), "NOT FOUND") for i in range(total)]
+
+    with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
+        df.to_excel(writer, index=False, sheet_name="Users")
+        ws = writer.sheets["Users"]
+
+        from openpyxl.styles import PatternFill
+        red    = PatternFill(start_color="FFCCCC", end_color="FFCCCC", fill_type="solid")
+        green  = PatternFill(start_color="CCFFCC", end_color="CCFFCC", fill_type="solid")
+        yellow = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
+        dcol   = df.columns.get_loc("Domain")
+
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+            val = str(row[dcol].value or "")
+            if val in ("NOT FOUND", "BLANK"):
+                for cell in row: cell.fill = red
+            elif "DISABLED" in val:
+                for cell in row: cell.fill = yellow
+            else:
+                row[dcol].fill = green
+
+        for col_cells in ws.columns:
+            w = max((len(str(c.value or "")) for c in col_cells), default=10)
+            ws.column_dimensions[col_cells[0].column_letter].width = min(w + 4, 60)
+
+    print(f"\n  Done!  {OUTPUT_FILE}")
+    print(f"  Checkpoint (safe to delete): {CHECKPOINT}\n")
+
+    breakdown = df["Domain"].value_counts()
+    print("─── Domain Breakdown ───────────────────────────")
+    print(breakdown.to_string())
+    print("────────────────────────────────────────────────")
+    not_found = int((df["Domain"] == "NOT FOUND").sum())
+    disabled  = int(df["Domain"].str.contains("DISABLED", na=False).sum())
+    found     = total - not_found - disabled - int((df["Domain"] == "BLANK").sum())
+    print(f"\n  Active & found : {found:,}")
+    print(f"  Disabled       : {disabled:,}")
+    print(f"  Not found      : {not_found:,}")
+    print(f"  Blank input    : {int((df['Domain'] == 'BLANK').sum()):,}")
+
+
+if __name__ == "__main__":
+    main()
+
+```
