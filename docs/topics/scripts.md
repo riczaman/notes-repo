@@ -358,235 +358,127 @@ Get-ADUser personID -Properties Enabled | Select-Object SamAccountName, Enabled
 """
 lookup_user_domains.py
 ----------------------
-Reads an Excel file with a "TD User ID" column, auto-discovers all AD domains
-and DCs, then queries LDAP using your current Windows login session (no
-username/password needed).
+Reads an Excel file with a "TD User ID" column, uses PowerShell Get-ADUser
+(running as your current Windows session) to find which domain each user
+belongs to. No LDAP, no credentials, no DC connections.
 
 Usage:
     python lookup_user_domains.py
 
 Requirements:
-    pip install pandas openpyxl ldap3 tqdm pywin32
+    pip install pandas openpyxl tqdm
 """
 
 import pandas as pd
-from ldap3 import Server, Connection, SASL, GSSAPI, AUTO_BIND_NO_TLS, SUBTREE
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
-import threading
 import subprocess
 import json
 import os
-import re
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONFIGURATION — only edit the three file paths below
+# CONFIGURATION — only edit these
 # ─────────────────────────────────────────────────────────────────────────────
 
 INPUT_FILE       = r"C:\path\to\your\input_file.xlsx"   # <-- change this
 OUTPUT_FILE      = r"C:\path\to\your\output_file.xlsx"  # <-- change this
 CHECKPOINT       = r"C:\path\to\checkpoint.json"         # <-- change this
 
-LDAP_PORT        = 389
-USE_SSL          = False
-MAX_WORKERS      = 16    # parallel threads — increase if network allows
-BATCH_SAVE_EVERY = 500   # save progress checkpoint every N users
+MAX_WORKERS      = 20    # how many parallel PowerShell queries to run at once
+BATCH_SIZE       = 50    # users per PowerShell call (batching = much faster)
+BATCH_SAVE_EVERY = 10    # save checkpoint every N batches
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 1 — Auto-discover all domains + DCs via PowerShell
-#           (runs as YOU, uses your existing Windows session — no creds needed)
+# STEP 1 — Discover all domains in the forest via PowerShell
 # ─────────────────────────────────────────────────────────────────────────────
 
-def discover_domains() -> dict:
-    print("\n[1/3] Auto-discovering domains via PowerShell...")
-
+def get_all_domains() -> list[str]:
+    """Returns list of domain DNS names, e.g. ['tdbfg.com', 'tdsecurities.com', ...]"""
+    print("\n[1/3] Discovering all domains in the forest...")
     ps = r"""
 $ErrorActionPreference = 'SilentlyContinue'
-$out = @()
 try {
-    $forest = Get-ADForest
-    foreach ($d in $forest.Domains) {
-        try {
-            $dom = Get-ADDomain -Identity $d
-            $dc  = Get-ADDomainController -DomainName $d -Discover -NextClosestSite 2>$null
-            if (-not $dc) { $dc = Get-ADDomainController -DomainName $d -Discover }
-            $out += [PSCustomObject]@{
-                NetBIOS = $dom.NetBIOSName
-                DNS     = $dom.DNSRoot
-                Base    = $dom.DistinguishedName
-                DC      = ($dc.HostName | Select-Object -First 1)
-            }
-        } catch {}
-    }
+    (Get-ADForest).Domains | ConvertTo-Json
 } catch {
-    try {
-        $dom = Get-ADDomain
-        $dc  = Get-ADDomainController -Discover
-        $out += [PSCustomObject]@{
-            NetBIOS = $dom.NetBIOSName
-            DNS     = $dom.DNSRoot
-            Base    = $dom.DistinguishedName
-            DC      = ($dc.HostName | Select-Object -First 1)
-        }
-    } catch {}
+    @((Get-ADDomain).DNSRoot) | ConvertTo-Json
 }
-$out | ConvertTo-Json -Depth 2
 """
-    try:
-        r = subprocess.run(
-            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
-            capture_output=True, text=True, timeout=60
-        )
-        raw = r.stdout.strip()
-        if not raw:
-            raise ValueError(f"No PowerShell output.\nSTDERR: {r.stderr.strip()}")
+    r = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+        capture_output=True, text=True, timeout=30
+    )
+    raw = r.stdout.strip()
+    if not raw:
+        raise RuntimeError(f"Could not discover domains.\nSTDERR: {r.stderr.strip()}")
 
-        data = json.loads(raw)
-        if isinstance(data, dict):
-            data = [data]
-
-        domains = {}
-        for entry in data:
-            label = entry.get("NetBIOS") or entry.get("DNS", "UNKNOWN")
-            dc    = entry.get("DC", "")
-            base  = entry.get("Base", "")
-            if isinstance(dc, list):
-                dc = dc[0]
-            if dc and base:
-                domains[str(label)] = {"dc": str(dc), "base_dn": str(base)}
-
-        if not domains:
-            raise ValueError("Discovered 0 usable domains from PowerShell output.")
-
-        print(f"  Found {len(domains)} domain(s):")
-        for label, info in domains.items():
-            print(f"    {label:20s}  DC={info['dc']}")
-            print(f"    {'':20s}  Base={info['base_dn']}")
-        return domains
-
-    except Exception as e:
-        print(f"  PowerShell failed: {e}")
-        print("  Falling back to nltest...\n")
-        return discover_domains_nltest()
-
-
-def discover_domains_nltest() -> dict:
-    domains = {}
-    r = subprocess.run(["nltest", "/domain_trusts", "/all_trusts"],
-                       capture_output=True, text=True, timeout=30)
-    names = re.findall(r'\d+: \S+ (\S+) \(', r.stdout)
-
-    if not names:
-        r2 = subprocess.run(["nltest", "/dsgetdc:"], capture_output=True, text=True)
-        m_dc  = re.search(r'DC: \\\\(\S+)', r2.stdout)
-        m_dom = re.search(r'Domain: (\S+)', r2.stdout)
-        if m_dc and m_dom:
-            dom   = m_dom.group(1)
-            label = dom.split(".")[0].upper()
-            base  = ",".join(f"DC={p}" for p in dom.split("."))
-            domains[label] = {"dc": m_dc.group(1), "base_dn": base}
-        return domains
-
-    for name in names:
-        r3 = subprocess.run(["nltest", f"/dclist:{name}"],
-                            capture_output=True, text=True, timeout=15)
-        hosts = re.findall(r'\\\\(\S+)\s+\[PDC\]', r3.stdout) or \
-                re.findall(r'\\\\(\S+)', r3.stdout)
-        if hosts:
-            base  = ",".join(f"DC={p}" for p in name.split("."))
-            label = name.split(".")[0].upper()
-            domains[label] = {"dc": hosts[0], "base_dn": base}
-
-    print(f"  Found {len(domains)} domain(s) via nltest.")
+    data = json.loads(raw)
+    domains = [data] if isinstance(data, str) else data
+    print(f"  Found {len(domains)} domain(s): {', '.join(domains)}")
     return domains
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 2 — Test-connect to each DC using current Windows session (GSSAPI/Kerberos)
+# STEP 2 — Batch lookup: given a list of sAMAccountNames, query each domain
+#           and return a dict of { username -> domain_netbios }
 # ─────────────────────────────────────────────────────────────────────────────
 
-def make_connection(dc: str) -> Connection | None:
+def lookup_batch(user_ids: list[str], domains: list[str]) -> dict[str, str]:
     """
-    Connect using your current Windows login — no username or password.
-    Uses Kerberos/GSSAPI (the same auth Windows uses automatically).
+    Runs a single PowerShell script that checks each domain for each user.
+    Returns dict: { "jsmith": "TDBFG", "bjones": "TDSecurities", ... }
     """
+    # Build a JSON array of usernames to pass into PS
+    users_json = json.dumps(user_ids)
+
+    # Build the list of domains as a PS array literal
+    domain_list = ", ".join(f'"{d}"' for d in domains)
+
+    ps = f"""
+$ErrorActionPreference = 'SilentlyContinue'
+$users   = '{users_json}' | ConvertFrom-Json
+$domains = @({domain_list})
+$results = @{{}}
+
+foreach ($user in $users) {{
+    $found = $false
+    foreach ($domain in $domains) {{
+        try {{
+            $obj = Get-ADUser -Identity $user -Server $domain -ErrorAction Stop |
+                   Select-Object -ExpandProperty DistinguishedName
+            if ($obj) {{
+                # Extract NetBIOS-style domain from DistinguishedName DC= parts
+                $dcParts = ($obj -split ',') | Where-Object {{ $_ -like 'DC=*' }}
+                $dns = ($dcParts | ForEach-Object {{ $_ -replace 'DC=','' }}) -join '.'
+                # Get NetBIOS name
+                $nb = (Get-ADDomain -Server $domain).NetBIOSName
+                $results[$user] = $nb
+                $found = $true
+                break
+            }}
+        }} catch {{}}
+    }}
+    if (-not $found) {{
+        $results[$user] = 'NOT FOUND'
+    }}
+}}
+$results | ConvertTo-Json
+"""
+
     try:
-        srv  = Server(dc, port=LDAP_PORT, use_ssl=USE_SSL, connect_timeout=6)
-        conn = Connection(
-            srv,
-            authentication=SASL,
-            sasl_mechanism=GSSAPI,   # Kerberos — uses your logged-in Windows ticket
-            auto_bind=AUTO_BIND_NO_TLS,
-            receive_timeout=10,
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+            capture_output=True, text=True, timeout=120
         )
-        return conn
+        raw = r.stdout.strip()
+        if not raw:
+            # All not found
+            return {u: "NOT FOUND" for u in user_ids}
+        data = json.loads(raw)
+        # Normalize: PS may return null for missing keys
+        return {u: (data.get(u) or "NOT FOUND") for u in user_ids}
     except Exception:
-        return None
-
-
-def validate_domains(domains: dict) -> dict:
-    print(f"\n[2/3] Testing connectivity using your Windows session ({len(domains)} domain(s))...")
-    valid = {}
-    for label, info in domains.items():
-        conn = make_connection(info["dc"])
-        if conn is None:
-            print(f"  SKIP {label:20s}  {info['dc']}  (could not connect)")
-            continue
-        try:
-            conn.search(info["base_dn"], "(objectClass=domain)", SUBTREE,
-                        attributes=["distinguishedName"], size_limit=1, time_limit=5)
-            conn.unbind()
-            print(f"  OK   {label:20s}  {info['dc']}")
-            valid[label] = info
-        except Exception as e:
-            print(f"  SKIP {label:20s}  {info['dc']}  ({e})")
-    return valid
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# STEP 3 — Parallel LDAP user lookups (all using your Windows session)
-# ─────────────────────────────────────────────────────────────────────────────
-
-_tl = threading.local()
-
-def _get_conn(label: str, info: dict) -> Connection | None:
-    """Thread-local cached connection per domain."""
-    if not hasattr(_tl, "c"):
-        _tl.c = {}
-    if label not in _tl.c:
-        _tl.c[label] = make_connection(info["dc"])
-    return _tl.c[label]
-
-
-def find_domain(sam: str, domains: dict) -> str:
-    sam = (sam or "").strip()
-    if not sam:
-        return "BLANK"
-
-    filt = f"(&(objectClass=user)(sAMAccountName={sam}))"
-
-    for label, info in domains.items():
-        conn = _get_conn(label, info)
-        if conn is None:
-            continue
-        try:
-            conn.search(
-                search_base=info["base_dn"],
-                search_filter=filt,
-                search_scope=SUBTREE,
-                attributes=["userAccountControl"],
-                time_limit=8,
-                size_limit=1,
-            )
-            if conn.entries:
-                uac = conn.entries[0].userAccountControl.value
-                if isinstance(uac, int) and (uac & 0x2):
-                    return f"{label} (DISABLED)"
-                return label
-        except Exception:
-            _tl.c.pop(label, None)  # drop dead connection; will reconnect on next call
-
-    return "NOT FOUND"
+        return {u: "ERROR" for u in user_ids}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -609,24 +501,11 @@ def save_checkpoint(results: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    # Discover domains (runs as your Windows user automatically)
-    domains = discover_domains()
-    if not domains:
-        print("\nERROR: Could not discover any domains.")
-        print("Make sure RSAT AD tools are installed (Get-ADForest) or nltest is available.")
-        return
-
-    # Validate connectivity
-    domains = validate_domains(domains)
-    if not domains:
-        print("\nERROR: Could not connect to any domain controller.")
-        print("This script uses your current Windows login (Kerberos).")
-        print("Make sure you're on the corporate network or VPN.")
-        return
+    # Discover domains
+    domains = get_all_domains()
 
     # Load Excel
-    print(f"\n[3/3] Processing users...")
-    print(f"  Reading {INPUT_FILE} ...")
+    print(f"\n[2/3] Loading {INPUT_FILE} ...")
     df = pd.read_excel(INPUT_FILE, dtype=str)
 
     col = "TD User ID"
@@ -634,37 +513,54 @@ def main():
         hit = [c for c in df.columns if c.strip().lower() == col.lower()]
         col = hit[0] if hit else None
     if not col:
-        raise ValueError(f"'TD User ID' column not found. Available columns: {list(df.columns)}")
+        raise ValueError(f"'TD User ID' column not found. Available: {list(df.columns)}")
 
-    user_ids = df[col].fillna("").tolist()
+    user_ids = df[col].fillna("").str.strip().tolist()
     total    = len(user_ids)
-    print(f"  {total:,} rows  |  {len(domains)} domain(s)  |  {MAX_WORKERS} threads\n")
+    print(f"  {total:,} rows loaded.")
 
-    results         = load_checkpoint()
-    remaining       = [(i, uid) for i, uid in enumerate(user_ids) if str(i) not in results]
-    done_since_save = 0
+    # Load checkpoint
+    results = load_checkpoint()
+
+    # Figure out which rows still need processing
+    remaining_indices = [i for i, uid in enumerate(user_ids)
+                         if uid and str(i) not in results]
+    # Mark blanks immediately
+    for i, uid in enumerate(user_ids):
+        if not uid and str(i) not in results:
+            results[str(i)] = "BLANK"
+
+    print(f"  {len(results):,} already done, {len(remaining_indices):,} remaining.\n")
+
+    # Split remaining into batches
+    batches = []
+    for start in range(0, len(remaining_indices), BATCH_SIZE):
+        chunk = remaining_indices[start:start + BATCH_SIZE]
+        batches.append(chunk)
+
+    print(f"[3/3] Running {len(batches)} batches of up to {BATCH_SIZE} users "
+          f"across {MAX_WORKERS} parallel workers...\n")
+
     lock            = threading.Lock()
+    done_batches    = 0
 
-    if results:
-        print(f"  Resuming: {len(results):,} already done, {len(remaining):,} remaining.\n")
-
-    def lookup(args):
-        idx, uid = args
-        return str(idx), find_domain(uid, domains)
+    def process_batch(index_chunk: list[int]) -> dict:
+        uid_list = [user_ids[i] for i in index_chunk]
+        mapping  = lookup_batch(uid_list, domains)
+        # Re-key by row index
+        return {str(index_chunk[j]): mapping[uid_list[j]] for j in range(len(index_chunk))}
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
-        futures = {ex.submit(lookup, item): item for item in remaining}
-        with tqdm(total=len(remaining), unit="user", dynamic_ncols=True) as bar:
+        futures = {ex.submit(process_batch, batch): batch for batch in batches}
+        with tqdm(total=len(remaining_indices), unit="user", dynamic_ncols=True) as bar:
             for f in as_completed(futures):
-                idx_str, domain = f.result()
+                batch_result = f.result()
                 with lock:
-                    results[idx_str] = domain
-                    done_since_save += 1
-                    bar.set_postfix_str(f"last={domain}", refresh=False)
-                    bar.update(1)
-                    if done_since_save >= BATCH_SAVE_EVERY:
+                    results.update(batch_result)
+                    done_batches += 1
+                    bar.update(len(batch_result))
+                    if done_batches % BATCH_SAVE_EVERY == 0:
                         save_checkpoint(results)
-                        done_since_save = 0
 
     save_checkpoint(results)
 
@@ -683,7 +579,7 @@ def main():
 
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
             val = row[dcol].value
-            if val in ("NOT FOUND", "BLANK"):
+            if val in ("NOT FOUND", "BLANK", "ERROR"):
                 for cell in row:
                     cell.fill = red
             elif val and "DISABLED" not in str(val):
