@@ -358,9 +358,9 @@ Get-ADUser personID -Properties Enabled | Select-Object SamAccountName, Enabled
 """
 lookup_user_domains.py
 ----------------------
-Reads an Excel file with a "TD User ID" column, queries Active Directory (LDAP)
-across multiple domains in parallel to find each user's domain, then writes
-the result to a new Excel file with a "Domain" column appended.
+Reads an Excel file with a "TD User ID" column, AUTO-DISCOVERS all domains
+and domain controllers from Active Directory, then queries LDAP in parallel
+to find each user's domain.
 
 Usage:
     python lookup_user_domains.py
@@ -370,115 +370,216 @@ Requirements:
 """
 
 import pandas as pd
-from ldap3 import Server, Connection, AUTO_BIND_NO_TLS, NTLM, ALL_ATTRIBUTES, SUBTREE
+from ldap3 import Server, Connection, NTLM, AUTO_BIND_NO_TLS, SUBTREE
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
 import threading
-import os
+import subprocess
 import json
+import os
+import re
 import getpass
 
 # ─────────────────────────────────────────────────────────────────────────────
-# CONFIGURATION — edit these before running
+# CONFIGURATION — only these three paths need editing
 # ─────────────────────────────────────────────────────────────────────────────
 
-INPUT_FILE   = r"C:\path\to\your\input_file.xlsx"   # <-- change this
-OUTPUT_FILE  = r"C:\path\to\your\output_file.xlsx"  # <-- change this
-CHECKPOINT   = r"C:\path\to\checkpoint.json"         # progress saved here
+INPUT_FILE       = r"C:\path\to\your\input_file.xlsx"   # <-- change this
+OUTPUT_FILE      = r"C:\path\to\your\output_file.xlsx"  # <-- change this
+CHECKPOINT       = r"C:\path\to\checkpoint.json"         # <-- change this
 
-# Your AD credentials (you will be prompted at runtime if left blank)
-AD_USERNAME  = ""   # e.g. "TDBFG\\your.name"  or leave blank to prompt
-AD_PASSWORD  = ""   # leave blank to prompt securely
+AD_USERNAME      = ""   # leave blank to prompt  e.g. "TDBFG\\your.name"
+AD_PASSWORD      = ""   # leave blank to prompt securely
 
-# Domain controllers — add/remove as needed.
-# Format: { "DomainLabel": "domain_controller_hostname_or_ip" }
-DOMAINS = {
-    "TDBFG":         "tdbfg.ad.td.com",        # <-- replace with real DC hostnames
-    "TDSecurities":  "tdsecurities.ad.td.com",
-    "TDCT":          "tdct.ad.td.com",
-    "AMTD":          "amtd.ad.td.com",
+LDAP_PORT        = 389
+USE_SSL          = False
+MAX_WORKERS      = 16   # parallel threads
+BATCH_SAVE_EVERY = 500
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 1 — Auto-discover all forest domains + nearest DC via PowerShell
+# ─────────────────────────────────────────────────────────────────────────────
+
+def discover_domains_via_powershell() -> dict:
+    print("\n[1/3] Auto-discovering domains via PowerShell (Get-ADForest / Get-ADDomain)...")
+
+    ps = r"""
+$ErrorActionPreference = 'SilentlyContinue'
+$out = @()
+try {
+    $forest = Get-ADForest
+    foreach ($d in $forest.Domains) {
+        try {
+            $dom = Get-ADDomain -Identity $d
+            $dc  = Get-ADDomainController -DomainName $d -Discover -NextClosestSite 2>$null
+            if (-not $dc) { $dc = Get-ADDomainController -DomainName $d -Discover }
+            $out += [PSCustomObject]@{
+                NetBIOS = $dom.NetBIOSName
+                DNS     = $dom.DNSRoot
+                Base    = $dom.DistinguishedName
+                DC      = ($dc.HostName | Select-Object -First 1)
+            }
+        } catch {}
+    }
+} catch {
+    # No forest — just grab current domain
+    try {
+        $dom = Get-ADDomain
+        $dc  = Get-ADDomainController -Discover
+        $out += [PSCustomObject]@{
+            NetBIOS = $dom.NetBIOSName
+            DNS     = $dom.DNSRoot
+            Base    = $dom.DistinguishedName
+            DC      = ($dc.HostName | Select-Object -First 1)
+        }
+    } catch {}
 }
+$out | ConvertTo-Json -Depth 2
+"""
+    try:
+        r = subprocess.run(
+            ["powershell", "-NoProfile", "-NonInteractive", "-Command", ps],
+            capture_output=True, text=True, timeout=60
+        )
+        raw = r.stdout.strip()
+        if not raw:
+            raise ValueError(f"No output from PowerShell.\nSTDERR: {r.stderr.strip()}")
 
-# Base DNs to search in each domain (adjust to match your AD structure)
-SEARCH_BASES = {
-    "TDBFG":         "DC=tdbfg,DC=ad,DC=td,DC=com",
-    "TDSecurities":  "DC=tdsecurities,DC=ad,DC=td,DC=com",
-    "TDCT":          "DC=tdct,DC=ad,DC=td,DC=com",
-    "AMTD":          "DC=amtd,DC=ad,DC=td,DC=com",
-}
+        data = json.loads(raw)
+        if isinstance(data, dict):
+            data = [data]
 
-LDAP_PORT        = 389      # 389 = LDAP, 636 = LDAPS
-USE_SSL          = False    # set True if using port 636
-MAX_WORKERS      = 8        # parallel threads (tune to your network; 8–16 is usually safe)
-BATCH_SAVE_EVERY = 500      # save checkpoint every N users
+        domains = {}
+        for entry in data:
+            label  = entry.get("NetBIOS") or entry.get("DNS", "UNKNOWN")
+            dc     = entry.get("DC", "")
+            base   = entry.get("Base", "")
+            if isinstance(dc, list):
+                dc = dc[0]
+            if dc and base:
+                domains[str(label)] = {"dc": str(dc), "base_dn": str(base)}
+
+        if not domains:
+            raise ValueError("Discovered 0 usable domains.")
+
+        for label, info in domains.items():
+            print(f"    {label:20s}  DC={info['dc']}")
+            print(f"    {'':20s}  Base={info['base_dn']}")
+        return domains
+
+    except Exception as e:
+        print(f"  PowerShell discovery failed: {e}")
+        print("  Falling back to nltest...\n")
+        return discover_domains_via_nltest()
+
+
+def discover_domains_via_nltest() -> dict:
+    """Fallback when RSAT cmdlets aren't available."""
+    domains = {}
+
+    r = subprocess.run(["nltest", "/domain_trusts", "/all_trusts"],
+                       capture_output=True, text=True, timeout=30)
+    names = re.findall(r'\d+: \S+ (\S+) \(', r.stdout)
+
+    if not names:
+        # Try current domain only
+        r2 = subprocess.run(["nltest", "/dsgetdc:"], capture_output=True, text=True)
+        m_dc  = re.search(r'DC: \\\\(\S+)', r2.stdout)
+        m_dom = re.search(r'Domain: (\S+)', r2.stdout)
+        if m_dc and m_dom:
+            dom   = m_dom.group(1)
+            label = dom.split(".")[0].upper()
+            base  = ",".join(f"DC={p}" for p in dom.split("."))
+            domains[label] = {"dc": m_dc.group(1), "base_dn": base}
+        return domains
+
+    for name in names:
+        r3 = subprocess.run(["nltest", f"/dclist:{name}"],
+                            capture_output=True, text=True, timeout=15)
+        hosts = re.findall(r'\\\\(\S+)\s+\[PDC\]', r3.stdout) or \
+                re.findall(r'\\\\(\S+)', r3.stdout)
+        if hosts:
+            dc    = hosts[0]
+            base  = ",".join(f"DC={p}" for p in name.split("."))
+            label = name.split(".")[0].upper()
+            domains[label] = {"dc": dc, "base_dn": base}
+
+    print(f"  Found {len(domains)} domain(s) via nltest.")
+    return domains
+
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LDAP helpers
+# STEP 2 — Validate we can actually bind to each DC
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Thread-local storage: one Connection per thread per domain
-_thread_local = threading.local()
-
-
-def _get_connection(domain_label: str, username: str, password: str) -> Connection | None:
-    """Return a cached (thread-local) LDAP connection for the given domain."""
-    if not hasattr(_thread_local, "conns"):
-        _thread_local.conns = {}
-
-    if domain_label not in _thread_local.conns:
-        dc = DOMAINS[domain_label]
+def validate_domains(domains: dict, username: str, password: str) -> dict:
+    print(f"\n[2/3] Testing LDAP connectivity ({len(domains)} domain(s))...")
+    valid = {}
+    for label, info in domains.items():
         try:
-            server = Server(dc, port=LDAP_PORT, use_ssl=USE_SSL, connect_timeout=5)
-            conn = Connection(
-                server,
-                user=username,
-                password=password,
-                authentication=NTLM,
-                auto_bind=AUTO_BIND_NO_TLS,
-                receive_timeout=10,
-            )
-            _thread_local.conns[domain_label] = conn
+            srv  = Server(info["dc"], port=LDAP_PORT, use_ssl=USE_SSL, connect_timeout=6)
+            conn = Connection(srv, user=username, password=password,
+                              authentication=NTLM, auto_bind=AUTO_BIND_NO_TLS,
+                              receive_timeout=8)
+            # Quick sanity search
+            conn.search(info["base_dn"], "(objectClass=domain)", SUBTREE,
+                        attributes=["distinguishedName"], size_limit=1, time_limit=5)
+            conn.unbind()
+            print(f"  OK   {label:20s}  {info['dc']}")
+            valid[label] = info
+        except Exception as e:
+            print(f"  SKIP {label:20s}  {info['dc']}  ({e})")
+    return valid
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STEP 3 — Parallel LDAP user lookups
+# ─────────────────────────────────────────────────────────────────────────────
+
+_tl = threading.local()
+
+def _conn(label: str, info: dict, username: str, password: str):
+    if not hasattr(_tl, "c"):
+        _tl.c = {}
+    if label not in _tl.c:
+        try:
+            srv  = Server(info["dc"], port=LDAP_PORT, use_ssl=USE_SSL, connect_timeout=6)
+            conn = Connection(srv, user=username, password=password,
+                              authentication=NTLM, auto_bind=AUTO_BIND_NO_TLS,
+                              receive_timeout=10)
+            _tl.c[label] = conn
         except Exception:
-            _thread_local.conns[domain_label] = None   # mark as unavailable
+            _tl.c[label] = None
+    return _tl.c[label]
 
-    return _thread_local.conns[domain_label]
 
-
-def find_user_domain(sam_account: str, username: str, password: str) -> str:
-    """
-    Search each domain for sam_account.
-    Returns the domain label if found and account is enabled, else "NOT FOUND".
-    Skips to the next domain immediately on any error.
-    """
-    sam_account = sam_account.strip()
-    if not sam_account:
+def find_domain(sam: str, domains: dict, username: str, password: str) -> str:
+    sam = sam.strip()
+    if not sam:
         return "BLANK"
 
-    ldap_filter = f"(&(objectClass=user)(sAMAccountName={sam_account}))"
+    filt = f"(&(objectClass=user)(sAMAccountName={sam}))"
 
-    for domain_label, base_dn in SEARCH_BASES.items():
-        conn = _get_connection(domain_label, username, password)
+    for label, info in domains.items():
+        conn = _conn(label, info, username, password)
         if conn is None:
             continue
         try:
             conn.search(
-                search_base=base_dn,
-                search_filter=ldap_filter,
+                search_base=info["base_dn"],
+                search_filter=filt,
                 search_scope=SUBTREE,
-                attributes=["sAMAccountName", "userAccountControl"],
+                attributes=["userAccountControl"],
                 time_limit=8,
                 size_limit=1,
             )
             if conn.entries:
-                # Check if account is disabled (userAccountControl bit 2 = disabled)
                 uac = conn.entries[0].userAccountControl.value
                 if isinstance(uac, int) and (uac & 0x2):
-                    return f"{domain_label} (DISABLED)"
-                return domain_label
+                    return f"{label} (DISABLED)"
+                return label
         except Exception:
-            # Connection dropped — clear it so it reconnects next time
-            _thread_local.conns.pop(domain_label, None)
-            continue
+            _tl.c.pop(label, None)   # drop broken connection — will reconnect next call
 
     return "NOT FOUND"
 
@@ -489,10 +590,9 @@ def find_user_domain(sam_account: str, username: str, password: str) -> str:
 
 def load_checkpoint() -> dict:
     if os.path.exists(CHECKPOINT):
-        with open(CHECKPOINT, "r") as f:
+        with open(CHECKPOINT) as f:
             return json.load(f)
     return {}
-
 
 def save_checkpoint(results: dict):
     with open(CHECKPOINT, "w") as f:
@@ -504,84 +604,94 @@ def save_checkpoint(results: dict):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def main():
-    # ── Credentials ──────────────────────────────────────────────────────────
     username = AD_USERNAME or input("AD Username (e.g. TDBFG\\your.name): ").strip()
     password = AD_PASSWORD or getpass.getpass("AD Password: ")
 
-    # ── Load Excel ───────────────────────────────────────────────────────────
-    print(f"\nReading {INPUT_FILE} ...")
+    # Discover
+    domains = discover_domains_via_powershell()
+    if not domains:
+        print("\nERROR: No domains discovered. Ensure RSAT AD tools are installed or nltest is available.")
+        return
+
+    # Validate
+    domains = validate_domains(domains, username, password)
+    if not domains:
+        print("\nERROR: Could not bind to any DC. Check credentials (format: DOMAIN\\user) and network.")
+        return
+
+    # Load data
+    print(f"\n[3/3] Processing users...")
     df = pd.read_excel(INPUT_FILE, dtype=str)
 
     col = "TD User ID"
     if col not in df.columns:
-        raise ValueError(f"Column '{col}' not found. Columns found: {list(df.columns)}")
+        hit = [c for c in df.columns if c.strip().lower() == col.lower()]
+        col = hit[0] if hit else None
+    if not col:
+        raise ValueError(f"'TD User ID' column not found. Available: {list(df.columns)}")
 
     user_ids = df[col].fillna("").tolist()
     total    = len(user_ids)
-    print(f"Loaded {total:,} rows.\n")
+    print(f"  {total:,} rows  |  {len(domains)} domain(s)  |  {MAX_WORKERS} threads\n")
 
-    # ── Resume from checkpoint ───────────────────────────────────────────────
-    results = load_checkpoint()
-    remaining = [(i, uid) for i, uid in enumerate(user_ids) if str(i) not in results]
-    print(f"{len(results):,} already done from checkpoint. {len(remaining):,} to process.\n")
-
-    # ── Parallel lookup ───────────────────────────────────────────────────────
-    lock = threading.Lock()
+    results        = load_checkpoint()
+    remaining      = [(i, uid) for i, uid in enumerate(user_ids) if str(i) not in results]
     done_since_save = 0
+    lock           = threading.Lock()
+
+    if results:
+        print(f"  Resuming: {len(results):,} already done, {len(remaining):,} remaining.\n")
 
     def lookup(args):
         idx, uid = args
-        domain = find_user_domain(uid, username, password)
-        return str(idx), domain
+        return str(idx), find_domain(uid, domains, username, password)
 
-    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(lookup, item): item for item in remaining}
-
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as ex:
+        futures = {ex.submit(lookup, item): item for item in remaining}
         with tqdm(total=len(remaining), unit="user", dynamic_ncols=True) as bar:
-            for future in as_completed(futures):
-                idx_str, domain = future.result()
+            for f in as_completed(futures):
+                idx_str, domain = f.result()
                 with lock:
                     results[idx_str] = domain
                     done_since_save += 1
                     bar.set_postfix_str(f"last={domain}", refresh=False)
                     bar.update(1)
-
                     if done_since_save >= BATCH_SAVE_EVERY:
                         save_checkpoint(results)
                         done_since_save = 0
 
-    save_checkpoint(results)   # final save
+    save_checkpoint(results)
 
-    # ── Write output Excel ────────────────────────────────────────────────────
-    print(f"\nWriting results to {OUTPUT_FILE} ...")
+    # Write output
+    print(f"\nWriting {OUTPUT_FILE} ...")
     df["Domain"] = [results.get(str(i), "NOT FOUND") for i in range(total)]
 
     with pd.ExcelWriter(OUTPUT_FILE, engine="openpyxl") as writer:
         df.to_excel(writer, index=False, sheet_name="Users")
         ws = writer.sheets["Users"]
 
-        # Auto-size columns
-        for col_cells in ws.columns:
-            max_len = max((len(str(c.value or "")) for c in col_cells), default=10)
-            ws.column_dimensions[col_cells[0].column_letter].width = min(max_len + 4, 60)
-
-        # Highlight "NOT FOUND" rows in light red
         from openpyxl.styles import PatternFill
-        red_fill = PatternFill(start_color="FFCCCC", end_color="FFCCCC", fill_type="solid")
-        domain_col_idx = df.columns.get_loc("Domain") + 1   # 1-based
+        red   = PatternFill(start_color="FFCCCC", end_color="FFCCCC", fill_type="solid")
+        green = PatternFill(start_color="CCFFCC", end_color="CCFFCC", fill_type="solid")
+        dcol  = df.columns.get_loc("Domain")  # 0-based index
+
         for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
-            if row[domain_col_idx - 1].value in ("NOT FOUND", "BLANK"):
+            val = row[dcol].value
+            if val in ("NOT FOUND", "BLANK"):
                 for cell in row:
-                    cell.fill = red_fill
+                    cell.fill = red
+            elif val and "DISABLED" not in str(val):
+                row[dcol].fill = green
 
-    print(f"\nDone! Output saved to: {OUTPUT_FILE}")
-    print(f"Checkpoint file (safe to delete): {CHECKPOINT}\n")
+        for col_cells in ws.columns:
+            w = max((len(str(c.value or "")) for c in col_cells), default=10)
+            ws.column_dimensions[col_cells[0].column_letter].width = min(w + 4, 60)
 
-    # ── Summary stats ─────────────────────────────────────────────────────────
-    domain_col = df["Domain"]
-    print("─── Domain Breakdown ───────────────────────────────")
-    print(domain_col.value_counts().to_string())
-    print("────────────────────────────────────────────────────")
+    print(f"\nDone!  {OUTPUT_FILE}")
+    print(f"Checkpoint (safe to delete): {CHECKPOINT}\n")
+    print("─── Domain Breakdown ───────────────────────────")
+    print(df["Domain"].value_counts().to_string())
+    print("────────────────────────────────────────────────")
 
 
 if __name__ == "__main__":
