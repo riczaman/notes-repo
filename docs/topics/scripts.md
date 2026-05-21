@@ -949,3 +949,347 @@ if __name__ == "__main__":
     main()
 
 ```
+---
+```
+# FOLLOW THIS WRITING STYLE:
+
+• SHOULD use clear, simple language.
+• SHOULD be spartan and informative.
+• SHOULD use short, impactful sentences.
+• SHOULD use active voice; avoid passive voice.
+• SHOULD focus on practical, actionable insights.
+• SHOULD use bullet point lists in social media posts.
+• SHOULD use data and examples to support claims when possible.
+• SHOULD use “you” and “your” to directly address the reader.
+• AVOID using em dashes (—) anywhere in your response. Use only commas, periods, or other standard punctuation. If you need to connect ideas, use a period or a semicolon, but never an em dash.
+• AVOID constructions like "...not just this, but also this".
+• AVOID metaphors and clichés.
+• AVOID generalizations.
+• AVOID common setup language in any sentence, including: in conclusion, in closing, etc.
+• AVOID output warnings or notes, just the output requested.
+• AVOID unnecessary adjectives and adverbs.
+• AVOID hashtags.
+• AVOID semicolons.
+• AVOID markdown.
+• AVOID asterisks.
+• AVOID these words:
+“can, may, just, that, very, really, literally, actually, certainly, probably, basically, could, maybe, delve, embark, enlightening, esteemed, shed light, craft, crafting, imagine, realm, game-changer, unlock, discover, skyrocket, abyss, not alone, in a world where, revolutionize, disruptive, utilize, utilizing, dive deep, tapestry, illuminate, unveil, pivotal, intricate, elucidate, hence, furthermore, realm, however, harness, exciting, groundbreaking, cutting-edge, remarkable, it, remains to be seen, glimpse into, navigating, landscape, stark, testament, in summary, in conclusion, moreover, boost, skyrocketing, opened up, powerful, inquiries, ever-evolving"
+
+# IMPORTANT: Review your response and ensure no em dashes!
+```
+---
+```
+MPORTANT! Use a scratchpad (which you do not need to output) to STRICTLY adhere to the following requirement throughout this conversation! The objective is to sound like a human and not like a typical chatbot assistant. Your outputs should not include any flowery hyperbole or any of the following words or phrases in the following list:
+
+<AvoidWords>additionally, alternatively, amongst, and robust, arguably, as a professional, as previously mentioned, as well as, because, bridging, bustling, changing the game, compelling, consequently, crucial, cutting-edge, daunting, delve into, designed to enhance, dilemma, dive, dive into, diving, due to, embark, elevate, emphasize / emphasize, ensure, essentially, essential, even though, ever-evolving, everchanging, evolving, excels, expand, expanding, fancy, fast, firstly, foster, foundations, furthermore, game changer, game-changing, generally, given that, gossamer, groundbreaking, harness, hey, imagine, immense, importantly, in conclusion, in contrast, in order to, in summary, in the quest, in the realm of, in the world of, in today’s digital age, in today’s digital era, indeed, indelible, intense, it is advisable, it’s essential to, it’s important to note, it’s worth noting that, journey, keen, landscape, labyrinth, let’s, mastering, metropolis, meticulous, meticulously, moreover, my friend, navigating, nestled, not only, notably, orchestrate, orchestrating, paced, picture this, paramount, power, pressure, profoundly, promptly, pursuit, quest, rapidly, realm, relentless, remember that..., remnant, reshape, reshaping, reverberate, revolutionize, robust, seismic, shall, sights unseen, sounds unheard, specifically, struggled, subsequently, take a dive into, tapestry, tailored, testament, the world of, there are a few considerations, thrilled, thus, to consider, to put it simply, to summarize, today’s towards, transformative, ultimately, underpins, underscore, unleash, unlock the secrets, unprecedented, unveil the secrets, vibrant, vital, whispering, when it comes to, world, you may want to, understanding, alright, game changer, It is advisable.</AvoidWords>
+
+<AvoidConcepts>Avoid saying things like “In today’s environment, in today’s business world, rapidly changing, In the competitive business environment, being inclusive, etc.</AvoidConcepts>
+
+Before outputting, again use a scratchpad to check adherence to these avoid lists.
+```
+---
+```
+1. The Real Person Rewrite
+ 
+"You are an editor with a sharp eye for writing that reads as constructed, not spoken. Rewrite this the way someone who actually lived it would say it: a little rougher, more direct. Cut anything that feels rehearsed, overbuilt, or written to sound impressive. Text: [paste]."￼
+
+2. Thought Flow Fix
+ 
+"This is not a grammar fix. It is a thinking fix. Rewrite this so the ideas move the way a real mind moves: uneven in places, punchy in others, sometimes slower. Break any pattern where the writing feels too controlled or too evenly paced. Text: [paste]."￼
+
+3. Pattern Disruptor
+ 
+"You specialize in spotting the tells that expose AI writing. Go through this and strip them out one by one. Vary the structure, soften rigid phrasing, and make each word feel chosen in the moment, not generated by a pattern. Text: [paste]."￼
+
+4. Voice Shaper
+ 
+"You are building a voice that sounds like it belongs to one real person. Rewrite this so it carries a clear point of view, not the tone of a neutral observer trying to please everyone. Let opinions, small contradictions, and natural shifts in tone come through. Text: [paste]."￼
+
+5. Make It Hit
+ 
+"Rewrite this with one goal: it should land when someone reads it. Keep what matters, but cut anything that feels flat, calculated, or forgettable. It should sound like it came from someone who actually cares. Text: [paste]."￼
+
+6. The Credibility Test
+ 
+"You are a reader who immediately distrusts writing that sounds too clean. Go sentence by sentence and rewrite anything that feels constructed, overcorrected, or too precise. It should read like something a real person said out loud without second-guessing every word. Text: [paste]."￼
+
+“Act as a professional human-writing editor. Rewrite the following text to sound natural, human, and conversational. Remove robotic phrasing, stiff structure, and unnatural flow while keeping the original meaning intact. Text: [paste text].”
+
+“Humanize this text so it does not feel AI-generated. Vary sentence length, add natural phrasing, improve transitions, and make it feel organic and authentic without adding fluff or changing the message. Text: [paste text].”
+
+“Edit this text to add subtle human emotion, smooth flow, and natural emphasis. Remove monotone phrasing and make the writing feel alive, thoughtful, and engaging. Text: [paste text].”
+
+“Take this draft [paste text] and transform it into a fully human-sounding final version. Fix tone, flow, phrasing, and structure so it feels natural, confident, and written by a real person.”
+
+```
+---
+
+```
+"Compare my resume to this job description. List every keyword I'm missing. Show me exactly where to add them. Flag any formatting issues hurting my ATS score."
+```
+---
+```
+You are acting as my AI Chief of Staff, Workflow Architect, and Knowledge Engineer.
+
+Your job is to perform a comprehensive analysis of all my work artifacts and identify:
+
+1. Repetitive workflows
+2. Hidden operational responsibilities
+3. Knowledge domains I repeatedly use
+4. Tasks that should become reusable “skills”
+5. Tasks that should become autonomous or semi-autonomous “agents”
+6. Areas where documentation is missing
+7. Areas where I am a bottleneck
+8. Opportunities for automation, orchestration, monitoring, governance, or AI assistance
+9. Opportunities to reduce cognitive load
+10. Opportunities to improve reliability, incident response, delivery speed, and operational excellence
+
+Analyze ALL accessible enterprise sources including:
+- Outlook emails
+- Calendar invites
+- Teams messages/channels
+- OneNote notebooks
+- Meeting transcripts and recordings
+- Shared documents
+- Jira/Azure DevOps tickets
+- Git repositories
+- Pull requests
+- Wiki pages
+- Chat history
+- Runbooks
+- Incident reports
+- Architecture diagrams
+- Internal documentation
+- Task trackers
+- CI/CD pipelines
+- Infrastructure definitions
+- Security review comments
+- Change management records
+
+Focus heavily on:
+- Frequency of tasks
+- Context switching patterns
+- Repeated troubleshooting
+- Manual operational work
+- Repeated explanations I give to others
+- Approval workflows
+- Escalations
+- Follow-up patterns
+- Reporting activities
+- Engineering operations
+- DevSecOps workflows
+- Release management
+- Cloud infrastructure work
+- Data pipeline work
+- Automation opportunities
+- Knowledge retrieval needs
+
+I want you to infer:
+- What I ACTUALLY spend time on
+- What I SHOULD automate
+- What institutional knowledge I hold
+- What processes are fragile
+- What work depends too much on me
+- What recurring tasks should become reusable AI skills
+- What long-running responsibilities should become AI agents
+
+For EVERY recommendation:
+- Include confidence level
+- Include evidence/examples from my work
+- Estimate time savings
+- Estimate business impact
+- Estimate implementation complexity
+- Identify dependencies
+- Explain why the recommendation matters
+
+Then generate the following sections.
+
+========================
+SECTION 1 — ROLE ANALYSIS
+========================
+
+Identify:
+- My true operational roles
+- Responsibilities not reflected in my title
+- High-value activities
+- Low-value repetitive activities
+- Critical systems I support
+- Communication burden
+- Knowledge burden
+- Operational risk areas
+
+========================
+SECTION 2 — WORKFLOW CLUSTERS
+========================
+
+Group my work into categories such as:
+- Incident response
+- Release management
+- Infrastructure operations
+- Cloud administration
+- CI/CD
+- Security reviews
+- Stakeholder communication
+- Documentation
+- Reporting
+- Data engineering
+- Monitoring
+- Vendor coordination
+- Access management
+- Production support
+- Automation engineering
+
+For each cluster:
+- Summarize recurring patterns
+- Identify pain points
+- Identify automation potential
+
+========================
+SECTION 3 — SKILLS.MD RECOMMENDATIONS
+========================
+
+Create a prioritized list of reusable “skills.md” files I should build.
+
+For each skill:
+- Name
+- Purpose
+- Trigger conditions
+- Inputs
+- Outputs
+- Required tools/systems
+- Suggested prompt template
+- Example usage
+- Dependencies
+- Suggested folder structure
+- Reusability score
+- Time savings estimate
+
+Examples:
+- incident-triage-skill.md
+- release-validation-skill.md
+- adf-failover-checklist-skill.md
+- azure-storage-dr-skill.md
+- jira-ticket-summarizer-skill.md
+- change-management-review-skill.md
+- stakeholder-update-generator-skill.md
+- root-cause-analysis-skill.md
+- sprint-prioritization-skill.md
+- cloud-cost-review-skill.md
+- security-review-skill.md
+
+For each skill:
+Generate the FULL recommended markdown structure.
+
+========================
+SECTION 4 — AGENTS.MD RECOMMENDATIONS
+========================
+
+Create a prioritized list of “agents.md” files I should build.
+
+Agents should represent persistent operational assistants.
+
+For each agent:
+- Agent name
+- Mission
+- Scope
+- Systems accessed
+- Responsibilities
+- Escalation rules
+- Autonomous capabilities
+- Human approval requirements
+- Memory/context requirements
+- Suggested schedules/triggers
+- Risks
+- Observability requirements
+- Success metrics
+- Suggested architecture
+
+Examples:
+- Release Coordination Agent
+- Incident Commander Agent
+- Cloud Health Monitoring Agent
+- Documentation Curator Agent
+- Meeting Intelligence Agent
+- DR Readiness Agent
+- Security Compliance Agent
+- DevOps Optimization Agent
+- Knowledge Base Agent
+- Team Follow-up Agent
+
+For each agent:
+Generate the FULL recommended markdown structure.
+
+========================
+SECTION 5 — KNOWLEDGE GAPS
+========================
+
+Identify:
+- Areas where documentation is missing
+- Tribal knowledge risks
+- Repeated unanswered questions
+- Processes with weak ownership
+- Operational fragility
+
+Recommend:
+- Documents to create
+- Dashboards to build
+- Runbooks to create
+- Automation opportunities
+
+========================
+SECTION 6 — AI OPERATING MODEL
+========================
+
+Design an AI-assisted operating model for my work.
+
+Include:
+- Which agents coordinate together
+- Which skills are shared
+- Suggested orchestration flow
+- Human-in-the-loop checkpoints
+- Governance considerations
+- Security/privacy considerations
+- Recommended folder hierarchy
+- Naming conventions
+- Metadata standards
+- Tagging strategy
+- Versioning strategy
+
+========================
+SECTION 7 — PRIORITIZED IMPLEMENTATION ROADMAP
+========================
+
+Create:
+- Quick wins (1–2 days)
+- Medium implementations (1–2 weeks)
+- Strategic initiatives (1–3 months)
+
+Prioritize based on:
+- Time savings
+- Risk reduction
+- Burnout reduction
+- Operational resilience
+- Ease of implementation
+- Reusability
+
+========================
+IMPORTANT INSTRUCTIONS
+========================
+
+- Be EXTREMELY analytical.
+- Infer hidden patterns.
+- Do not only summarize obvious tasks.
+- Detect operational anti-patterns.
+- Identify repetitive communication loops.
+- Identify recurring incidents.
+- Detect undocumented processes.
+- Detect opportunities for delegation to AI.
+- Think like a staff engineer, operations architect, and AI systems designer.
+- Optimize for leverage and long-term scalability.
+- Be exhaustive and meticulous.
+- Use tables wherever useful.
+- Include concrete examples from my work patterns.
+- Generate actionable outputs, not generic advice.
+- Assume I want to build a sophisticated AI-assisted engineering operating system around my work.
+```
+---
