@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Driven Executive Objective Generation | Workday Strategy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ink: #0d0f14;
+    --paper: #f5f3ee;
+    --cream: #faf9f6;
+    --accent: #c84b2f;
+    --accent2: #2563eb;
+    --gold: #b8943f;
+    --muted: #6b7280;
+    --border: rgba(13,15,20,0.12);
+    --card-bg: rgba(255,255,255,0.72);
+    --shadow: 0 2px 24px rgba(13,15,20,0.09);
+    --shadow-lg: 0 8px 48px rgba(13,15,20,0.14);
+    --radius: 12px;
+    --section-gap: 80px;
+    --col: #e8e5df;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  #nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(245,243,238,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    transition: box-shadow .3s;
+  }
+  #nav.scrolled { box-shadow: 0 2px 20px rgba(13,15,20,0.10); }
+  .nav-brand { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; display:flex;align-items:center;gap:.5rem; }
+  .nav-brand .dot { width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block; }
+  .nav-links { display: flex; gap: .25rem; list-style: none; }
+  .nav-links a { font-size: .78rem; font-weight: 500; color: var(--muted); text-decoration: none; padding: .35rem .75rem; border-radius: 6px; transition: all .2s; white-space: nowrap; }
+  .nav-links a:hover { color: var(--ink); background: var(--col); }
+  .nav-toggle { display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px; }
+  .nav-toggle span { display:block;width:22px;height:2px;background:var(--ink);border-radius:2px;transition:.3s; }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8rem 2.5rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,75,47,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 10% 80%, rgba(37,99,235,0.05) 0%, transparent 50%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0; opacity: .35;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-inner { position: relative; z-index: 1; max-width: 1100px; }
+  .hero-kicker { font-family: 'DM Mono', monospace; font-size: .72rem; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1.4rem; opacity: 0; animation: fadeUp .7s .2s forwards; }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.6rem, 5.5vw, 4.8rem); font-weight: 700; line-height: 1.08; letter-spacing: -.02em; margin-bottom: 1.6rem; opacity: 0; animation: fadeUp .8s .35s forwards; }
+  .hero-title em { font-style: normal; color: var(--accent); }
+  .hero-sub { font-size: 1.08rem; color: var(--muted); max-width: 620px; line-height: 1.7; margin-bottom: 2.8rem; opacity: 0; animation: fadeUp .8s .5s forwards; }
+  .hero-pills { display: flex; flex-wrap: wrap; gap: .65rem; margin-bottom: 3rem; opacity: 0; animation: fadeUp .8s .65s forwards; }
+  .pill { display: inline-flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 500; background: var(--card-bg); border: 1px solid var(--border); padding: .4rem .9rem; border-radius: 999px; backdrop-filter: blur(6px); }
+  .pill .ico { font-size: 1rem; }
+  .hero-stats { display: flex; flex-wrap: wrap; gap: 2.5rem; opacity: 0; animation: fadeUp .8s .8s forwards; }
+  .stat { }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; line-height: 1; }
+  .stat-num .unit { font-size: 1rem; color: var(--accent); }
+  .stat-label { font-size: .75rem; color: var(--muted); margin-top: .25rem; }
+  .scroll-cue { position: absolute; bottom: 2.5rem; left: 2.5rem; display: flex; align-items: center; gap: .5rem; font-size: .72rem; color: var(--muted); opacity: 0; animation: fadeIn 1s 1.2s forwards; }
+  .scroll-line { width: 40px; height: 1px; background: var(--muted); }
+
+  /* ── SECTIONS ── */
+  .section { padding: var(--section-gap) 2.5rem; max-width: 1180px; margin: 0 auto; }
+  .section-label { font-family: 'DM Mono', monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: .8rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; margin-bottom: 1rem; }
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 680px; line-height: 1.7; margin-bottom: 3rem; }
+  .divider { height: 1px; background: var(--border); margin: 0 2.5rem; }
+
+  /* ── CARDS ── */
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem; backdrop-filter: blur(8px); transition: transform .25s, box-shadow .25s; }
+  .card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .card-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem; }
+  .card-body { font-size: .875rem; color: var(--muted); line-height: 1.65; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; }
+
+  /* ── PAIN POINTS ── */
+  .pain-item { display: flex; gap: 1rem; align-items: flex-start; padding: 1.2rem 1.5rem; background: var(--card-bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: .75rem; }
+  .pain-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--accent); min-width: 2rem; }
+  .pain-content h4 { font-size: .9rem; font-weight: 600; margin-bottom: .2rem; }
+  .pain-content p { font-size: .82rem; color: var(--muted); }
+
+  /* ── PROCESS FLOW ── */
+  .flow { display: flex; align-items: stretch; flex-wrap: wrap; gap: 0; }
+  .flow-step { flex: 1; min-width: 140px; background: var(--card-bg); border: 1px solid var(--border); padding: 1.25rem 1rem; position: relative; text-align: center; }
+  .flow-step + .flow-step::before { content:'→'; position:absolute;left:-12px;top:50%;transform:translateY(-50%);font-size:1.1rem;color:var(--muted);z-index:1; }
+  .flow-step .fs-ico { font-size: 1.5rem; margin-bottom: .5rem; }
+  .flow-step .fs-label { font-size: .78rem; font-weight: 600; }
+  .flow-step .fs-sub { font-size: .7rem; color: var(--muted); margin-top: .2rem; }
+  .flow-step.pain { background: rgba(200,75,47,0.06); border-color: rgba(200,75,47,0.25); }
+
+  /* ── SOLUTION OPTIONS ── */
+  .sol-header { display: flex; align-items: flex-start; gap: 1.2rem; margin-bottom: 1.5rem; }
+  .sol-num { font-family: 'Playfair Display', serif; font-size: 3rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .sol-meta { flex: 1; }
+  .sol-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; }
+  .sol-concept { font-size: .85rem; color: var(--muted); margin-top: .2rem; }
+  .sol-badge { display: inline-flex; align-items: center; gap: .3rem; font-size: .7rem; font-weight: 600; padding: .25rem .65rem; border-radius: 999px; margin-top: .5rem; }
+  .badge-fast { background: rgba(34,197,94,.12); color: #15803d; }
+  .badge-med { background: rgba(234,179,8,.12); color: #854d0e; }
+  .badge-complex { background: rgba(239,68,68,.12); color: #991b1b; }
+  .badge-future { background: rgba(37,99,235,.12); color: #1d4ed8; }
+
+  .sol-tabs { display: flex; gap: .35rem; flex-wrap: wrap; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); padding-bottom: .75rem; }
+  .sol-tab { font-size: .78rem; font-weight: 500; color: var(--muted); cursor: pointer; padding: .35rem .8rem; border-radius: 6px; transition: all .2s; border: 1px solid transparent; }
+  .sol-tab.active { color: var(--accent); background: rgba(200,75,47,0.07); border-color: rgba(200,75,47,0.2); }
+  .sol-tab-content { display: none; }
+  .sol-tab-content.active { display: block; animation: fadeIn .3s; }
+
+  /* ── SCORE BARS ── */
+  .score-row { display: flex; align-items: center; gap: 1rem; margin-bottom: .75rem; }
+  .score-label { font-size: .8rem; color: var(--muted); width: 160px; flex-shrink: 0; }
+  .score-bar-wrap { flex: 1; background: var(--col); border-radius: 999px; height: 8px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 999px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+  .score-val { font-family: 'DM Mono', monospace; font-size: .75rem; width: 28px; text-align: right; font-weight: 500; }
+  .bar-high { background: linear-gradient(90deg, #22c55e, #16a34a); }
+  .bar-med { background: linear-gradient(90deg, #eab308, #ca8a04); }
+  .bar-low { background: linear-gradient(90deg, #ef4444, #dc2626); }
+
+  /* ── COMPARISON MATRIX ── */
+  .matrix-wrap { overflow-x: auto; }
+  .matrix { width: 100%; border-collapse: collapse; font-size: .8rem; }
+  .matrix th { background: var(--ink); color: var(--paper); padding: .75rem .9rem; text-align: left; font-weight: 500; white-space: nowrap; }
+  .matrix th:first-child { border-radius: var(--radius) 0 0 0; }
+  .matrix th:last-child { border-radius: 0 var(--radius) 0 0; }
+  .matrix td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .matrix tr:last-child td { border-bottom: none; }
+  .matrix tr:hover td { background: rgba(13,15,20,0.025); }
+  .matrix .opt-name { font-weight: 600; font-size: .82rem; }
+  .heat { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 20px; border-radius: 4px; font-size: .7rem; font-weight: 700; font-family: 'DM Mono', monospace; }
+  .h5 { background: #dcfce7; color: #15803d; }
+  .h4 { background: #bbf7d0; color: #15803d; }
+  .h3 { background: #fef9c3; color: #854d0e; }
+  .h2 { background: #fed7aa; color: #c2410c; }
+  .h1 { background: #fecaca; color: #991b1b; }
+
+  /* ── ROADMAP TIMELINE ── */
+  .roadmap { position: relative; padding-left: 2rem; }
+  .roadmap::before { content:''; position:absolute;left:.75rem;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--accent),var(--accent2)); border-radius:2px; }
+  .phase { position: relative; margin-bottom: 2.5rem; }
+  .phase-dot { position:absolute;left:-1.25rem;top:.15rem;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid var(--paper);box-shadow:0 0 0 3px rgba(200,75,47,0.2); }
+  .phase-label { font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.3rem; }
+  .phase-title { font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;margin-bottom:.4rem; }
+  .phase-desc { font-size:.85rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem; }
+  .phase-items { display:flex;flex-wrap:wrap;gap:.5rem; }
+  .phase-item { font-size:.75rem;background:var(--card-bg);border:1px solid var(--border);padding:.3rem .7rem;border-radius:6px; }
+
+  /* ── EXAMPLES BLOCK ── */
+  .example-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .example-header { background: var(--ink); color: var(--paper); padding: .9rem 1.4rem; display: flex; align-items: center; gap: .75rem; }
+  .example-role { font-family:'Playfair Display',serif;font-size:1rem;font-weight:600; }
+  .example-badge { font-family:'DM Mono',monospace;font-size:.65rem;background:rgba(255,255,255,0.12);padding:.2rem .6rem;border-radius:4px;letter-spacing:.06em; }
+  .example-body { padding: 1.4rem; }
+  .ex-section { margin-bottom: 1.1rem; }
+  .ex-label { font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.4rem; }
+  .ex-input { font-size:.82rem;background:rgba(13,15,20,0.04);border:1px solid var(--border);border-radius:6px;padding:.65rem .85rem;color:var(--ink); }
+  .ex-output { font-size:.82rem;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.2);border-radius:6px;padding:.75rem .85rem;color:var(--ink);line-height:1.6; }
+  .ex-output strong { color: var(--accent2); font-weight:600; }
+
+  /* ── ARCH DIAGRAM ── */
+  .arch { display:flex;flex-direction:column;gap:1.25rem;align-items:stretch; }
+  .arch-row { display:flex;gap:1rem;align-items:center;justify-content:center;flex-wrap:wrap; }
+  .arch-box { background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:.75rem 1.1rem;font-size:.78rem;font-weight:500;text-align:center;min-width:110px; box-shadow:var(--shadow); }
+  .arch-box.primary { background:var(--ink);color:var(--paper);border-color:var(--ink); }
+  .arch-box.accent { background:rgba(200,75,47,0.08);border-color:rgba(200,75,47,0.25);color:var(--accent); }
+  .arch-box.blue { background:rgba(37,99,235,0.07);border-color:rgba(37,99,235,0.2);color:var(--accent2); }
+  .arch-arr { font-size:1.1rem;color:var(--muted); }
+  .arch-label { font-family:'DM Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:center;margin:.25rem 0; }
+
+  /* ── GOVERNANCE ── */
+  .risk-item { display:flex;gap:1rem;align-items:flex-start;padding:1rem 1.25rem;border-radius:8px;border:1px solid var(--border);margin-bottom:.75rem; }
+  .risk-icon { font-size:1.4rem; }
+  .risk-body h4 { font-size:.875rem;font-weight:600;margin-bottom:.2rem; }
+  .risk-body p { font-size:.8rem;color:var(--muted);line-height:1.6; }
+  .risk-level { margin-left:auto;font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;white-space:nowrap;align-self:flex-start; }
+  .rl-high { background:rgba(239,68,68,.12);color:#991b1b; }
+  .rl-med { background:rgba(234,179,8,.12);color:#854d0e; }
+  .rl-low { background:rgba(34,197,94,.12);color:#15803d; }
+
+  /* ── COLLAPSIBLE ── */
+  .collapsible { border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.75rem;overflow:hidden; }
+  .coll-trigger { width:100%;display:flex;align-items:center;justify-content:space-between;padding:1rem 1.4rem;background:var(--card-bg);cursor:pointer;font-size:.9rem;font-weight:600;border:none;text-align:left;transition:background .2s; }
+  .coll-trigger:hover { background:var(--col); }
+  .coll-arrow { transition:transform .3s;font-size:1rem;color:var(--muted); }
+  .coll-trigger.open .coll-arrow { transform:rotate(180deg); }
+  .coll-body { display:none;padding:1.25rem 1.4rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--muted);line-height:1.7; }
+  .coll-body.open { display:block;animation:fadeIn .3s; }
+
+  /* ── RECOMMENDATION ── */
+  .rec-block { background:var(--ink);color:var(--paper);border-radius:var(--radius);padding:2rem 2.4rem;margin-bottom:1.25rem; }
+  .rec-block .rl { font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin-bottom:.4rem; }
+  .rec-block h3 { font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.65rem; }
+  .rec-block p { font-size:.875rem;opacity:.75;line-height:1.7; }
+  .rec-block .rec-tag { display:inline-flex;align-items:center;gap:.3rem;font-size:.72rem;background:rgba(255,255,255,0.1);padding:.25rem .65rem;border-radius:999px;margin-top:1rem;margin-right:.4rem; }
+
+  /* ── INNOVATION ── */
+  .inno-card { padding:1.25rem 1.5rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--card-bg);display:flex;gap:1rem;align-items:flex-start; }
+  .inno-ico { font-size:1.6rem;flex-shrink:0; }
+  .inno-body h4 { font-size:.88rem;font-weight:600;margin-bottom:.3rem; }
+  .inno-body p { font-size:.8rem;color:var(--muted);line-height:1.6; }
+
+  /* ── FOOTER ── */
+  #footer { padding: 3rem 2.5rem; text-align:center;border-top:1px solid var(--border); }
+  #footer p { font-size:.78rem;color:var(--muted); }
+  #footer strong { color:var(--ink); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:none} }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .fade-in { opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s; }
+  .fade-in.visible { opacity:1;transform:none; }
+
+  /* ── MOBILE ── */
+  @media (max-width:768px) {
+    .nav-links { display:none;flex-direction:column;position:absolute;top:60px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--border);padding:1rem; }
+    .nav-links.open { display:flex; }
+    .nav-toggle { display:flex; }
+    .grid-2,.grid-3,.grid-4 { grid-template-columns:1fr; }
+    .flow { flex-direction:column; }
+    .flow-step + .flow-step::before { content:'↓';left:50%;top:-12px;transform:translateX(-50%); }
+    .arch-row { flex-direction:column;align-items:stretch; }
+  }
+
+  /* ── SOLUTION CARD WRAPPING ── */
+  .sol-card { background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:2rem;margin-bottom:2rem;backdrop-filter:blur(8px); }
+
+  /* ── PRO/CON ── */
+  .pro-con { display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
+  .pros, .cons { border-radius:8px;padding:1rem 1.25rem; }
+  .pros { background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2); }
+  .cons { background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2); }
+  .pros h5 { color:#15803d;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem; }
+  .cons h5 { color:#991b1b;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem; }
+  .pros li, .cons li { font-size:.8rem;color:var(--muted);margin-bottom:.3rem;padding-left:.25rem; }
+  .pros ul, .cons ul { padding-left:1rem; }
+
+  /* ── HIGHLIGHT BOX ── */
+  .highlight-box { background:linear-gradient(135deg,rgba(200,75,47,0.07),rgba(37,99,235,0.05));border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;font-size:.875rem;line-height:1.7;margin-bottom:1.25rem; }
+  .highlight-box strong { color:var(--accent); }
+
+  /* ── TAG LIST ── */
+  .tag-list { display:flex;flex-wrap:wrap;gap:.4rem; }
+  .tag { font-size:.72rem;background:var(--col);border-radius:6px;padding:.25rem .6rem;font-weight:500; }
+
+  /* active nav */
+  .nav-links a.active { color:var(--accent);background:rgba(200,75,47,0.07); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand"><span class="dot"></span> AI Objective Strategy</div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero">Overview</a></li>
+    <li><a href="#current-state">Current State</a></li>
+    <li><a href="#solutions">Solutions</a></li>
+    <li><a href="#matrix">Matrix</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#examples">Examples</a></li>
+    <li><a href="#governance">Governance</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#innovation">Innovation</a></li>
+    <li><a href="#recommendation">Recommendation</a></li>
+  </ul>
+  <div class="nav-toggle" id="navToggle"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <p class="hero-kicker">Enterprise AI Strategy · Workday · 2025–2026</p>
+    <h1 class="hero-title">AI-Driven Executive<br><em>Objective Generation</em><br>for Workday</h1>
+    <p class="hero-sub">A comprehensive solution exploration for enabling executives to generate high-quality, strategy-aligned objectives — before Workday's native AI capabilities mature.</p>
+    <div class="hero-pills">
+      <span class="pill"><span class="ico">🎯</span> 6 Solution Pathways</span>
+      <span class="pill"><span class="ico">📊</span> Comparison Matrix</span>
+      <span class="pill"><span class="ico">🏗️</span> Architecture Diagrams</span>
+      <span class="pill"><span class="ico">🗺️</span> Phased Roadmap</span>
+      <span class="pill"><span class="ico">🛡️</span> Governance Framework</span>
+      <span class="pill"><span class="ico">💡</span> Innovation Ideas</span>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">6<span class="unit">+</span></div><div class="stat-label">Solution Options Analyzed</div></div>
+      <div class="stat"><div class="stat-num">10<span class="unit">x</span></div><div class="stat-label">Criteria Evaluated</div></div>
+      <div class="stat"><div class="stat-num">4<span class="unit">ph</span></div><div class="stat-label">Roadmap Phases</div></div>
+      <div class="stat"><div class="stat-num">5<span class="unit">+</span></div><div class="stat-label">Exec Role Examples</div></div>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="scroll-line"></div> Scroll to explore</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXECUTIVE SUMMARY -->
+<section class="section fade-in" id="exec-summary">
+  <div class="section-label">01 · Executive Summary</div>
+  <h2 class="section-title">Why This Matters Now</h2>
+  <p class="section-sub">Organizations relying on Workday for performance management face a strategic gap: the platform's AI capabilities for executive objective generation remain immature, yet the business need for consistent, aligned objectives is urgent.</p>
+
+  <div class="grid-2" style="margin-bottom:1.25rem;">
+    <div class="card">
+      <div class="card-icon">⚠️</div>
+      <div class="card-title">Problem Statement</div>
+      <div class="card-body">Executives across all functions struggle to author well-structured, measurable strategic objectives. Current processes are manual, inconsistent, and poorly aligned to corporate and technology strategy. This creates cascading misalignment across the organization.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏢</div>
+      <div class="card-title">Business Impact</div>
+      <div class="card-body">Poor objective quality directly undermines performance review credibility, executive accountability, and strategic execution. When objectives lack measurability or strategic alignment, the entire goal management cycle loses integrity.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <div class="card-title">Workday Limitation</div>
+      <div class="card-body">Workday's native AI (Workday Illuminate) is not yet mature for executive objective generation. Deep HR process integration, context awareness, and enterprise-grade prompt governance are absent from current product releases.</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🚀</div>
+      <div class="card-title">Strategic Value</div>
+      <div class="card-body">Bridging this gap with interim AI solutions accelerates organizational alignment, reduces HR admin overhead, elevates objective quality organization-wide, and positions the organization ahead of the Workday AI maturity curve.</div>
+    </div>
+  </div>
+
+  <div class="highlight-box">
+    <strong>Recommended Direction:</strong> Implement a two-track approach — <strong>immediately deploy a curated prompt library</strong> (low cost, days to go-live) while simultaneously <strong>building a lightweight guided web portal</strong> (medium effort, high UX quality). This provides immediate value and a stepping stone to a future AI Copilot integration and eventual Workday native AI.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CURRENT STATE -->
+<section class="section fade-in" id="current-state">
+  <div class="section-label">02 · Current State Analysis</div>
+  <h2 class="section-title">The Manual Objective Journey</h2>
+  <p class="section-sub">Today's executive objective creation process is fragmented, inconsistent, and entirely dependent on individual capability — with no AI assistance or quality guardrails.</p>
+
+  <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;margin-top:2rem;">Current Process Flow</h3>
+  <div class="flow" style="margin-bottom:2.5rem;">
+    <div class="flow-step pain">
+      <div class="fs-ico">📅</div>
+      <div class="fs-label">Annual Planning Kick-off</div>
+      <div class="fs-sub">Corporate strategy shared</div>
+    </div>
+    <div class="flow-step pain">
+      <div class="fs-ico">😕</div>
+      <div class="fs-label">Executive Self-Drafts</div>
+      <div class="fs-sub">No guidance, no templates</div>
+    </div>
+    <div class="flow-step pain">
+      <div class="fs-ico">🔄</div>
+      <div class="fs-label">Multiple Revisions</div>
+      <div class="fs-sub">HR/manager feedback loops</div>
+    </div>
+    <div class="flow-step pain">
+      <div class="fs-ico">⌨️</div>
+      <div class="fs-label">Workday Manual Entry</div>
+      <div class="fs-sub">Copy/paste, error-prone</div>
+    </div>
+    <div class="flow-step pain">
+      <div class="fs-ico">📊</div>
+      <div class="fs-label">Mid-Year Review</div>
+      <div class="fs-sub">Misalignment discovered late</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;">Core Pain Points</h3>
+  <div class="pain-item"><div class="pain-num">01</div><div class="pain-content"><h4>Inconsistent Objective Quality</h4><p>No two executives write objectives to the same standard. Some are vague aspirations; others overly tactical. SMART criteria rarely applied consistently.</p></div></div>
+  <div class="pain-item"><div class="pain-num">02</div><div class="pain-content"><h4>Weak Strategic Alignment</h4><p>Executives often draft objectives in isolation from corporate and technology strategy. Cascade from board-level intent to exec-level goal is rarely validated.</p></div></div>
+  <div class="pain-item"><div class="pain-num">03</div><div class="pain-content"><h4>Manual, Time-Consuming Process</h4><p>An average executive spends 4–8 hours on objective drafting each cycle, with additional HR and HRBP review cycles adding another 2–4 hours per executive.</p></div></div>
+  <div class="pain-item"><div class="pain-num">04</div><div class="pain-content"><h4>Workday AI Immaturity</h4><p>Workday Illuminate does not yet provide contextual, role-aware objective generation. Current AI features are limited to search and basic data insights.</p></div></div>
+  <div class="pain-item"><div class="pain-num">05</div><div class="pain-content"><h4>Organizational Risk</h4><p>Poor objective quality cascades downward: if executive objectives are weak, departmental and team objectives built on them inherit that weakness, undermining performance culture.</p></div></div>
+  <div class="pain-item"><div class="pain-num">06</div><div class="pain-content"><h4>Vendor Roadmap Dependency</h4><p>Waiting for Workday to deliver AI capabilities creates an indefinite gap. Workday's enterprise product cycle means features announced today may be 18–36 months from GA availability.</p></div></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SOLUTIONS -->
+<section class="section fade-in" id="solutions">
+  <div class="section-label">03 · Solution Options</div>
+  <h2 class="section-title">Six Strategic Pathways</h2>
+  <p class="section-sub">Each option is evaluated across architecture, user experience, risk, delivery timeline, and strategic fit. Click the tabs within each option to explore details.</p>
+
+  <!-- OPTION 1 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">01</div>
+      <div class="sol-meta">
+        <div class="sol-title">Curated Prompt Library</div>
+        <div class="sol-concept">Structured, governed AI prompts embedded with best practices — executives paste context, receive curated objectives</div>
+        <span class="sol-badge badge-fast">⚡ Fastest to Implement</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s1','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s1','workflow')">Workflow</div>
+      <div class="sol-tab" onclick="showTab(this,'s1','proscons')">Pros & Cons</div>
+      <div class="sol-tab" onclick="showTab(this,'s1','scores')">Scores</div>
+      <div class="sol-tab" onclick="showTab(this,'s1','governance')">Governance</div>
+    </div>
+    <div id="s1-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">A curated library of structured, tested prompts — hosted in SharePoint, Confluence, or a simple internal site — that executives use with any LLM (ChatGPT, Copilot, Claude). Each prompt embeds SMART objective criteria, role-specific context placeholders, and alignment hooks to corporate strategy pillars.</p>
+      <div class="grid-3">
+        <div class="card"><div class="card-icon">📝</div><div class="card-title">Prompt Templates</div><div class="card-body">Role-specific templates (CIO, VP Eng, CISO, etc.) with fill-in-the-blank strategy context slots. Versioned and governed by HR.</div></div>
+        <div class="card"><div class="card-icon">🎯</div><div class="card-title">Embedded Best Practices</div><div class="card-body">Each prompt encodes SMART criteria, Balanced Scorecard alignment, OKR formatting, and corporate strategy language.</div></div>
+        <div class="card"><div class="card-icon">📚</div><div class="card-title">Governance Model</div><div class="card-body">HR/Strategy team owns and versions prompts. Quarterly review cycle. Change log maintained. Access controlled by role group.</div></div>
+      </div>
+      <div style="margin-top:1.25rem;background:rgba(13,15,20,0.03);border-radius:8px;padding:1rem 1.25rem;border:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem;">Example Prompt Template Structure</div>
+        <pre style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink);white-space:pre-wrap;line-height:1.6;">You are an executive performance management expert. Generate 3–5 executive-level objectives for a [ROLE_TITLE].
+
+Context provided:
+- Corporate Strategy: [PASTE CORPORATE STRATEGY PILLARS]
+- Technology Strategy: [PASTE TECH STRATEGY]
+- Organizational Goals: [PASTE ORG GOALS]  
+- My Key Accountabilities: [PASTE YOUR ROLE RESPONSIBILITIES]
+
+Requirements:
+- Each objective must be SMART (Specific, Measurable, Achievable, Relevant, Time-bound)
+- Align to at least one corporate strategy pillar
+- Include a success metric or KPI
+- Use active, outcome-oriented language
+- Appropriate for VP/Director/C-Suite level scope
+
+Format each objective as:
+OBJECTIVE: [one sentence]
+RATIONALE: [strategic alignment reason]
+SUCCESS METRIC: [measurable outcome]</pre>
+      </div>
+    </div>
+    <div id="s1-workflow" class="sol-tab-content">
+      <div class="flow" style="margin-bottom:1.5rem;">
+        <div class="flow-step"><div class="fs-ico">📖</div><div class="fs-label">Access Library</div><div class="fs-sub">SharePoint / Intranet</div></div>
+        <div class="flow-step"><div class="fs-ico">🎭</div><div class="fs-label">Select Role Template</div><div class="fs-sub">CIO, VP, Director…</div></div>
+        <div class="flow-step"><div class="fs-ico">📋</div><div class="fs-label">Fill Context Slots</div><div class="fs-sub">Strategy, goals, role</div></div>
+        <div class="flow-step"><div class="fs-ico">🤖</div><div class="fs-label">Paste into LLM</div><div class="fs-sub">Copilot / ChatGPT</div></div>
+        <div class="flow-step"><div class="fs-ico">✅</div><div class="fs-label">Review & Refine</div><div class="fs-sub">Copy to Workday</div></div>
+      </div>
+      <div class="highlight-box">
+        <strong>Why this is fastest:</strong> Zero infrastructure to build. No APIs, no authentication, no integration. Ready to deploy in <strong>days</strong> using existing Microsoft 365 or intranet infrastructure. Immediate executive value with <strong>~80% of the benefit</strong> of more complex solutions.
+      </div>
+      <div class="collapsible"><button class="coll-trigger" onclick="toggleColl(this)">Versioning & Quality Control Considerations <span class="coll-arrow">▾</span></button><div class="coll-body">
+        <p>Maintain prompt versions in SharePoint with major/minor versioning (e.g., v1.2). Each version should include: change rationale, tested output samples, approver sign-off from HR Strategy. Deprecation notices sent via email digest 30 days before prompt retirement. Annual review cycle tied to corporate strategy refresh. Consider A/B testing prompt variations to optimize objective quality scores.</p>
+      </div></div>
+      <div class="collapsible"><button class="coll-trigger" onclick="toggleColl(this)">Prompt Governance Model <span class="coll-arrow">▾</span></button><div class="coll-body">
+        <p>Establish a Prompt Governance Council (HR Strategy + L&D + 1–2 exec sponsors). Prompts must pass a quality check: 3 test runs producing SMART-compliant objectives before publishing. Executives rate prompt quality after each use (1–5 stars) to drive continuous improvement. Flag prompts with <3.5 average for rapid review. Governance charter should define: ownership, review cadence, escalation paths for misuse, and LLM platform approved for use.</p>
+      </div></div>
+    </div>
+    <div id="s1-proscons" class="sol-tab-content">
+      <div class="pro-con">
+        <div class="pros"><h5>✓ Pros</h5><ul>
+          <li>Days to deploy, not months</li>
+          <li>Near-zero cost (uses existing LLM licenses)</li>
+          <li>No technical infrastructure needed</li>
+          <li>High executive control and flexibility</li>
+          <li>Easy to iterate and improve prompts</li>
+          <li>Works with any LLM (future-proof)</li>
+          <li>HR retains governance ownership</li>
+        </ul></div>
+        <div class="cons"><h5>✗ Cons</h5><ul>
+          <li>Manual copy-paste UX friction</li>
+          <li>No Workday integration</li>
+          <li>No automated context pulling</li>
+          <li>Dependent on executive compliance</li>
+          <li>Hard to track usage/adoption</li>
+          <li>Quality varies by executive effort</li>
+          <li>Prompt library can grow unwieldy</li>
+        </ul></div>
+      </div>
+      <div style="margin-top:1.25rem;">
+        <div style="font-family:'DM Mono',monospace;font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Estimated Timeline</div>
+        <div class="tag-list">
+          <span class="tag">🗓️ Week 1: Prompt drafting & testing</span>
+          <span class="tag">🗓️ Week 2: HR review & governance setup</span>
+          <span class="tag">🗓️ Week 3: SharePoint publishing & comms</span>
+          <span class="tag">🗓️ Week 4: Executive training & go-live</span>
+        </div>
+      </div>
+    </div>
+    <div id="s1-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:95%"></div></div><div class="score-val">9.5</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:90%"></div></div><div class="score-val">9.0</div></div>
+      <div class="score-row"><div class="score-label">Technical Complexity</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:85%"></div></div><div class="score-val">Low</div></div>
+      <div class="score-row"><div class="score-label">User Friendliness</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:55%"></div></div><div class="score-val">5.5</div></div>
+      <div class="score-row"><div class="score-label">AI Sophistication</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:50%"></div></div><div class="score-val">5.0</div></div>
+      <div class="score-row"><div class="score-label">Governance</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:70%"></div></div><div class="score-val">7.0</div></div>
+      <div class="score-row"><div class="score-label">Scalability</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:60%"></div></div><div class="score-val">6.0</div></div>
+      <div class="score-row"><div class="score-label">Executive Adoption</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:65%"></div></div><div class="score-val">6.5</div></div>
+    </div>
+    <div id="s1-governance" class="sol-tab-content">
+      <div class="grid-2">
+        <div class="card"><div class="card-icon">🔐</div><div class="card-title">Data Privacy</div><div class="card-body">Executives must not paste confidential M&A, HR, or financial data into public LLMs. Governance policy must explicitly define acceptable context data. Consider approved enterprise LLM tenants (Azure OpenAI, Microsoft 365 Copilot) where data stays within org boundary.</div></div>
+        <div class="card"><div class="card-icon">📋</div><div class="card-title">Accountability</div><div class="card-body">All AI-generated objectives must be reviewed, refined, and owned by the executive before entry into Workday. Clear policy: "AI suggests, human decides." Audit trail maintained via Workday's standard objective history.</div></div>
+        <div class="card"><div class="card-icon">🧪</div><div class="card-title">Quality Control</div><div class="card-body">HR Strategy team reviews sample output quarterly. Flagging mechanism for executives to report low-quality outputs. Prompt improvement backlog maintained and prioritized.</div></div>
+        <div class="card"><div class="card-icon">⚖️</div><div class="card-title">Compliance</div><div class="card-body">Ensure prompts and LLM usage comply with GDPR/CCPA data handling. Review vendor terms for AI output ownership. Document AI use in relevant HR policy frameworks.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">02</div>
+      <div class="sol-meta">
+        <div class="sol-title">Custom AI Copilot / Chatbot</div>
+        <div class="sol-concept">Enterprise-grade conversational AI assistant — dynamically generates objectives with automated context, RAG, and optional Workday API integration</div>
+        <span class="sol-badge badge-med">⚙️ Medium–High Complexity</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s2','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s2','arch')">Architecture</div>
+      <div class="sol-tab" onclick="showTab(this,'s2','proscons')">Pros & Cons</div>
+      <div class="sol-tab" onclick="showTab(this,'s2','scores')">Scores</div>
+    </div>
+    <div id="s2-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">A purpose-built enterprise AI assistant — built on Azure OpenAI + Microsoft Copilot Studio, or a custom web application — that guides executives through a conversational flow, automatically retrieves their role profile, injects organizational strategy context via RAG, and generates polished objectives.</p>
+      <div class="grid-2">
+        <div class="card"><div class="card-icon">💬</div><div class="card-title">Conversational UX</div><div class="card-body">Natural language chat interface. Executive says "Help me create my Q1 objectives" and the assistant guides them through a structured conversation, asking for missing context dynamically.</div></div>
+        <div class="card"><div class="card-icon">🔗</div><div class="card-title">Context Automation</div><div class="card-body">Pulls executive role, department, and reporting structure from Workday via REST API (or HR data feed). Injects corporate strategy documents via RAG — no manual copy-paste required.</div></div>
+        <div class="card"><div class="card-icon">📚</div><div class="card-title">RAG Knowledge Base</div><div class="card-body">Strategy documents, previous year's objectives, industry benchmarks, and corporate values embedded in a vector database (Azure AI Search, Pinecone). Always-current context injection.</div></div>
+        <div class="card"><div class="card-icon">🏢</div><div class="card-title">Enterprise Security</div><div class="card-body">SSO via Azure AD / Entra ID. All data stays within tenant. Role-based access — executives only see their own context. Audit logging of all AI interactions for compliance.</div></div>
+      </div>
+    </div>
+    <div id="s2-arch" class="sol-tab-content">
+      <h4 style="font-size:.85rem;font-weight:600;margin-bottom:1rem;color:var(--muted);">HIGH-LEVEL SYSTEM ARCHITECTURE</h4>
+      <div class="arch">
+        <div class="arch-row">
+          <div class="arch-box primary">Executive (Browser/Teams)</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓ SSO / Azure AD Auth ↓</div>
+        <div class="arch-row">
+          <div class="arch-box accent">AI Copilot Frontend<br><small>React / Copilot Studio</small></div>
+          <div class="arch-arr">↔</div>
+          <div class="arch-box blue">API Gateway<br><small>Azure APIM</small></div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↕ Orchestration Layer ↕</div>
+        <div class="arch-row">
+          <div class="arch-box">Azure OpenAI<br><small>GPT-4o</small></div>
+          <div class="arch-box">RAG Engine<br><small>Azure AI Search</small></div>
+          <div class="arch-box">Workday API<br><small>REST / SOAP</small></div>
+          <div class="arch-box">Strategy Docs<br><small>SharePoint / Blob</small></div>
+        </div>
+        <div class="arch-label">↓ Output ↓</div>
+        <div class="arch-row">
+          <div class="arch-box accent">Generated Objectives + Push to Workday (optional)</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:1.5rem;">
+        <strong>Workday API Consideration:</strong> Workday's SOAP/REST APIs can expose worker profiles, job classifications, and goal objects. However, OAuth 2.0 setup and ISU (Integration System User) configuration require Workday admin involvement and ~4–6 weeks of integration effort. Initial MVP can work without Workday API — use HR data exports instead.
+      </div>
+    </div>
+    <div id="s2-proscons" class="sol-tab-content">
+      <div class="pro-con">
+        <div class="pros"><h5>✓ Pros</h5><ul>
+          <li>Superior user experience — conversational, guided</li>
+          <li>Automated context retrieval — no manual copy-paste</li>
+          <li>RAG enables always-current strategy alignment</li>
+          <li>Scales to entire executive population</li>
+          <li>Can push objectives directly to Workday</li>
+          <li>Full audit trail and analytics</li>
+          <li>Extensible to other HR processes</li>
+        </ul></div>
+        <div class="cons"><h5>✗ Cons</h5><ul>
+          <li>3–6 month build timeline</li>
+          <li>Significant infrastructure cost</li>
+          <li>Requires Azure/cloud engineering expertise</li>
+          <li>Workday API integration complexity</li>
+          <li>Ongoing model & RAG maintenance</li>
+          <li>Change management for adoption</li>
+          <li>Security review and pen-testing required</li>
+        </ul></div>
+      </div>
+      <div style="margin-top:1.25rem;">
+        <div class="tag-list">
+          <span class="tag">🗓️ Month 1–2: Architecture & Azure setup</span>
+          <span class="tag">🗓️ Month 2–3: RAG pipeline & strategy ingestion</span>
+          <span class="tag">🗓️ Month 3–4: Frontend & UX build</span>
+          <span class="tag">🗓️ Month 4–5: Workday API integration</span>
+          <span class="tag">🗓️ Month 5–6: Testing, security review, pilot</span>
+        </div>
+      </div>
+    </div>
+    <div id="s2-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-low" style="width:30%"></div></div><div class="score-val">3.0</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-low" style="width:35%"></div></div><div class="score-val">3.5</div></div>
+      <div class="score-row"><div class="score-label">User Friendliness</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:92%"></div></div><div class="score-val">9.2</div></div>
+      <div class="score-row"><div class="score-label">AI Sophistication</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:95%"></div></div><div class="score-val">9.5</div></div>
+      <div class="score-row"><div class="score-label">Scalability</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:90%"></div></div><div class="score-val">9.0</div></div>
+      <div class="score-row"><div class="score-label">Integration Depth</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:88%"></div></div><div class="score-val">8.8</div></div>
+      <div class="score-row"><div class="score-label">Long-term Viability</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:85%"></div></div><div class="score-val">8.5</div></div>
+      <div class="score-row"><div class="score-label">Executive Adoption</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:82%"></div></div><div class="score-val">8.2</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">03</div>
+      <div class="sol-meta">
+        <div class="sol-title">AI Skills / Knowledge Files Approach</div>
+        <div class="sol-concept">Reusable AI instruction files and organizational knowledge embedded in Microsoft Copilot or similar platforms</div>
+        <span class="sol-badge badge-med">🧠 Moderate Complexity</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s3','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s3','structure')">Skill Structure</div>
+      <div class="sol-tab" onclick="showTab(this,'s3','proscons')">Pros & Cons</div>
+      <div class="sol-tab" onclick="showTab(this,'s3','scores')">Scores</div>
+    </div>
+    <div id="s3-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">Leverage Microsoft 365 Copilot's "Copilot Pages," custom agents, or declarative agents — combined with organizational knowledge files — to create reusable AI skills that executives invoke without needing to craft prompts themselves.</p>
+      <div class="grid-3">
+        <div class="card"><div class="card-icon">📦</div><div class="card-title">Packaged Instructions</div><div class="card-body">Each "skill" is a pre-configured instruction set: objective writing rules, alignment framework, quality checklist — packaged once, used by all executives.</div></div>
+        <div class="card"><div class="card-icon">📄</div><div class="card-title">Knowledge Files</div><div class="card-body">Corporate strategy PDFs, tech roadmaps, OKR frameworks uploaded as grounding documents that the Copilot agent references during generation.</div></div>
+        <div class="card"><div class="card-icon">🔌</div><div class="card-title">M365 Native</div><div class="card-body">Works within existing Microsoft 365 Copilot license for organizations already invested in M365 E5. No new platform to introduce.</div></div>
+      </div>
+      <div class="collapsible" style="margin-top:1.25rem;"><button class="coll-trigger" onclick="toggleColl(this)">Microsoft Copilot Feasibility Assessment <span class="coll-arrow">▾</span></button><div class="coll-body">
+        <p>Microsoft 365 Copilot's declarative agent capability (GA since late 2024) allows organizations to create custom agents with: pre-configured system instructions, grounding documents (SharePoint files, uploaded PDFs), and plugin actions. This is a viable lightweight alternative to full custom builds. Key limitation: Copilot agents cannot natively authenticate to Workday APIs without Power Automate or Azure Logic App middleware. Executive interaction is through Teams or Copilot chat interface — familiar but not purpose-built. Expect 4–8 weeks to configure, test, and deploy to executive group.</p>
+      </div></div>
+    </div>
+    <div id="s3-structure" class="sol-tab-content">
+      <div style="background:rgba(13,15,20,0.03);border-radius:8px;padding:1.25rem;border:1px solid var(--border);">
+        <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:.75rem;">Example Copilot Agent / Skill Structure</div>
+        <pre style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--ink);white-space:pre-wrap;line-height:1.7;">AGENT NAME: Executive Objective Generator v1.0
+
+SYSTEM INSTRUCTIONS:
+You are an enterprise HR strategy assistant specializing in 
+executive performance objective creation.
+
+Your role:
+- Generate 3–5 SMART executive objectives
+- Align to corporate strategy (see knowledge files)
+- Adapt tone and scope to executive seniority level
+- Always include: objective text, rationale, success metric
+
+KNOWLEDGE FILES:
+- FY25_Corporate_Strategy.pdf
+- Technology_Roadmap_2025.pdf  
+- Executive_Objective_Examples.docx
+- SMART_Framework_Guide.pdf
+
+BEHAVIORS:
+- Ask for role title if not provided
+- Ask for top 2 priorities if not mentioned
+- Never generate objectives without strategy context
+- Flag if user tries to generate objectives for others
+
+GUARDRAILS:
+- Do not reference confidential M&A activity
+- Do not generate objectives for other executives
+- Always recommend human review before Workday entry</pre>
+      </div>
+    </div>
+    <div id="s3-proscons" class="sol-tab-content">
+      <div class="pro-con">
+        <div class="pros"><h5>✓ Pros</h5><ul>
+          <li>Leverages existing M365 Copilot investment</li>
+          <li>No new platform to procure or manage</li>
+          <li>Familiar Teams/Copilot interface for executives</li>
+          <li>Strategy docs grounded in SharePoint</li>
+          <li>4–8 week deployment timeline</li>
+          <li>Centrally managed and versioned</li>
+        </ul></div>
+        <div class="cons"><h5>✗ Cons</h5><ul>
+          <li>Requires M365 Copilot license (~$30/user/mo)</li>
+          <li>Limited Workday integration out-of-box</li>
+          <li>Microsoft product evolution creates dependency</li>
+          <li>Copilot quality variable vs purpose-built LLM</li>
+          <li>Non-M365 shops have no equivalent path</li>
+          <li>Executive experience less polished than custom build</li>
+        </ul></div>
+      </div>
+    </div>
+    <div id="s3-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:70%"></div></div><div class="score-val">7.0</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:60%"></div></div><div class="score-val">6.0</div></div>
+      <div class="score-row"><div class="score-label">User Friendliness</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:72%"></div></div><div class="score-val">7.2</div></div>
+      <div class="score-row"><div class="score-label">AI Sophistication</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:65%"></div></div><div class="score-val">6.5</div></div>
+      <div class="score-row"><div class="score-label">Long-term Viability</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:60%"></div></div><div class="score-val">6.0</div></div>
+      <div class="score-row"><div class="score-label">Executive Adoption</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:70%"></div></div><div class="score-val">7.0</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION 4 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">04</div>
+      <div class="sol-meta">
+        <div class="sol-title">Human + AI Assisted Review Workflow</div>
+        <div class="sol-concept">AI drafts objectives — HR Strategy or PMO team reviews, refines, and approves before executive submission</div>
+        <span class="sol-badge badge-med">🔍 High Governance</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s4','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s4','workflow')">Workflow</div>
+      <div class="sol-tab" onclick="showTab(this,'s4','proscons')">Pros & Cons</div>
+      <div class="sol-tab" onclick="showTab(this,'s4','scores')">Scores</div>
+    </div>
+    <div id="s4-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">The highest-governance option: AI generates first-draft objectives, but an HR Strategy team or PMO reviews, scores, and refines each draft before returning to the executive. Introduces human quality assurance as a formal step in the process.</p>
+      <div class="grid-2">
+        <div class="card"><div class="card-icon">🤝</div><div class="card-title">Human-in-the-Loop</div><div class="card-body">Every AI-generated objective is reviewed by a skilled HR strategist before reaching the executive. Halluciations, misalignments, and quality issues caught before submission.</div></div>
+        <div class="card"><div class="card-icon">📊</div><div class="card-title">Quality Scoring</div><div class="card-body">HR team applies a scoring rubric: SMART compliance, strategic alignment, measurability, language quality. Only objectives scoring 4+/5 returned to executive.</div></div>
+        <div class="card"><div class="card-icon">🛡️</div><div class="card-title">AI Risk Mitigation</div><div class="card-body">Dramatically reduces hallucination and bias risk. Suitable for organizations with low AI maturity or high sensitivity to AI quality failure.</div></div>
+        <div class="card"><div class="card-icon">📈</div><div class="card-title">Quality Baseline Building</div><div class="card-body">Over time, reviewed objectives become a high-quality training corpus. Patterns improve prompt quality and eventually reduce need for manual review.</div></div>
+      </div>
+    </div>
+    <div id="s4-workflow" class="sol-tab-content">
+      <div class="flow">
+        <div class="flow-step"><div class="fs-ico">📝</div><div class="fs-label">Exec Submits Context</div><div class="fs-sub">Form or email</div></div>
+        <div class="flow-step"><div class="fs-ico">🤖</div><div class="fs-label">AI Generates Draft</div><div class="fs-sub">Prompt library / Copilot</div></div>
+        <div class="flow-step"><div class="fs-ico">👩‍💼</div><div class="fs-label">HR Reviews</div><div class="fs-sub">Quality score & refine</div></div>
+        <div class="flow-step"><div class="fs-ico">✅</div><div class="fs-label">Approved Draft Returned</div><div class="fs-sub">To executive for final review</div></div>
+        <div class="flow-step"><div class="fs-ico">📤</div><div class="fs-label">Exec Enters in Workday</div><div class="fs-sub">Final ownership</div></div>
+      </div>
+      <div class="highlight-box" style="margin-top:1.5rem;">
+        <strong>Best for:</strong> Organizations with risk-averse cultures, high AI skepticism at board level, regulated industries (financial services, healthcare), or first-year AI adoption cycles where trust must be built incrementally.
+      </div>
+    </div>
+    <div id="s4-proscons" class="sol-tab-content">
+      <div class="pro-con">
+        <div class="pros"><h5>✓ Pros</h5><ul>
+          <li>Highest quality assurance of any option</li>
+          <li>Human accountability retained</li>
+          <li>Builds trust in AI over time</li>
+          <li>Reduces hallucination risk to near-zero</li>
+          <li>HR gains strategic insight into exec priorities</li>
+          <li>Low technical complexity</li>
+        </ul></div>
+        <div class="cons"><h5>✗ Cons</h5><ul>
+          <li>Slowest delivery of objectives to executives</li>
+          <li>HR team resource burden significant</li>
+          <li>Doesn't scale without more HR staff</li>
+          <li>Executives may bypass process if too slow</li>
+          <li>Not sustainable as executive population grows</li>
+        </ul></div>
+      </div>
+    </div>
+    <div id="s4-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:75%"></div></div><div class="score-val">7.5</div></div>
+      <div class="score-row"><div class="score-label">Governance Quality</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:98%"></div></div><div class="score-val">9.8</div></div>
+      <div class="score-row"><div class="score-label">AI Risk Mitigation</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:95%"></div></div><div class="score-val">9.5</div></div>
+      <div class="score-row"><div class="score-label">Scalability</div><div class="score-bar-wrap"><div class="score-bar bar-low" style="width:25%"></div></div><div class="score-val">2.5</div></div>
+      <div class="score-row"><div class="score-label">Exec Adoption Likelihood</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:55%"></div></div><div class="score-val">5.5</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:50%"></div></div><div class="score-val">5.0</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION 5 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">05</div>
+      <div class="sol-meta">
+        <div class="sol-title">Lightweight Internal Web Portal</div>
+        <div class="sol-concept">Guided web interface — executives answer structured questions, AI generates objectives behind the scenes — the strategic middle ground</div>
+        <span class="sol-badge badge-med">⭐ Recommended Middle Ground</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s5','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s5','ux')">UX Flow</div>
+      <div class="sol-tab" onclick="showTab(this,'s5','arch')">Architecture</div>
+      <div class="sol-tab" onclick="showTab(this,'s5','proscons')">Pros & Cons</div>
+      <div class="sol-tab" onclick="showTab(this,'s5','scores')">Scores</div>
+    </div>
+    <div id="s5-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">A purpose-built internal web application that presents executives with a clean, guided form experience. Executives select their role, answer 5–8 targeted questions about their priorities and strategy context, and the portal orchestrates an LLM call to generate polished, role-appropriate objectives — all without executives ever seeing a prompt.</p>
+      <div class="grid-3">
+        <div class="card"><div class="card-icon">🖥️</div><div class="card-title">Guided Form UX</div><div class="card-body">Executive-friendly, step-by-step interface. No AI literacy required. Dropdowns for role, strategy pillar selection. Free-text for nuances. Progress indicator.</div></div>
+        <div class="card"><div class="card-icon">⚡</div><div class="card-title">Invisible AI Orchestration</div><div class="card-body">Form inputs are programmatically assembled into optimized prompts. Executive sees only the clean output. Prompt engineering hidden from user.</div></div>
+        <div class="card"><div class="card-icon">🔗</div><div class="card-title">Integration Ready</div><div class="card-body">Can integrate Workday SAML SSO for authentication. Future: push objectives directly to Workday via API. Near-term: one-click copy to clipboard.</div></div>
+      </div>
+      <div class="highlight-box">
+        <strong>Why this is the strategic middle ground:</strong> Deployable in <strong>6–10 weeks</strong> with moderate engineering investment. Dramatically superior UX vs. manual prompting. Can evolve incrementally — start with a form + clipboard output, then add Workday API write-back, then add RAG, then add conversation — becoming more sophisticated without a full rebuild.
+      </div>
+    </div>
+    <div id="s5-ux" class="sol-tab-content">
+      <div style="background:var(--ink);border-radius:12px;padding:2rem;color:var(--paper);">
+        <div style="font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;opacity:.4;margin-bottom:1rem;">Executive Objective Generator — Portal UX Flow</div>
+        <div style="display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+          <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.08);border-radius:8px;padding:.75rem;text-align:center;">
+            <div style="font-size:.7rem;opacity:.5;margin-bottom:.3rem;">STEP 1</div>
+            <div style="font-size:.82rem;font-weight:500;">Role Selection</div>
+            <div style="font-size:.7rem;opacity:.4;margin-top:.2rem;">CIO / VP / Director</div>
+          </div>
+          <div style="opacity:.3;">→</div>
+          <div style="flex:1;min-width:100px;background:rgba(200,75,47,0.2);border-radius:8px;padding:.75rem;text-align:center;">
+            <div style="font-size:.7rem;opacity:.5;margin-bottom:.3rem;">STEP 2</div>
+            <div style="font-size:.82rem;font-weight:500;">Strategy Context</div>
+            <div style="font-size:.7rem;opacity:.4;margin-top:.2rem;">Select pillars</div>
+          </div>
+          <div style="opacity:.3;">→</div>
+          <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.08);border-radius:8px;padding:.75rem;text-align:center;">
+            <div style="font-size:.7rem;opacity:.5;margin-bottom:.3rem;">STEP 3</div>
+            <div style="font-size:.82rem;font-weight:500;">Key Priorities</div>
+            <div style="font-size:.7rem;opacity:.4;margin-top:.2rem;">Top 3 focus areas</div>
+          </div>
+          <div style="opacity:.3;">→</div>
+          <div style="flex:1;min-width:100px;background:rgba(255,255,255,0.08);border-radius:8px;padding:.75rem;text-align:center;">
+            <div style="font-size:.7rem;opacity:.5;margin-bottom:.3rem;">STEP 4</div>
+            <div style="font-size:.82rem;font-weight:500;">Generate</div>
+            <div style="font-size:.7rem;opacity:.4;margin-top:.2rem;">AI runs in background</div>
+          </div>
+          <div style="opacity:.3;">→</div>
+          <div style="flex:1;min-width:100px;background:rgba(37,99,235,0.25);border-radius:8px;padding:.75rem;text-align:center;">
+            <div style="font-size:.7rem;opacity:.5;margin-bottom:.3rem;">STEP 5</div>
+            <div style="font-size:.82rem;font-weight:500;">Review & Copy</div>
+            <div style="font-size:.7rem;opacity:.4;margin-top:.2rem;">Paste to Workday</div>
+          </div>
+        </div>
+        <div style="font-size:.78rem;opacity:.5;text-align:center;">Total executive time: ~8 minutes · AI generation: ~15 seconds</div>
+      </div>
+    </div>
+    <div id="s5-arch" class="sol-tab-content">
+      <div class="arch">
+        <div class="arch-row">
+          <div class="arch-box primary">Executive Browser (SSO via Azure AD)</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓</div>
+        <div class="arch-row">
+          <div class="arch-box accent">React Web App (Objective Portal)</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓ HTTPS POST ↓</div>
+        <div class="arch-row">
+          <div class="arch-box blue">Node.js / Python API Backend</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↕</div>
+        <div class="arch-row">
+          <div class="arch-box">Azure OpenAI / Claude API</div>
+          <div class="arch-box">Strategy Docs (SharePoint)</div>
+          <div class="arch-box">HR Data Feed (Workday export)</div>
+        </div>
+        <div class="arch-label">↓ Response ↓</div>
+        <div class="arch-row">
+          <div class="arch-box accent">Formatted Objectives → Copy to Clipboard → Paste to Workday</div>
+        </div>
+      </div>
+    </div>
+    <div id="s5-proscons" class="sol-tab-content">
+      <div class="pro-con">
+        <div class="pros"><h5>✓ Pros</h5><ul>
+          <li>Superior UX without full chatbot complexity</li>
+          <li>6–10 week delivery timeline</li>
+          <li>Executive-friendly — no AI literacy needed</li>
+          <li>Incrementally extensible</li>
+          <li>Controllable prompt engineering</li>
+          <li>Analytics on usage and adoption</li>
+          <li>SSO — no new credentials</li>
+          <li>Lower cost than full Copilot build</li>
+        </ul></div>
+        <div class="cons"><h5>✗ Cons</h5><ul>
+          <li>Requires engineering team (FE + BE)</li>
+          <li>Hosting and infrastructure cost</li>
+          <li>Security review required</li>
+          <li>No native Workday write-back in MVP</li>
+          <li>Maintenance of web application ongoing</li>
+          <li>Adoption requires exec change management</li>
+        </ul></div>
+      </div>
+    </div>
+    <div id="s5-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:65%"></div></div><div class="score-val">6.5</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-med" style="width:62%"></div></div><div class="score-val">6.2</div></div>
+      <div class="score-row"><div class="score-label">User Friendliness</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:85%"></div></div><div class="score-val">8.5</div></div>
+      <div class="score-row"><div class="score-label">AI Sophistication</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:75%"></div></div><div class="score-val">7.5</div></div>
+      <div class="score-row"><div class="score-label">Scalability</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:80%"></div></div><div class="score-val">8.0</div></div>
+      <div class="score-row"><div class="score-label">Long-term Viability</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:82%"></div></div><div class="score-val">8.2</div></div>
+      <div class="score-row"><div class="score-label">Executive Adoption</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:83%"></div></div><div class="score-val">8.3</div></div>
+    </div>
+  </div>
+
+  <!-- OPTION 6 -->
+  <div class="sol-card">
+    <div class="sol-header">
+      <div class="sol-num">06</div>
+      <div class="sol-meta">
+        <div class="sol-title">Future Workday Native AI Strategy</div>
+        <div class="sol-concept">Strategic planning for Workday AI maturity — with intelligent transition from interim solutions to native platform integration</div>
+        <span class="sol-badge badge-future">🔭 Long-term Vision</span>
+      </div>
+    </div>
+    <div class="sol-tabs">
+      <div class="sol-tab active" onclick="showTab(this,'s6','overview')">Overview</div>
+      <div class="sol-tab" onclick="showTab(this,'s6','risks')">Vendor Risks</div>
+      <div class="sol-tab" onclick="showTab(this,'s6','transition')">Transition Strategy</div>
+      <div class="sol-tab" onclick="showTab(this,'s6','scores')">Scores</div>
+    </div>
+    <div id="s6-overview" class="sol-tab-content active">
+      <p style="font-size:.875rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.7;">Workday Illuminate is Workday's AI platform layer, introduced in 2024. While currently focused on search, scheduling, and analytics, the roadmap includes AI-assisted goal setting and performance management. This option involves building interim solutions now with a deliberate transition plan to Workday native AI as capabilities mature.</p>
+      <div class="grid-2">
+        <div class="card"><div class="card-icon">📍</div><div class="card-title">Workday AI Current State</div><div class="card-body">Workday Illuminate (2024) offers: AI-powered search, scheduling assistants, compensation benchmarking. Goal/objective AI generation: Not yet available in production at enterprise scale.</div></div>
+        <div class="card"><div class="card-icon">🗺️</div><div class="card-title">Projected Maturity</div><div class="card-body">Based on Gartner and Workday analyst coverage: enterprise-grade AI objective generation estimated 18–36 months from GA. Beta features possible by late 2025 / early 2026.</div></div>
+        <div class="card"><div class="card-icon">⏳</div><div class="card-title">Stopgap Strategy</div><div class="card-body">Deploy Prompt Library immediately (Option 1). Build Portal (Option 5) as primary solution. Design both to be sunset-able when Workday native AI reaches acceptable maturity threshold.</div></div>
+        <div class="card"><div class="card-icon">🔄</div><div class="card-title">Long-term Consolidation</div><div class="card-body">When Workday AI matures: run parallel for one objective cycle, validate quality parity, transition executives to native workflow, decommission interim tools cleanly.</div></div>
+      </div>
+    </div>
+    <div id="s6-risks" class="sol-tab-content">
+      <div class="risk-item"><div class="risk-icon">⚠️</div><div class="risk-body"><h4>Roadmap Uncertainty</h4><p>Workday's AI feature timelines have historically slipped. Features announced at Rising (annual conference) may take 2+ release cycles to reach GA with enterprise-grade quality.</p></div><div class="risk-level rl-high">HIGH</div></div>
+      <div class="risk-item"><div class="risk-icon">💰</div><div class="risk-body"><h4>Licensing Cost Escalation</h4><p>Workday AI features may require additional licensing tiers (AI add-on modules). Budget planning must account for potential 15–30% uplift on existing Workday contract.</p></div><div class="risk-level rl-med">MED</div></div>
+      <div class="risk-item"><div class="risk-icon">🔒</div><div class="risk-body"><h4>Vendor Lock-in</h4><p>Deep reliance on Workday native AI reduces optionality. If Workday AI quality doesn't meet standards, migrating away is complex given deep HCM integration.</p></div><div class="risk-level rl-med">MED</div></div>
+      <div class="risk-item"><div class="risk-icon">🧪</div><div class="risk-body"><h4>Quality Gap Risk</h4><p>Workday's AI must match or exceed custom solutions in objective quality. Enterprise-grade LLMs (GPT-4o, Claude) may outperform Workday's embedded models for nuanced executive content.</p></div><div class="risk-level rl-low">LOW–MED</div></div>
+    </div>
+    <div id="s6-transition" class="sol-tab-content">
+      <div class="highlight-box">
+        <strong>Transition Trigger Criteria:</strong> Migrate to Workday native AI when: (1) Workday objective AI reaches GA for 6+ months, (2) quality scores match current solution (via blind evaluation), (3) Workday supports org-specific strategy grounding, (4) integration with existing Workday goal cascade is validated.
+      </div>
+      <div class="flow">
+        <div class="flow-step"><div class="fs-ico">🔍</div><div class="fs-label">Monitor Workday AI</div><div class="fs-sub">Track GA releases quarterly</div></div>
+        <div class="flow-step"><div class="fs-ico">🧪</div><div class="fs-label">Beta Evaluation</div><div class="fs-sub">Pilot with 5–10 execs</div></div>
+        <div class="flow-step"><div class="fs-ico">📊</div><div class="fs-label">Quality Gate</div><div class="fs-sub">Blind scoring comparison</div></div>
+        <div class="flow-step"><div class="fs-ico">🔄</div><div class="fs-label">Parallel Run</div><div class="fs-sub">One full objective cycle</div></div>
+        <div class="flow-step"><div class="fs-ico">✅</div><div class="fs-label">Full Migration</div><div class="fs-sub">Decommission interim tools</div></div>
+      </div>
+    </div>
+    <div id="s6-scores" class="sol-tab-content">
+      <div class="score-row"><div class="score-label">Speed to Market</div><div class="score-bar-wrap"><div class="score-bar bar-low" style="width:10%"></div></div><div class="score-val">1.0</div></div>
+      <div class="score-row"><div class="score-label">Native Integration</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:98%"></div></div><div class="score-val">9.8</div></div>
+      <div class="score-row"><div class="score-label">Long-term Viability</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:90%"></div></div><div class="score-val">9.0</div></div>
+      <div class="score-row"><div class="score-label">Vendor Dependency Risk</div><div class="score-bar-wrap"><div class="score-bar bar-low" style="width:25%"></div></div><div class="score-val">High</div></div>
+      <div class="score-row"><div class="score-label">Cost Efficiency</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:80%"></div></div><div class="score-val">8.0</div></div>
+      <div class="score-row"><div class="score-label">Executive Adoption</div><div class="score-bar-wrap"><div class="score-bar bar-high" style="width:88%"></div></div><div class="score-val">8.8</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPARISON MATRIX -->
+<section class="section fade-in" id="matrix">
+  <div class="section-label">04 · Comparison Matrix</div>
+  <h2 class="section-title">Decision Intelligence Dashboard</h2>
+  <p class="section-sub">All six options scored across ten strategic dimensions. Scores 1–5: 5 = Best, 1 = Worst. Color-coded for rapid executive scanning.</p>
+  <div class="matrix-wrap">
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>Solution Option</th>
+          <th>Speed</th>
+          <th>Cost</th>
+          <th>Complexity</th>
+          <th>UX Quality</th>
+          <th>AI Power</th>
+          <th>Governance</th>
+          <th>Scalability</th>
+          <th>Integration</th>
+          <th>Longevity</th>
+          <th>Adoption</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="opt-name">01 · Curated Prompt Library</td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h3">3</span></td>
+        </tr>
+        <tr>
+          <td class="opt-name">02 · Custom AI Copilot</td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h4">4</span></td>
+        </tr>
+        <tr>
+          <td class="opt-name">03 · AI Skills / M365 Copilot</td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+        </tr>
+        <tr>
+          <td class="opt-name">04 · Human + AI Review</td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h2">2</span></td>
+        </tr>
+        <tr>
+          <td class="opt-name">05 · Lightweight Web Portal</td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h4">4</span></td>
+        </tr>
+        <tr>
+          <td class="opt-name">06 · Workday Native (Future)</td>
+          <td><span class="heat h1">1</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h2">2</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h3">3</span></td>
+          <td><span class="heat h4">4</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h5">5</span></td>
+          <td><span class="heat h4">4</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap;align-items:center;">
+    <span style="font-size:.72rem;color:var(--muted);">Score key:</span>
+    <span class="heat h5">5</span><span style="font-size:.72rem;color:var(--muted);">Best</span>
+    <span class="heat h4">4</span><span style="font-size:.72rem;color:var(--muted);">Good</span>
+    <span class="heat h3">3</span><span style="font-size:.72rem;color:var(--muted);">Moderate</span>
+    <span class="heat h2">2</span><span style="font-size:.72rem;color:var(--muted);">Poor</span>
+    <span class="heat h1">1</span><span style="font-size:.72rem;color:var(--muted);">Worst</span>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ROADMAP -->
+<section class="section fade-in" id="roadmap">
+  <div class="section-label">05 · Enterprise Architecture Roadmap</div>
+  <h2 class="section-title">Phased Implementation Journey</h2>
+  <p class="section-sub">A deliberate four-phase approach that delivers immediate value while progressively increasing sophistication — aligned to organizational readiness and Workday AI maturity.</p>
+
+  <div class="roadmap">
+    <div class="phase">
+      <div class="phase-dot"></div>
+      <div class="phase-label">Phase 1 · Weeks 1–4 · Quick Win</div>
+      <div class="phase-title">🚀 Curated Prompt Library Launch</div>
+      <div class="phase-desc">Deploy a governed library of role-specific AI prompts on SharePoint/Intranet. Establish Prompt Governance Council. Train executives. Capture baseline adoption and quality metrics. Begin collecting feedback for Phase 2 requirements.</div>
+      <div class="phase-items">
+        <span class="phase-item">📝 Prompt drafting (5–8 role variants)</span>
+        <span class="phase-item">🗂️ SharePoint library setup</span>
+        <span class="phase-item">👩‍💼 HR governance model</span>
+        <span class="phase-item">📊 Adoption tracking (basic)</span>
+        <span class="phase-item">📧 Executive communication & training</span>
+        <span class="phase-item">💰 Cost: Near Zero</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-dot" style="background:var(--gold)"></div>
+      <div class="phase-label">Phase 2 · Months 2–4 · Foundation</div>
+      <div class="phase-title">🖥️ Lightweight Web Portal Build</div>
+      <div class="phase-desc">Design and build the guided web portal with SSO authentication. Integrate Azure OpenAI / Claude API for generation. Deploy strategy document ingestion. Launch pilot with 15–20 executives. Iterate based on feedback before full rollout.</div>
+      <div class="phase-items">
+        <span class="phase-item">🏗️ React frontend + API backend</span>
+        <span class="phase-item">🔐 Azure AD SSO integration</span>
+        <span class="phase-item">🤖 LLM API integration</span>
+        <span class="phase-item">📚 Strategy doc ingestion</span>
+        <span class="phase-item">👥 Pilot cohort (15–20 execs)</span>
+        <span class="phase-item">💰 Cost: $50K–$120K build</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-dot" style="background:var(--accent2)"></div>
+      <div class="phase-label">Phase 3 · Months 5–10 · Intelligence</div>
+      <div class="phase-title">🧠 Full AI Copilot Integration</div>
+      <div class="phase-desc">Evolve portal to full conversational AI experience. Add RAG with full strategy corpus. Integrate Workday API for profile pull and optional objective write-back. Add objective quality scoring. Deploy analytics dashboard for HR leadership.</div>
+      <div class="phase-items">
+        <span class="phase-item">💬 Conversational AI upgrade</span>
+        <span class="phase-item">📖 RAG pipeline (Azure AI Search)</span>
+        <span class="phase-item">🔗 Workday API integration</span>
+        <span class="phase-item">📊 Quality scoring engine</span>
+        <span class="phase-item">📈 HR analytics dashboard</span>
+        <span class="phase-item">💰 Cost: $150K–$300K</span>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-dot" style="background:var(--ink)"></div>
+      <div class="phase-label">Phase 4 · 2026–2027 · Consolidation</div>
+      <div class="phase-title">⚙️ Native Workday AI Integration</div>
+      <div class="phase-desc">Evaluate Workday native AI capabilities as they reach GA. Run parallel evaluation with quality gate criteria. If parity met, transition executive population to Workday-native experience. Decommission interim tools. Maintain custom solution for any capability gaps.</div>
+      <div class="phase-items">
+        <span class="phase-item">🔍 Workday AI quality evaluation</span>
+        <span class="phase-item">🧪 Parallel run (1 objective cycle)</span>
+        <span class="phase-item">✅ Quality gate assessment</span>
+        <span class="phase-item">🔄 Executive migration</span>
+        <span class="phase-item">📦 Interim tool decommission</span>
+        <span class="phase-item">💰 Net savings on interim platform</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXAMPLES -->
+<section class="section fade-in" id="examples">
+  <div class="section-label">06 · Sample Objective Generation</div>
+  <h2 class="section-title">AI-Generated Objective Examples</h2>
+  <p class="section-sub">Illustrating how high-quality, strategy-aligned objectives look across different executive roles — with input context and reasoning for quality.</p>
+
+  <div class="grid-2" style="gap:1.5rem;">
+    <div class="example-card">
+      <div class="example-header">
+        <div>
+          <div class="example-role">Chief Information Officer</div>
+          <div class="example-badge">C-SUITE · TECHNOLOGY</div>
+        </div>
+      </div>
+      <div class="example-body">
+        <div class="ex-section">
+          <div class="ex-label">Input Strategy Context</div>
+          <div class="ex-input">Corporate Pillar: Digital-first customer experience. Tech Strategy: Cloud modernization, AI enablement. Key accountability: Technology delivery and cost optimization.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Generated Objective</div>
+          <div class="ex-output">Deliver the enterprise cloud migration program on-schedule and within 5% of approved budget by Q4 FY25, achieving <strong>30% reduction in infrastructure unit cost</strong> and enabling AI platform capabilities that support three strategic digital products for the customer experience pillar.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Why This Is High Quality</div>
+          <div class="ex-input">✓ SMART · ✓ Links to corporate pillar · ✓ Quantified success metric · ✓ CIO-appropriate scope · ✓ Time-bound · ✓ Enables downstream AI strategy</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="example-header">
+        <div>
+          <div class="example-role">VP of Engineering</div>
+          <div class="example-badge">VP-LEVEL · ENGINEERING</div>
+        </div>
+      </div>
+      <div class="example-body">
+        <div class="ex-section">
+          <div class="ex-label">Input Strategy Context</div>
+          <div class="ex-input">Tech strategy: Platform reliability, developer velocity. Org goal: Reduce time-to-market by 40%. Accountability: Engineering delivery, platform stability.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Generated Objective</div>
+          <div class="ex-output">Increase engineering deployment frequency from bi-weekly to daily releases by Q3 FY25 through CI/CD pipeline maturation and developer experience improvements, achieving <strong>DORA Elite performer benchmarks</strong> for Lead Time and Change Failure Rate — directly enabling the 40% time-to-market reduction organizational goal.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Why This Is High Quality</div>
+          <div class="ex-input">✓ Industry benchmark referenced · ✓ Specific delivery metrics · ✓ Direct org goal linkage · ✓ Appropriate VP scope · ✓ Two measurable KPIs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="example-header">
+        <div>
+          <div class="example-role">Director of Infrastructure</div>
+          <div class="example-badge">DIRECTOR · INFRASTRUCTURE</div>
+        </div>
+      </div>
+      <div class="example-body">
+        <div class="ex-section">
+          <div class="ex-label">Input Strategy Context</div>
+          <div class="ex-input">Tech strategy: Cloud-first, cost reduction. Corp goal: Operational efficiency. Accountability: Data center and cloud infrastructure operations.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Generated Objective</div>
+          <div class="ex-output">Complete decommissioning of legacy on-premises data center (DC2) by Q2 FY25 and migrate remaining 47 workloads to Azure, reducing annual infrastructure operating cost by <strong>$2.3M</strong> while maintaining 99.95% availability SLA across all migrated production systems.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Why This Is High Quality</div>
+          <div class="ex-input">✓ Specific scope (47 workloads) · ✓ Dollar value ROI · ✓ SLA commitment · ✓ Director-level operational focus · ✓ Clear deadline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="example-header">
+        <div>
+          <div class="example-role">Head of Security (CISO)</div>
+          <div class="example-badge">C-LEVEL · SECURITY</div>
+        </div>
+      </div>
+      <div class="example-body">
+        <div class="ex-section">
+          <div class="ex-label">Input Strategy Context</div>
+          <div class="ex-input">Corp strategy: Risk reduction, regulatory compliance. Tech strategy: Zero Trust architecture. Accountability: Cybersecurity posture and compliance.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Generated Objective</div>
+          <div class="ex-output">Achieve Zero Trust Architecture Tier 2 maturity across identity, device, and network controls by Q4 FY25, reducing the organization's risk exposure score by <strong>35%</strong> and maintaining full compliance with SOC 2 Type II, ISO 27001, and applicable regulatory frameworks throughout the year.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Why This Is High Quality</div>
+          <div class="ex-input">✓ Industry maturity framework cited · ✓ Multiple compliance anchors · ✓ Quantified risk reduction · ✓ CISO-appropriate strategic scope</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="example-header">
+        <div>
+          <div class="example-role">Product Executive (CPO)</div>
+          <div class="example-badge">C-SUITE · PRODUCT</div>
+        </div>
+      </div>
+      <div class="example-body">
+        <div class="ex-section">
+          <div class="ex-label">Input Strategy Context</div>
+          <div class="ex-input">Corp strategy: Customer growth, market share expansion. Org goal: NPS improvement. Accountability: Product portfolio and customer value delivery.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Generated Objective</div>
+          <div class="ex-output">Launch three AI-powered product features that directly address top-5 customer pain points by Q3 FY25, driving a <strong>15-point NPS improvement</strong> and contributing to 12% net new customer acquisition growth — establishing the organization as the AI-differentiated market leader in the core segment.</div>
+        </div>
+        <div class="ex-section">
+          <div class="ex-label">Why This Is High Quality</div>
+          <div class="ex-input">✓ Customer-back framing · ✓ NPS metric specified · ✓ Revenue growth linkage · ✓ Market positioning statement · ✓ CPO-level strategic language</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GOVERNANCE -->
+<section class="section fade-in" id="governance">
+  <div class="section-label">07 · Governance & Risk Framework</div>
+  <h2 class="section-title">Responsible AI for Executive Objectives</h2>
+  <p class="section-sub">AI-generated content in performance management carries real risk. A structured governance framework ensures executive accountability, content quality, and regulatory compliance.</p>
+
+  <div class="grid-2" style="margin-bottom:2rem;">
+    <div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;">Risk Register</h3>
+      <div class="risk-item"><div class="risk-icon">🌀</div><div class="risk-body"><h4>AI Hallucination Risk</h4><p>LLMs may generate plausible-sounding but factually incorrect objectives (e.g., referencing non-existent strategy pillars or incorrect org metrics). Mitigation: Human review gate, grounding in verified strategy documents via RAG.</p></div><div class="risk-level rl-high">HIGH</div></div>
+      <div class="risk-item"><div class="risk-icon">⚖️</div><div class="risk-body"><h4>Bias in Generated Objectives</h4><p>AI may produce objectives that unconsciously favor certain leadership styles, industries, or demographics. Mitigation: Diverse prompt testing, HR review for bias patterns, annual prompt audit.</p></div><div class="risk-level rl-med">MED</div></div>
+      <div class="risk-item"><div class="risk-icon">🔒</div><div class="risk-body"><h4>Data Privacy</h4><p>Executive role data, compensation context, and organizational strategy are sensitive. Must not flow to public LLM APIs without appropriate data handling agreements. Use enterprise-tenanted AI services.</p></div><div class="risk-level rl-high">HIGH</div></div>
+      <div class="risk-item"><div class="risk-icon">📋</div><div class="risk-body"><h4>Executive Accountability Erosion</h4><p>Risk that executives adopt AI output verbatim without ownership. Policy must be explicit: AI drafts, executive decides. Workday entry = executive accountability.</p></div><div class="risk-level rl-med">MED</div></div>
+      <div class="risk-item"><div class="risk-icon">🏛️</div><div class="risk-body"><h4>Compliance & Audit</h4><p>AI use in HR processes may trigger employment law, GDPR, or internal audit considerations. Engage legal and compliance teams before scaling. Document AI use in HR policy.</p></div><div class="risk-level rl-med">MED</div></div>
+    </div>
+    <div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1.25rem;">Governance Controls</h3>
+      <div class="card" style="margin-bottom:.75rem;"><div class="card-icon">🏢</div><div class="card-title">Prompt Governance Council</div><div class="card-body">Cross-functional body: HR Strategy + Legal + CISO + 2 exec sponsors. Quarterly prompt review, change approval, incident response. Documented charter and RACI.</div></div>
+      <div class="card" style="margin-bottom:.75rem;"><div class="card-icon">📊</div><div class="card-title">Objective Quality Scoring</div><div class="card-body">Automated SMART-compliance scoring on generated objectives. Outputs below quality threshold flagged for human review before presented to executive.</div></div>
+      <div class="card" style="margin-bottom:.75rem;"><div class="card-icon">📝</div><div class="card-title">Audit Logging</div><div class="card-body">All AI interactions logged (prompt inputs, model version, output tokens). Retained for 24 months. Accessible to compliance and HR leadership. Not used for individual performance evaluation of executives.</div></div>
+      <div class="card"><div class="card-icon">🎓</div><div class="card-title">Executive AI Literacy</div><div class="card-body">Mandatory 30-minute training for all participating executives: what AI can and cannot do, their accountability for final objectives, how to recognize hallucinations, escalation path.</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ARCHITECTURE DEEP DIVE -->
+<section class="section fade-in" id="architecture">
+  <div class="section-label">08 · Technical Architecture Deep Dive</div>
+  <h2 class="section-title">Architecture Reference Models</h2>
+  <p class="section-sub">Visual architecture patterns for each solution approach, from simplest prompt flow to full RAG-enabled enterprise integration.</p>
+
+  <div class="collapsible">
+    <button class="coll-trigger" onclick="toggleColl(this)">📝 Prompt-Based Architecture <span class="coll-arrow">▾</span></button>
+    <div class="coll-body">
+      <div class="arch">
+        <div class="arch-row"><div class="arch-box primary">Executive</div></div>
+        <div class="arch-arr" style="text-align:center;">↓ Copy prompt template from SharePoint ↓</div>
+        <div class="arch-row">
+          <div class="arch-box">SharePoint<br>Prompt Library</div>
+          <div class="arch-arr">→</div>
+          <div class="arch-box accent">Any LLM<br>ChatGPT / Copilot</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓ Generated objectives ↓</div>
+        <div class="arch-row"><div class="arch-box blue">Executive reviews → copies → pastes into Workday</div></div>
+      </div>
+      <p style="margin-top:1rem;font-size:.82rem;color:var(--muted);">Complexity: Very Low · Security: Depends on LLM used · Integration: None · Timeline: Days</p>
+    </div>
+  </div>
+
+  <div class="collapsible">
+    <button class="coll-trigger" onclick="toggleColl(this)">🖥️ Web Portal Architecture <span class="coll-arrow">▾</span></button>
+    <div class="coll-body">
+      <div class="arch">
+        <div class="arch-row"><div class="arch-box primary">Executive Browser (SAML/OIDC SSO)</div></div>
+        <div class="arch-arr" style="text-align:center;">↕ HTTPS ↕</div>
+        <div class="arch-row">
+          <div class="arch-box accent">React SPA<br>Guided Form</div>
+          <div class="arch-arr">→</div>
+          <div class="arch-box blue">Node.js / FastAPI<br>Orchestration Layer</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↕</div>
+        <div class="arch-row">
+          <div class="arch-box">Azure OpenAI<br>GPT-4o</div>
+          <div class="arch-box">Strategy Docs<br>SharePoint</div>
+          <div class="arch-box">HR Role Data<br>CSV/API Feed</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓ Generated + formatted objectives → clipboard ↓</div>
+        <div class="arch-row"><div class="arch-box primary">Workday Goal Module (manual paste or API write)</div></div>
+      </div>
+      <p style="margin-top:1rem;font-size:.82rem;color:var(--muted);">Complexity: Medium · Security: Enterprise SSO · Integration: Optional Workday API · Timeline: 6–10 weeks</p>
+    </div>
+  </div>
+
+  <div class="collapsible">
+    <button class="coll-trigger" onclick="toggleColl(this)">🧠 RAG-Enabled Architecture <span class="coll-arrow">▾</span></button>
+    <div class="coll-body">
+      <div class="arch">
+        <div class="arch-row"><div class="arch-box primary">Executive (Teams / Web App)</div></div>
+        <div class="arch-arr" style="text-align:center;">↓ Authenticated Request ↓</div>
+        <div class="arch-row">
+          <div class="arch-box blue">AI Orchestration Layer<br>LangChain / Azure AI Foundry</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↕ Parallel Calls ↕</div>
+        <div class="arch-row">
+          <div class="arch-box accent">Azure OpenAI<br>Chat Completion</div>
+          <div class="arch-box">Azure AI Search<br>Vector Store (RAG)</div>
+          <div class="arch-box">Workday REST API<br>Worker Profile</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↕ Knowledge Ingestion Pipeline ↕</div>
+        <div class="arch-row">
+          <div class="arch-box">Strategy PDFs</div>
+          <div class="arch-box">Tech Roadmaps</div>
+          <div class="arch-box">OKR Frameworks</div>
+          <div class="arch-box">Prior Year Objectives</div>
+        </div>
+        <div class="arch-arr" style="text-align:center;">↓ High-quality, context-grounded objectives ↓</div>
+        <div class="arch-row"><div class="arch-box primary">Workday Goal Write-back via API</div></div>
+      </div>
+      <p style="margin-top:1rem;font-size:.82rem;color:var(--muted);">Complexity: High · Security: Enterprise-grade · Integration: Full Workday API · Timeline: 5–8 months</p>
+    </div>
+  </div>
+
+  <div class="collapsible">
+    <button class="coll-trigger" onclick="toggleColl(this)">🔗 Workday Integration Model <span class="coll-arrow">▾</span></button>
+    <div class="coll-body">
+      <p style="margin-bottom:1rem;font-size:.85rem;color:var(--muted);">Workday exposes goal and performance data via REST and SOAP APIs. Key integration patterns for this use case:</p>
+      <div class="grid-2">
+        <div style="background:rgba(13,15,20,0.03);border-radius:8px;padding:1rem;border:1px solid var(--border);">
+          <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:.5rem;">READ — Worker Context Pull</div>
+          <pre style="font-family:'DM Mono',monospace;font-size:.72rem;white-space:pre-wrap;">GET /ccx/api/v1/{tenant}/workers/{id}
+→ Job Title, Department, Manager
+→ Job Profile, Job Family
+→ Organization Hierarchy
+
+Auth: OAuth 2.0 + ISU Setup
+Effort: 3–4 weeks (admin + dev)</pre>
+        </div>
+        <div style="background:rgba(13,15,20,0.03);border-radius:8px;padding:1rem;border:1px solid var(--border);">
+          <div style="font-family:'DM Mono',monospace;font-size:.68rem;color:var(--muted);margin-bottom:.5rem;">WRITE — Goal Submission</div>
+          <pre style="font-family:'DM Mono',monospace;font-size:.72rem;white-space:pre-wrap;">POST /ccx/api/v1/{tenant}/goals
+{
+  "worker": { "id": "..." },
+  "title": "AI-generated objective",
+  "description": "...",
+  "category": "Strategic",
+  "dueDate": "2025-12-31"
+}
+Effort: 2–3 weeks additional</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- INNOVATION -->
+<section class="section fade-in" id="innovation">
+  <div class="section-label">09 · Innovation Opportunities</div>
+  <h2 class="section-title">Beyond the Six Options</h2>
+  <p class="section-sub">Additional AI-enabled concepts that extend the core use case — from productivity integrations to intelligent strategy alignment engines.</p>
+
+  <div class="grid-2">
+    <div class="inno-card"><div class="inno-ico">💬</div><div class="inno-body"><h4>Microsoft Teams Bot</h4><p>An embedded Teams bot that lets executives generate objectives directly in their workflow. Triggered by a slash command (/objectives). Context pulled from profile, output posted to a private channel for review before Workday entry. Zero new app to learn.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">📧</div><div class="inno-body"><h4>Outlook Add-in</h4><p>An Outlook task pane that activates when executives are reviewing planning emails. Extracts strategy context from email content, generates objective suggestions in-context. Lowers friction by meeting executives where they already work.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">📊</div><div class="inno-body"><h4>Objective Quality Scoring Engine</h4><p>An AI service that scores any submitted objective on SMART compliance, strategic alignment, language quality, and measurability. Could be integrated into the Workday entry flow or run as a standalone QA tool for HR business partners reviewing exec objectives.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">🗺️</div><div class="inno-body"><h4>Strategy-to-Objective Recommendation Engine</h4><p>Upload the corporate strategy deck → AI automatically suggests 8–12 candidate objectives per executive role based on strategy cascade logic. HR provides a curated menu; executives select and personalize. Dramatically reduces blank-page problem.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">🎯</div><div class="inno-body"><h4>Objective Alignment Heatmap</h4><p>Visualize how all executive objectives map to corporate strategy pillars. Identify gaps (unstaffed strategy areas) and redundancies. Presented as an HR leadership dashboard. Enables proactive alignment intervention before objectives are finalized.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">🤝</div><div class="inno-body"><h4>AI Objective Workshop Facilitator</h4><p>An AI-powered facilitation guide for executive team objective-setting workshops. Suggests discussion prompts, flags interdependencies between executive objectives, and generates a first-draft objective set that the group refines together. HR-led, AI-enhanced group session.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">🏢</div><div class="inno-body"><h4>SharePoint-Integrated Assistant</h4><p>A SharePoint page with an embedded AI chat widget (using Azure OpenAI + Power Pages). Executives visit the intranet strategy page and the assistant is contextually aware of the strategy documents published there. Lowest infrastructure, highest contextual relevance.</p></div></div>
+    <div class="inno-card"><div class="inno-ico">📱</div><div class="inno-body"><h4>Mobile Objective Check-in App</h4><p>Lightweight mobile app that lets executives review, rate, and refine AI-generated objectives on-the-go. Push notifications when new objectives are ready for review. Connects to the web portal backend — same data, optimized mobile UX.</p></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- RECOMMENDATION -->
+<section class="section fade-in" id="recommendation">
+  <div class="section-label">10 · Strategic Recommendation</div>
+  <h2 class="section-title">The Recommended Path Forward</h2>
+  <p class="section-sub">Based on all analysis, the recommended approach is a deliberate two-track strategy delivering immediate value and building toward long-term AI excellence.</p>
+
+  <div class="rec-block" style="margin-bottom:1.25rem;">
+    <div class="rl">IMMEDIATE ACTION · WEEK 1–4</div>
+    <h3>🚀 Deploy the Curated Prompt Library</h3>
+    <p>Launch a governed library of role-specific, strategy-embedded AI prompts on your existing intranet or SharePoint. Establish the Prompt Governance Council. Begin measuring adoption, quality, and executive satisfaction. This delivers <strong>80% of the business value with less than 2% of the effort</strong> of more complex solutions. It also builds the organizational AI muscle memory needed for the next phase.</p>
+    <span class="rec-tag">⚡ Weeks to deploy</span>
+    <span class="rec-tag">💰 Near-zero cost</span>
+    <span class="rec-tag">📊 Immediate quality improvement</span>
+  </div>
+
+  <div class="rec-block" style="background:linear-gradient(135deg,#1e3a6e,#0d0f14);margin-bottom:1.25rem;">
+    <div class="rl">PRIMARY INVESTMENT · MONTHS 2–4</div>
+    <h3>🖥️ Build the Lightweight Web Portal</h3>
+    <p>Invest in a guided web portal that provides a superior executive experience — step-by-step, SSO-authenticated, with invisible AI orchestration. This becomes the primary production solution that serves the organization until Workday native AI reaches acceptable maturity. Design it to be incrementally enhanced: start with clipboard output, add Workday API write-back in Phase 3, add RAG in Phase 3+.</p>
+    <span class="rec-tag">✨ Executive-grade UX</span>
+    <span class="rec-tag">🔐 Enterprise secure</span>
+    <span class="rec-tag">🚀 Scalable to entire exec population</span>
+  </div>
+
+  <div class="rec-block" style="background:linear-gradient(135deg,#1a3a1a,#0d0f14);margin-bottom:1.25rem;">
+    <div class="rl">PARALLEL TRACK · ONGOING</div>
+    <h3>🔍 Monitor Workday AI Maturity</h3>
+    <p>Assign an HR Technology analyst to track Workday Illuminate development quarterly. Establish quality gate criteria for transition. When Workday native AI reaches parity, plan a deliberate migration. Do not let vendor enthusiasm override quality evidence — run a full parallel cycle before committing to native-only.</p>
+    <span class="rec-tag">📅 Quarterly evaluation cadence</span>
+    <span class="rec-tag">🎯 Clear quality gate criteria</span>
+  </div>
+
+  <div style="background:rgba(200,75,47,0.05);border:1px solid rgba(200,75,47,0.2);border-radius:var(--radius);padding:2rem;margin-top:1.5rem;">
+    <div style="font-family:'DM Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:.75rem;">WHAT TO AVOID</div>
+    <div class="grid-2">
+      <div>
+        <p style="font-size:.875rem;font-weight:600;margin-bottom:.35rem;">❌ Do not wait for Workday</p>
+        <p style="font-size:.82rem;color:var(--muted);">The 18–36 month timeline creates unacceptable organizational risk. The business need is now.</p>
+      </div>
+      <div>
+        <p style="font-size:.875rem;font-weight:600;margin-bottom:.35rem;">❌ Do not skip governance</p>
+        <p style="font-size:.82rem;color:var(--muted);">Deploying AI in HR without a governance framework creates compliance, bias, and quality risks.</p>
+      </div>
+      <div>
+        <p style="font-size:.875rem;font-weight:600;margin-bottom:.35rem;">❌ Do not over-engineer immediately</p>
+        <p style="font-size:.82rem;color:var(--muted);">A full RAG + Copilot build without first establishing demand and adoption is waste risk.</p>
+      </div>
+      <div>
+        <p style="font-size:.875rem;font-weight:600;margin-bottom:.35rem;">❌ Do not ignore executive UX</p>
+        <p style="font-size:.82rem;color:var(--muted);">A technically excellent solution that executives don't use delivers zero ROI. UX is strategy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <p style="margin-bottom:.5rem;"><strong>AI-Driven Executive Objective Generation for Workday</strong></p>
+  <p>Enterprise AI Strategy · Architecture & Solution Exploration · Confidential Working Document</p>
+  <p style="margin-top:.75rem;">Prepared for internal review. All cost estimates indicative. AI model quality subject to model selection and prompt engineering. Workday roadmap subject to vendor change.</p>
+</footer>
+
+<script>
+  // NAV scroll behavior
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Mobile nav toggle
+  const toggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    links.forEach(l => {
+      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
+    });
+  });
+
+  // Tab switcher
+  function showTab(btn, solutionId, tabName) {
+    const card = btn.closest('.sol-card');
+    card.querySelectorAll('.sol-tab').forEach(t => t.classList.remove('active'));
+    card.querySelectorAll('.sol-tab-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    const target = document.getElementById(solutionId + '-' + tabName);
+    if (target) target.classList.add('active');
+  }
+
+  // Collapsible
+  function toggleColl(btn) {
+    const body = btn.nextElementSibling;
+    btn.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  // Intersection Observer for fade-in
+  const fadeEls = document.querySelectorAll('.fade-in');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // animate score bars
+        e.target.querySelectorAll('.score-bar').forEach(bar => {
+          const w = bar.style.width;
+          bar.style.width = '0';
+          setTimeout(() => { bar.style.width = w; }, 100);
+        });
+      }
+    });
+  }, { threshold: 0.08 });
+  fadeEls.forEach(el => observer.observe(el));
+
+  // Stagger card animations
+  document.querySelectorAll('.grid-2 > .card, .grid-3 > .card, .grid-4 > .card').forEach((card, i) => {
+    card.style.transitionDelay = (i * 0.07) + 's';
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(14px)';
+    card.style.transition = 'opacity .5s, transform .5s';
+  });
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.card').forEach(c => {
+          c.style.opacity = '1';
+          c.style.transform = 'none';
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.grid-2, .grid-3, .grid-4').forEach(g => cardObserver.observe(g));
+</script>
+</body>
+</html>
