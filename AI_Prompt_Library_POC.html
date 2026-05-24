@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Executive Prompt Library — Enterprise POC</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #f0ede8;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #9a9a94;
+    --border: rgba(0,0,0,0.12);
+    --border2: rgba(0,0,0,0.22);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Menlo', 'Consolas', 'Monaco', monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #f0ede8;
+      --text2: #9a9a94;
+      --text3: #6b6b67;
+      --border: rgba(255,255,255,0.10);
+      --border2: rgba(255,255,255,0.18);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); font-size: 15px; color: var(--text); background: var(--bg3); line-height: 1.6; }
+  .shell { display: grid; grid-template-columns: 230px 1fr; min-height: 100vh; max-width: 1200px; margin: 0 auto; background: var(--bg); box-shadow: 0 0 40px rgba(0,0,0,0.12); }
+  .nav { background: var(--bg2); border-right: 0.5px solid var(--border); padding: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .nav-logo { padding: 1.25rem 1rem; border-bottom: 0.5px solid var(--border); }
+  .nav-logo-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .nav-logo-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .nav-section { padding: 0.75rem 1rem 0.25rem; font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+  .nav-item { display: flex; align-items: center; gap: 8px; padding: 0.5rem 1rem; font-size: 13px; cursor: pointer; color: var(--text2); border-left: 2px solid transparent; transition: all 0.12s; text-decoration: none; }
+  .nav-item:hover { color: var(--text); background: var(--bg); }
+  .nav-item.active { color: var(--text); background: var(--bg); border-left-color: #7F77DD; font-weight: 500; }
+  .nav-item i { font-size: 15px; flex-shrink: 0; }
+  .main { padding: 2.5rem; overflow-y: auto; min-height: 100vh; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .page-title { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+  .page-sub { font-size: 14px; color: var(--text2); margin-bottom: 2rem; }
+  .section-title { font-size: 16px; font-weight: 600; margin: 2rem 0 0.75rem; }
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 0.75rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+  .metric-card { background: var(--bg2); border-radius: var(--radius); padding: 1rem; text-align: center; }
+  .metric-label { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+  .metric-value { font-size: 26px; font-weight: 600; color: var(--text); }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--radius); font-weight: 500; }
+  .badge-purple { background: #EEEDFE; color: #3C3489; }
+  .badge-teal { background: #E1F5EE; color: #0F6E56; }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-coral { background: #FAECE7; color: #993C1D; }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+  .badge-green { background: #EAF3DE; color: #3B6D11; }
+  .badge-pink { background: #FBEAF0; color: #993356; }
+  @media (prefers-color-scheme: dark) {
+    .badge-purple { background: #26215C; color: #AFA9EC; }
+    .badge-teal { background: #04342C; color: #5DCAA5; }
+    .badge-blue { background: #042C53; color: #85B7EB; }
+    .badge-amber { background: #412402; color: #EF9F27; }
+    .badge-coral { background: #4A1B0C; color: #F0997B; }
+    .badge-gray { background: #2C2C2A; color: #B4B2A9; }
+    .badge-green { background: #173404; color: #97C459; }
+    .badge-pink { background: #4B1528; color: #ED93B1; }
+  }
+  .prompt-box { background: var(--bg2); border-radius: var(--radius); padding: 1rem; font-size: 12px; line-height: 1.8; font-family: var(--mono); white-space: pre-wrap; margin: 0.5rem 0; border-left: 3px solid #7F77DD; color: var(--text); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; font-size: 13px; border: 0.5px solid var(--border2); border-radius: var(--radius); cursor: pointer; background: transparent; color: var(--text); transition: all 0.12s; font-family: var(--font); }
+  .btn:hover { background: var(--bg2); }
+  .btn-primary { background: #7F77DD; border-color: #7F77DD; color: #fff; }
+  .btn-primary:hover { background: #534AB7; border-color: #534AB7; color: #fff; }
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 1rem 0; }
+  .info-row { display: flex; gap: 0.5rem; font-size: 13px; margin: 0.4rem 0; }
+  .info-label { color: var(--text2); min-width: 140px; flex-shrink: 0; }
+  .prompt-card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+  .prompt-card:hover { border-color: var(--border2); }
+  .collapse-btn { background: none; border: none; cursor: pointer; font-size: 13px; color: var(--text2); display: flex; align-items: center; gap: 4px; padding: 0; font-family: var(--font); }
+  .collapse-content { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
+  .collapse-content.open { display: block; }
+  .step-row { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1rem; }
+  .step-num { min-width: 28px; height: 28px; border-radius: 50%; background: #EEEDFE; color: #3C3489; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+  .step-title { font-size: 14px; font-weight: 500; }
+  .step-desc { font-size: 13px; color: var(--text2); }
+  .phase-bar { display: flex; gap: 4px; margin: 1rem 0; }
+  .phase-block { flex: 1; padding: 0.75rem; border-radius: var(--radius); text-align: center; }
+  .ph-label { font-size: 10px; font-weight: 600; margin-bottom: 4px; }
+  .ph-name { font-size: 13px; font-weight: 600; }
+  .ph-weeks { font-size: 11px; margin-top: 2px; }
+  .risk-row { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.75rem 0; border-bottom: 0.5px solid var(--border); }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+  .filter-btn { padding: 5px 14px; font-size: 12px; border: 0.5px solid var(--border2); border-radius: 100px; cursor: pointer; background: transparent; color: var(--text2); font-family: var(--font); transition: all 0.12s; }
+  .filter-btn.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
+  .tab-row { display: flex; border-bottom: 0.5px solid var(--border); margin-bottom: 1.5rem; }
+  .tab { padding: 0.5rem 1rem; font-size: 13px; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tab.active { color: var(--text); border-bottom-color: #7F77DD; font-weight: 500; }
+  .arch-box { border: 0.5px solid var(--border); border-radius: var(--radius); padding: 0.75rem 1rem; margin: 4px 0; }
+  .arch-title { font-size: 13px; font-weight: 500; color: var(--text); }
+  .arch-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .copied-msg { font-size: 12px; color: #0F6E56; display: none; }
+  .tip-box { background: #E1F5EE; border-radius: var(--radius); padding: 0.75rem; }
+  @media (prefers-color-scheme: dark) { .tip-box { background: #04342C; } .tip-box .tip-title { color: #5DCAA5; } .tip-box .tip-text { color: #9FE1CB; } }
+  .tip-title { font-size: 12px; font-weight: 500; color: #085041; margin-bottom: 2px; }
+  .tip-text { font-size: 12px; color: #0F6E56; }
+  .output-box { background: var(--bg2); border-radius: var(--radius); padding: 0.75rem; font-size: 12px; color: var(--text2); line-height: 1.7; }
+  @media (max-width: 768px) {
+    .shell { grid-template-columns: 1fr; }
+    .nav { position: static; height: auto; }
+    .grid2, .grid3 { grid-template-columns: 1fr; }
+    .phase-bar { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-title">AI Prompt Library</div>
+    <div class="nav-logo-sub">Executive Objectives POC</div>
+  </div>
+  <div class="nav-section">Overview</div>
+  <a class="nav-item active" onclick="show('home',this)"><i class="ti ti-layout-dashboard"></i>Solution overview</a>
+  <a class="nav-item" onclick="show('arch',this)"><i class="ti ti-building-arch"></i>Architecture</a>
+  <a class="nav-item" onclick="show('roadmap',this)"><i class="ti ti-map"></i>Roadmap</a>
+  <div class="nav-section">Prompt library</div>
+  <a class="nav-item" onclick="show('prompts',this)"><i class="ti ti-file-text"></i>All prompts</a>
+  <a class="nav-item" onclick="show('governance',this)"><i class="ti ti-shield-check"></i>Governance</a>
+  <a class="nav-item" onclick="show('sp',this)"><i class="ti ti-sitemap"></i>SharePoint IA</a>
+  <div class="nav-section">Delivery</div>
+  <a class="nav-item" onclick="show('ux',this)"><i class="ti ti-brush"></i>UX design</a>
+  <a class="nav-item" onclick="show('analytics',this)"><i class="ti ti-chart-bar"></i>Analytics</a>
+  <a class="nav-item" onclick="show('risks',this)"><i class="ti ti-alert-triangle"></i>Risks</a>
+  <a class="nav-item" onclick="show('checklist',this)"><i class="ti ti-checklist"></i>POC checklist</a>
+  <a class="nav-item" onclick="show('exec',this)"><i class="ti ti-presentation"></i>Exec presentation</a>
+</nav>
+
+<div class="main">
+
+<!-- HOME -->
+<div id="home" class="page active">
+  <div class="page-title">AI-powered objective generation</div>
+  <div class="page-sub">Enterprise POC — Microsoft 365 + SharePoint Prompt Library</div>
+  <div class="grid3" style="margin-bottom:2rem">
+    <div class="metric-card"><div class="metric-label">Prompt templates</div><div class="metric-value">40+</div></div>
+    <div class="metric-card"><div class="metric-label">Roles covered</div><div class="metric-value">10</div></div>
+    <div class="metric-card"><div class="metric-label">Weeks to MVP</div><div class="metric-value">6</div></div>
+  </div>
+
+  <div class="section-title">Business problem</div>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:0.5rem">Current pain points</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          • HR manually assists every leader<br>
+          • Process is slow and inconsistent<br>
+          • Objective quality varies widely<br>
+          • HR capacity is a bottleneck<br>
+          • No scalable mechanism exists
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:0.5rem">Solution outcomes</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          • 80% reduction in HR touch time<br>
+          • Consistent, high-quality objectives<br>
+          • Self-serve for all leaders<br>
+          • Scalable across all departments<br>
+          • Audit trail and governance built-in
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Why a prompt library first — not a chatbot</div>
+  <div class="grid2">
+    <div class="card">
+      <div style="font-size:14px;font-weight:600;color:#0F6E56;margin-bottom:0.5rem"><i class="ti ti-check"></i> Prompt library (recommended now)</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.9">
+        • Zero custom development needed<br>
+        • Works with existing Copilot licenses<br>
+        • Deployable in 6 weeks<br>
+        • Users control their own experience<br>
+        • Easy to govern and audit<br>
+        • Builds AI literacy organically<br>
+        • Fallback options for non-Copilot users
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:600;color:#854F0B;margin-bottom:0.5rem"><i class="ti ti-clock"></i> Custom chatbot (defer to future)</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.9">
+        • Requires dev team and budget<br>
+        • 6–12 month delivery timeline<br>
+        • Security review needed<br>
+        • Workday integration complexity<br>
+        • Risk of scope creep<br>
+        • AI maturity not yet established<br>
+        • Maintenance overhead ongoing
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Non-Copilot users: options available today</div>
+  <div class="card">
+    <div class="grid3">
+      <div>
+        <div class="badge badge-teal" style="margin-bottom:8px">Option A</div>
+        <div style="font-size:13px;font-weight:500">Microsoft Copilot (free)</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">copilot.microsoft.com — free tier, work account sign-in, no M365 integration but all prompts work perfectly</div>
+      </div>
+      <div>
+        <div class="badge badge-blue" style="margin-bottom:8px">Option B</div>
+        <div style="font-size:13px;font-weight:500">Claude.ai / ChatGPT</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Free tiers available. All prompts are tool-agnostic and work identically in any LLM</div>
+      </div>
+      <div>
+        <div class="badge badge-amber" style="margin-bottom:8px">Option C</div>
+        <div style="font-size:13px;font-weight:500">SharePoint + Power Automate</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">Guided form collects inputs → Power Automate calls Azure OpenAI → result emailed back. No Copilot license needed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Recommended Microsoft tools</div>
+  <div class="grid2">
+    <div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-brand-sharepoint"></i> SharePoint</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Prompt library home, metadata taxonomy, version control, search</div></div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-brand-teams"></i> Microsoft Teams</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Copilot pages, sharing, collaboration, notification bot later</div></div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-forms"></i> Power Apps</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Phase 2 guided form — collect inputs, fill prompt template automatically</div></div>
+    </div>
+    <div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-brand-office"></i> Microsoft Copilot</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Primary AI interface — M365 Chat, Copilot in Word/Outlook</div></div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-bolt"></i> Power Automate</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Non-Copilot fallback, feedback collection, approval workflows</div></div>
+      <div class="card"><div style="font-size:14px;font-weight:500"><i class="ti ti-chart-bar"></i> Power BI</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Adoption dashboard, prompt usage analytics, feedback trends</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<div id="arch" class="page">
+  <div class="page-title">Architecture</div>
+  <div class="page-sub">MVP now vs. future-state vision</div>
+  <div class="tab-row">
+    <div class="tab active" onclick="switchTab('mvp',this)">MVP architecture</div>
+    <div class="tab" onclick="switchTab('future',this)">Future-state architecture</div>
+    <div class="tab" onclick="switchTab('maturity',this)">AI maturity roadmap</div>
+  </div>
+  <div id="mvp-tab">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">6-week deliverable. Zero custom development. Works with existing Microsoft 365 licensing.</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:4px">User layer</div>
+      <div class="arch-box" style="border-color:#AFA9EC;background:#EEEDFE"><div class="arch-title" style="color:#3C3489">Executive / leader</div><div class="arch-desc">Navigates to SharePoint prompt library → selects relevant prompt → copies to Copilot or alternative AI → pastes output into Workday / Word</div></div>
+      <div style="text-align:center;font-size:18px;color:var(--text3)">↓</div>
+      <div style="text-align:center;font-size:12px;color:var(--text3)">Prompt delivery layer</div>
+      <div class="grid2">
+        <div class="arch-box" style="border-color:#9FE1CB;background:#E1F5EE"><div class="arch-title" style="color:#085041">SharePoint prompt library</div><div class="arch-desc">Filtered list of prompt templates by role, department, use case. Metadata-tagged, versioned, governed.</div></div>
+        <div class="arch-box" style="border-color:#FAC775;background:#FAEEDA"><div class="arch-title" style="color:#633806">Copilot Pages (Teams)</div><div class="arch-desc">Saved AI outputs, shared refinements, team collaboration on objectives</div></div>
+      </div>
+      <div style="text-align:center;font-size:18px;color:var(--text3)">↓</div>
+      <div style="text-align:center;font-size:12px;color:var(--text3)">AI layer</div>
+      <div class="grid3">
+        <div class="arch-box" style="border-color:#AFA9EC;background:#EEEDFE"><div class="arch-title" style="color:#3C3489">Microsoft Copilot (M365)</div><div class="arch-desc">Primary. Licensed users.</div></div>
+        <div class="arch-box" style="border-color:#B5D4F4;background:#E6F1FB"><div class="arch-title" style="color:#0C447C">Copilot.microsoft.com</div><div class="arch-desc">Free fallback. Work account.</div></div>
+        <div class="arch-box" style="border-color:#FAC775;background:#FAEEDA"><div class="arch-title" style="color:#633806">Claude / ChatGPT</div><div class="arch-desc">Alternative AI. Prompts portable.</div></div>
+      </div>
+      <div style="text-align:center;font-size:18px;color:var(--text3)">↓</div>
+      <div style="text-align:center;font-size:12px;color:var(--text3)">Governance & feedback layer</div>
+      <div class="grid2">
+        <div class="arch-box"><div class="arch-title">SharePoint Forms + Power Automate</div><div class="arch-desc">Prompt feedback collection → SharePoint list → Power BI dashboard</div></div>
+        <div class="arch-box"><div class="arch-title">Governance committee</div><div class="arch-desc">Monthly review of prompt effectiveness, version approvals, new submissions</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="future-tab" style="display:none">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">12–24 month future state. Native integrations. Minimal manual steps.</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div class="arch-box" style="border-color:#AFA9EC;background:#EEEDFE"><div class="arch-title" style="color:#3C3489">Power Apps guided form</div><div class="arch-desc">Leader fills structured form → form auto-fills prompt template → sends to AI automatically</div></div>
+      <div style="text-align:center;font-size:18px;color:var(--text3)">↓</div>
+      <div class="arch-box" style="border-color:#9FE1CB;background:#E1F5EE"><div class="arch-title" style="color:#085041">Azure OpenAI / Copilot Studio agent</div><div class="arch-desc">Custom AI agent with retrieval-augmented generation (RAG) from corporate strategy documents, prior year objectives, and Workday performance data</div></div>
+      <div style="text-align:center;font-size:18px;color:var(--text3)">↓</div>
+      <div class="grid2">
+        <div class="arch-box" style="border-color:#FAC775;background:#FAEEDA"><div class="arch-title" style="color:#633806">Workday integration</div><div class="arch-desc">Objectives pushed directly into Workday via API. No copy/paste. Leader reviews and approves.</div></div>
+        <div class="arch-box" style="border-color:#B5D4F4;background:#E6F1FB"><div class="arch-title" style="color:#0C447C">Native Workday AI</div><div class="arch-desc">When Workday's native AI capability launches, this architecture bridges to it seamlessly</div></div>
+      </div>
+    </div>
+  </div>
+  <div id="maturity-tab" style="display:none">
+    <div style="font-size:13px;color:var(--text2);margin-bottom:1rem">Four-stage AI maturity progression for objective generation.</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="arch-box" style="border-left:3px solid #7F77DD"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div class="arch-title">Stage 1: Prompt library (now)</div><span class="badge badge-purple">Months 0–3</span></div><div class="arch-desc">SharePoint-based. Manual copy/paste. Builds AI literacy. Measures adoption.</div></div>
+      <div class="arch-box" style="border-left:3px solid #1D9E75"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div class="arch-title">Stage 2: Guided form + automation</div><span class="badge badge-teal">Months 4–9</span></div><div class="arch-desc">Power Apps form. Auto-filled prompts. Power Automate feedback loop. HR review workflow.</div></div>
+      <div class="arch-box" style="border-left:3px solid #378ADD"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div class="arch-title">Stage 3: AI agent (Copilot Studio)</div><span class="badge badge-blue">Months 10–18</span></div><div class="arch-desc">Custom Copilot Studio agent. RAG from strategy docs. Conversational refinement. Draft pushed to Workday staging.</div></div>
+      <div class="arch-box" style="border-left:3px solid #EF9F27"><div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px"><div class="arch-title">Stage 4: Native Workday AI</div><span class="badge badge-amber">Months 19–24+</span></div><div class="arch-desc">Migrate to Workday's native AI when available. Custom agent bridges or retires gracefully.</div></div>
+    </div>
+    <div class="card" style="margin-top:1.5rem;background:var(--bg2);border-color:#9FE1CB">
+      <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem">Build or wait for Workday AI? Recommendation: BUILD NOW</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.8">Workday AI for objective generation is 18–36 months from enterprise-grade availability. Business pressure is immediate. The prompt library approach builds organizational AI literacy, governance muscles, and measurable ROI — all of which accelerate Workday AI adoption when it arrives. Do not wait. Start now with SharePoint prompts; evolve intelligently.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROADMAP -->
+<div id="roadmap" class="page">
+  <div class="page-title">Implementation roadmap</div>
+  <div class="page-sub">Phased delivery from POC to enterprise scale</div>
+  <div class="phase-bar">
+    <div class="phase-block" style="background:#EEEDFE"><div class="ph-label" style="color:#534AB7">PHASE 1</div><div class="ph-name" style="color:#3C3489">Foundation</div><div class="ph-weeks" style="color:#534AB7">Weeks 1–6</div></div>
+    <div class="phase-block" style="background:#E1F5EE"><div class="ph-label" style="color:#0F6E56">PHASE 2</div><div class="ph-name" style="color:#085041">Expansion</div><div class="ph-weeks" style="color:#0F6E56">Weeks 7–14</div></div>
+    <div class="phase-block" style="background:#E6F1FB"><div class="ph-label" style="color:#185FA5">PHASE 3</div><div class="ph-name" style="color:#0C447C">Automation</div><div class="ph-weeks" style="color:#185FA5">Weeks 15–26</div></div>
+    <div class="phase-block" style="background:#FAEEDA"><div class="ph-label" style="color:#854F0B">PHASE 4</div><div class="ph-name" style="color:#633806">Intelligence</div><div class="ph-weeks" style="color:#854F0B">Months 7–18</div></div>
+  </div>
+
+  <div class="section-title">Phase 1 — Foundation (weeks 1–6)</div>
+  <div class="step-row"><div class="step-num">1</div><div><div class="step-title">SharePoint site build</div><div class="step-desc">Create AI Prompt Library site. Configure navigation, metadata columns, permission groups. Estimated effort: 3 days.</div></div></div>
+  <div class="step-row"><div class="step-num">2</div><div><div class="step-title">Top 10 prompt templates authored</div><div class="step-desc">HR + AI SME workshop to finalize prompts. Each prompt peer-reviewed by 2 executives in pilot group. Estimated effort: 5 days.</div></div></div>
+  <div class="step-row"><div class="step-num">3</div><div><div class="step-title">Governance committee formed</div><div class="step-desc">Establish committee, approval workflow in SharePoint, prompt submission form. Estimated effort: 2 days.</div></div></div>
+  <div class="step-row"><div class="step-num">4</div><div><div class="step-title">Pilot with 10–20 executives</div><div class="step-desc">Live walkthroughs. 30-minute onboarding sessions. Collect feedback after first use. Estimated effort: 3 days facilitation.</div></div></div>
+  <div class="step-row"><div class="step-num">5</div><div><div class="step-title">Feedback loop activated</div><div class="step-desc">SharePoint feedback form live. Power BI dashboard connected. Weekly review cadence set. Estimated effort: 2 days.</div></div></div>
+
+  <div class="section-title">Phase 2 — Expansion (weeks 7–14)</div>
+  <div class="step-row"><div class="step-num">6</div><div><div class="step-title">Full prompt library (40+ prompts)</div><div class="step-desc">All 10 role categories populated. Department variants added. Multilingual support if required.</div></div></div>
+  <div class="step-row"><div class="step-num">7</div><div><div class="step-title">Broad rollout to all leaders</div><div class="step-desc">Change management campaign, Teams channel, email series, lunch & learn sessions.</div></div></div>
+  <div class="step-row"><div class="step-num">8</div><div><div class="step-title">HR enablement</div><div class="step-desc">HR team trained to assist leaders using prompts. HR-specific prompts for review and coaching added.</div></div></div>
+
+  <div class="section-title">Phase 3 — Automation (weeks 15–26)</div>
+  <div class="step-row"><div class="step-num">9</div><div><div class="step-title">Power Apps guided form</div><div class="step-desc">Structured input form auto-populates prompt template. No copy/paste of template required. Outputs to Word/email.</div></div></div>
+  <div class="step-row"><div class="step-num">10</div><div><div class="step-title">Non-Copilot automation</div><div class="step-desc">Power Automate + Azure OpenAI flow for users without Copilot. Form → AI → email delivery.</div></div></div>
+
+  <div class="section-title">Phase 4 — Intelligence (months 7–18)</div>
+  <div class="step-row"><div class="step-num">11</div><div><div class="step-title">Copilot Studio agent</div><div class="step-desc">Custom conversational agent. RAG from corporate strategy. Workday data integration.</div></div></div>
+  <div class="step-row"><div class="step-num">12</div><div><div class="step-title">Workday AI migration readiness</div><div class="step-desc">Prompt library, governance model, and feedback data ready to hand off to Workday native AI when available.</div></div></div>
+
+  <div class="section-title">Effort and timeline estimate</div>
+  <div class="card">
+    <div class="grid3">
+      <div class="metric-card"><div class="metric-label">Phase 1 effort</div><div class="metric-value" style="font-size:20px">15–20 days</div></div>
+      <div class="metric-card"><div class="metric-label">Phase 2 effort</div><div class="metric-value" style="font-size:20px">20–30 days</div></div>
+      <div class="metric-card"><div class="metric-label">Phase 3–4 effort</div><div class="metric-value" style="font-size:20px">40–60 days</div></div>
+    </div>
+    <div style="margin-top:1rem;font-size:13px;color:var(--text2)">Team required: SharePoint developer (0.5 FTE), HR content SME (0.5 FTE), AI prompt engineer (0.5 FTE), project manager (0.25 FTE). Phase 1–2 can be delivered by an existing M365 admin + HR partner with minimal external support.</div>
+  </div>
+</div>
+
+<!-- PROMPTS -->
+<div id="prompts" class="page">
+  <div class="page-title">Prompt library</div>
+  <div class="page-sub">Production-ready templates. Click any prompt to expand full details.</div>
+  <div class="filter-row" id="filter-row">
+    <button class="filter-btn active" onclick="filterPrompts('all',this)">All</button>
+    <button class="filter-btn" onclick="filterPrompts('executive',this)">Executive</button>
+    <button class="filter-btn" onclick="filterPrompts('vp',this)">VP</button>
+    <button class="filter-btn" onclick="filterPrompts('director',this)">Director</button>
+    <button class="filter-btn" onclick="filterPrompts('technology',this)">Technology</button>
+    <button class="filter-btn" onclick="filterPrompts('operations',this)">Operations</button>
+    <button class="filter-btn" onclick="filterPrompts('finance',this)">Finance</button>
+    <button class="filter-btn" onclick="filterPrompts('hr',this)">HR</button>
+    <button class="filter-btn" onclick="filterPrompts('product',this)">Product</button>
+    <button class="filter-btn" onclick="filterPrompts('risk',this)">Risk</button>
+    <button class="filter-btn" onclick="filterPrompts('transformation',this)">Transformation</button>
+  </div>
+  <div id="prompt-list"></div>
+</div>
+
+<!-- GOVERNANCE -->
+<div id="governance" class="page">
+  <div class="page-title">Governance model</div>
+  <div class="page-sub">Approval workflow, committee structure, metadata taxonomy, versioning</div>
+
+  <div class="section-title">Governance committee structure</div>
+  <div class="card">
+    <div style="display:flex;flex-direction:column;gap:0.5rem">
+      <div class="info-row"><div class="info-label" style="font-weight:600">Chair</div><div>Chief People Officer (or delegate)</div></div>
+      <div class="info-row"><div class="info-label">HR rep</div><div>Senior HRBP — owns prompt quality and alignment to HR policy</div></div>
+      <div class="info-row"><div class="info-label">Technology rep</div><div>M365 Platform Owner — owns SharePoint, security, and tooling</div></div>
+      <div class="info-row"><div class="info-label">AI SME</div><div>Prompt engineer or AI CoE lead — owns prompt quality and testing</div></div>
+      <div class="info-row"><div class="info-label">Compliance</div><div>Legal/Privacy rep — reviews data sensitivity and acceptable use</div></div>
+      <div class="info-row"><div class="info-label">Business reps</div><div>2 rotating department heads (quarterly) — business relevance review</div></div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:0.5rem">Meeting cadence</div>
+    <div class="grid3">
+      <div style="font-size:13px"><span style="color:var(--text2)">Weekly (pilot phase):</span> Feedback review</div>
+      <div style="font-size:13px"><span style="color:var(--text2)">Monthly (steady state):</span> Prompt approvals</div>
+      <div style="font-size:13px"><span style="color:var(--text2)">Quarterly:</span> Full library audit</div>
+    </div>
+  </div>
+
+  <div class="section-title">Prompt approval workflow</div>
+  <div class="card">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+      <div class="arch-box" style="flex:1;min-width:100px;text-align:center;border-color:#AFA9EC;background:#EEEDFE"><div style="font-size:11px;color:#534AB7;font-weight:600">Submit</div><div style="font-size:12px;color:#3C3489">Prompt author submits via SharePoint form</div></div>
+      <div style="font-size:18px;color:var(--text3)">→</div>
+      <div class="arch-box" style="flex:1;min-width:100px;text-align:center;border-color:#9FE1CB;background:#E1F5EE"><div style="font-size:11px;color:#0F6E56;font-weight:600">AI SME review</div><div style="font-size:12px;color:#085041">Quality, tone, SMART criteria check</div></div>
+      <div style="font-size:18px;color:var(--text3)">→</div>
+      <div class="arch-box" style="flex:1;min-width:100px;text-align:center;border-color:#FAC775;background:#FAEEDA"><div style="font-size:11px;color:#854F0B;font-weight:600">HR review</div><div style="font-size:12px;color:#633806">Policy alignment, language check</div></div>
+      <div style="font-size:18px;color:var(--text3)">→</div>
+      <div class="arch-box" style="flex:1;min-width:100px;text-align:center;border-color:#B5D4F4;background:#E6F1FB"><div style="font-size:11px;color:#185FA5;font-weight:600">Publish</div><div style="font-size:12px;color:#0C447C">Versioned and live in SharePoint</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-top:0.75rem">Power Automate triggers email approvals at each stage. Target SLA: 5 business days from submission to publish.</div>
+  </div>
+
+  <div class="section-title">Metadata taxonomy</div>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div class="info-row"><div class="info-label">Prompt ID</div><div>Auto-generated (PLB-001)</div></div>
+        <div class="info-row"><div class="info-label">Role level</div><div>C-Suite / VP / Director / Manager</div></div>
+        <div class="info-row"><div class="info-label">Department</div><div>HR / Tech / Finance / Ops / Product / Risk</div></div>
+        <div class="info-row"><div class="info-label">Use case</div><div>Annual / Quarterly / Stretch / Development</div></div>
+        <div class="info-row"><div class="info-label">Strategy pillar</div><div>Growth / Efficiency / Innovation / People / Risk</div></div>
+      </div>
+      <div>
+        <div class="info-row"><div class="info-label">Version</div><div>Semantic (1.0, 1.1, 2.0)</div></div>
+        <div class="info-row"><div class="info-label">Status</div><div>Draft / In review / Approved / Retired</div></div>
+        <div class="info-row"><div class="info-label">Last reviewed</div><div>Date (auto-populated)</div></div>
+        <div class="info-row"><div class="info-label">Owner</div><div>Governance committee member</div></div>
+        <div class="info-row"><div class="info-label">AI tool</div><div>Copilot / Claude / GPT / Universal</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Prompt versioning strategy</div>
+  <div class="card">
+    <div class="info-row"><div class="info-label" style="font-weight:600">Minor version (1.x)</div><div>Wording refinements, example updates, tip additions. HR SME approval only.</div></div>
+    <div class="info-row"><div class="info-label" style="font-weight:600">Major version (x.0)</div><div>Structural change, new required inputs, strategy realignment. Full committee review required.</div></div>
+    <div class="info-row"><div class="info-label" style="font-weight:600">Retired</div><div>Superseded prompts archived for audit trail. Never deleted.</div></div>
+    <div class="info-row"><div class="info-label" style="font-weight:600">Annual review</div><div>All prompts reviewed against current corporate strategy at start of each planning cycle.</div></div>
+  </div>
+</div>
+
+<!-- SHAREPOINT IA -->
+<div id="sp" class="page">
+  <div class="page-title">SharePoint information architecture</div>
+  <div class="page-sub">Site structure, navigation, and content organization</div>
+
+  <div class="section-title">Site map</div>
+  <div class="card">
+    <div style="font-family:var(--mono);font-size:12px;line-height:2.2;color:var(--text2)">
+      <div style="color:var(--text);font-weight:600">📁 AI Prompt Library (SharePoint site)</div>
+      <div style="padding-left:1.5rem">📄 Home — welcome, quick start guide, featured prompts</div>
+      <div style="padding-left:1.5rem">📁 Prompt Catalog</div>
+      <div style="padding-left:3rem">📄 All Prompts (filtered list view)</div>
+      <div style="padding-left:3rem">📄 By Role (C-Suite / VP / Director / Manager)</div>
+      <div style="padding-left:3rem">📄 By Department (Tech / HR / Finance / Ops / Product / Risk)</div>
+      <div style="padding-left:3rem">📄 By Use Case (Annual / Quarterly / Stretch)</div>
+      <div style="padding-left:3rem">📄 Top 10 (featured / most used)</div>
+      <div style="padding-left:1.5rem">📁 How-To Guides</div>
+      <div style="padding-left:3rem">📄 Quick start (3-step guide)</div>
+      <div style="padding-left:3rem">📄 Video walkthroughs</div>
+      <div style="padding-left:3rem">📄 FAQ</div>
+      <div style="padding-left:3rem">📄 Non-Copilot options</div>
+      <div style="padding-left:1.5rem">📁 Governance</div>
+      <div style="padding-left:3rem">📄 Prompt submission form</div>
+      <div style="padding-left:3rem">📄 Approval status tracker</div>
+      <div style="padding-left:3rem">📄 Committee charter</div>
+      <div style="padding-left:3rem">📄 Acceptable use policy</div>
+      <div style="padding-left:1.5rem">📁 Analytics (restricted)</div>
+      <div style="padding-left:3rem">📄 Adoption dashboard (Power BI)</div>
+      <div style="padding-left:3rem">📄 Feedback log</div>
+      <div style="padding-left:3rem">📄 Monthly metrics report</div>
+    </div>
+  </div>
+
+  <div class="section-title">Permissions model</div>
+  <div class="card">
+    <div class="info-row"><div class="info-label">All employees</div><div>Read — browse and copy prompts</div></div>
+    <div class="info-row"><div class="info-label">HR / AI SMEs</div><div>Contribute — submit and edit draft prompts</div></div>
+    <div class="info-row"><div class="info-label">Governance committee</div><div>Approve — publish and retire prompts</div></div>
+    <div class="info-row"><div class="info-label">Site admins</div><div>Full control — structure, metadata, permissions</div></div>
+    <div class="info-row"><div class="info-label">Analytics page</div><div>Restricted to HR leadership and governance committee only</div></div>
+  </div>
+
+  <div class="section-title">Prioritized implementation backlog</div>
+  <div class="card">
+    <div class="step-row"><div class="step-num" style="background:#E1F5EE;color:#0F6E56">P1</div><div><div class="step-title">SharePoint site scaffold and navigation</div><div class="step-desc">Pages, document libraries, metadata columns, permission groups</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#E1F5EE;color:#0F6E56">P1</div><div><div class="step-title">Top 10 prompt cards authored and published</div><div class="step-desc">Initial content for pilot. One per major role/department.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#E1F5EE;color:#0F6E56">P1</div><div><div class="step-title">Feedback form (SharePoint / Forms)</div><div class="step-desc">Simple 5-question form linked from every prompt card</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#FAEEDA;color:#854F0B">P2</div><div><div class="step-title">Power BI adoption dashboard</div><div class="step-desc">Page views, unique users, most-used prompts, feedback scores</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#FAEEDA;color:#854F0B">P2</div><div><div class="step-title">Full prompt library (40+ prompts)</div><div class="step-desc">All role and department categories populated</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#FAEEDA;color:#854F0B">P2</div><div><div class="step-title">Governance approval workflow (Power Automate)</div><div class="step-desc">Email-based approvals. SharePoint status tracking.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#E6F1FB;color:#185FA5">P3</div><div><div class="step-title">Power Apps guided form</div><div class="step-desc">Structured input → auto-filled prompt → AI output</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#E6F1FB;color:#185FA5">P3</div><div><div class="step-title">Non-Copilot automation flow</div><div class="step-desc">Power Automate + Azure OpenAI fallback for non-licensed users</div></div></div>
+  </div>
+</div>
+
+<!-- UX -->
+<div id="ux" class="page">
+  <div class="page-title">UX design recommendations</div>
+  <div class="page-sub">Designed for non-technical executives. Fewest clicks. Maximum clarity.</div>
+
+  <div class="section-title">The 3-step workflow</div>
+  <div class="card">
+    <div class="grid3">
+      <div style="text-align:center;padding:1rem">
+        <div style="font-size:32px;margin-bottom:0.5rem"><i class="ti ti-search" style="color:#7F77DD"></i></div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:0.25rem">1. Find your prompt</div>
+        <div style="font-size:12px;color:var(--text2)">Filter by your role and use case in SharePoint. One click to your category.</div>
+      </div>
+      <div style="text-align:center;padding:1rem;border-left:0.5px solid var(--border);border-right:0.5px solid var(--border)">
+        <div style="font-size:32px;margin-bottom:0.5rem"><i class="ti ti-copy" style="color:#7F77DD"></i></div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:0.25rem">2. Fill and copy</div>
+        <div style="font-size:12px;color:var(--text2)">Replace the [highlighted fields] with your information. Copy the completed prompt.</div>
+      </div>
+      <div style="text-align:center;padding:1rem">
+        <div style="font-size:32px;margin-bottom:0.5rem"><i class="ti ti-sparkles" style="color:#7F77DD"></i></div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:0.25rem">3. Paste and generate</div>
+        <div style="font-size:12px;color:var(--text2)">Paste into Microsoft Copilot (or any AI). Review and refine the output. Done.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Onboarding approach</div>
+  <div class="grid2">
+    <div class="card">
+      <div style="font-size:14px;font-weight:500;margin-bottom:0.5rem">Week 1: Awareness</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.9">
+        Executive sponsor email introducing the tool<br>
+        Teams channel created: #ai-objectives-help<br>
+        1-page PDF quick start guide distributed<br>
+        30-second video walkthrough posted
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:500;margin-bottom:0.5rem">Week 2: Hands-on</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.9">
+        30-minute live demo (recorded for async)<br>
+        HR office hours for questions<br>
+        HR sends personalized prompt recommendation to each leader<br>
+        Feedback form shared after first use
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Change management considerations</div>
+  <div class="card">
+    <div class="info-row" style="margin-bottom:0.5rem"><div class="info-label" style="font-weight:600">Resistance to AI</div><div>Position as "HR co-pilot, not replacement." Emphasize leader stays in control, AI is a first draft only.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.5rem"><div class="info-label" style="font-weight:600">Awareness</div><div>Frame as a time-saver: "Spend 15 min, not 2 hours." Use data from pilot on time saved.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.5rem"><div class="info-label" style="font-weight:600">Adoption plateau</div><div>Monthly "prompt of the month" email. Success story from pilot leaders shared broadly.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.5rem"><div class="info-label" style="font-weight:600">Quality concern</div><div>Emphasize that AI output is a starting point. Show before/after examples with human refinement.</div></div>
+    <div class="divider"></div>
+    <div class="info-row"><div class="info-label" style="font-weight:600">Executive sponsors</div><div>Secure 2–3 senior leaders who used the tool and will advocate publicly in all-hands or town halls.</div></div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div id="analytics" class="page">
+  <div class="page-title">Analytics and feedback strategy</div>
+  <div class="page-sub">What to measure, how to collect it, how to act on it</div>
+
+  <div class="section-title">Key metrics</div>
+  <div class="grid3" style="margin-bottom:1.5rem">
+    <div class="metric-card"><div class="metric-label">Target adoption (month 3)</div><div class="metric-value">70%</div></div>
+    <div class="metric-card"><div class="metric-label">Prompt rating target</div><div class="metric-value">4.0/5</div></div>
+    <div class="metric-card"><div class="metric-label">HR time saved target</div><div class="metric-value">80%</div></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem">Adoption metrics (SharePoint analytics + Power BI)</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:1rem">
+      • Unique users per week / month<br>
+      • Pages viewed by role and department<br>
+      • Most accessed prompts<br>
+      • Return visit rate (prompt reuse)<br>
+      • Conversion: viewed → used (estimated via feedback form completion)
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem">Quality metrics (feedback form)</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:1rem">
+      • Prompt helpfulness rating (1–5 stars)<br>
+      • Output quality rating (1–5 stars)<br>
+      • Did you use the output? (Yes / Partially / No)<br>
+      • How much did you edit the output? (None / Minor / Major)<br>
+      • Free text: "What would make this prompt better?"
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:0.5rem">Business impact metrics (HR report)</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.9">
+      • HR hours spent assisting with objectives (before vs. after)<br>
+      • Objective quality score (HR-rated rubric, sampled monthly)<br>
+      • Time to complete objectives (planning cycle duration)<br>
+      • Number of revision rounds required per objective set
+    </div>
+  </div>
+
+  <div class="section-title">Feedback collection touchpoints</div>
+  <div class="card">
+    <div class="step-row"><div class="step-num">1</div><div><div class="step-title">In-prompt feedback link</div><div class="step-desc">Every prompt card includes a "Rate this prompt" link (Microsoft Forms, 5 questions, 2 minutes). Anonymous option available.</div></div></div>
+    <div class="step-row"><div class="step-num">2</div><div><div class="step-title">Post-cycle survey</div><div class="step-desc">30 days after planning cycle closes — longer survey on overall experience, HR effort, and objective quality.</div></div></div>
+    <div class="step-row"><div class="step-num">3</div><div><div class="step-title">HR observation notes</div><div class="step-desc">HRBPs record qualitative feedback from 1:1s. Submitted to SharePoint feedback list monthly.</div></div></div>
+    <div class="step-row"><div class="step-num">4</div><div><div class="step-title">Teams channel signal</div><div class="step-desc">#ai-objectives-help channel monitored for recurring questions — signals missing prompts or UX gaps.</div></div></div>
+  </div>
+</div>
+
+<!-- RISKS -->
+<div id="risks" class="page">
+  <div class="page-title">Risks and mitigation</div>
+  <div class="page-sub">Security, compliance, and delivery risk register</div>
+
+  <div class="section-title">Security and compliance</div>
+  <div class="card">
+    <div class="info-row" style="margin-bottom:0.75rem"><div class="info-label" style="font-weight:600">Data sensitivity</div><div>Prompts themselves contain no PII. Users must not paste individual performance data or salary figures into external AI tools. Acceptable use policy required.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.75rem"><div class="info-label" style="font-weight:600">Copilot data residency</div><div>Microsoft Copilot for M365 uses tenant-scoped data with Microsoft's enterprise data protection. No training on customer data. Confirm tenant configuration with IT.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.75rem"><div class="info-label" style="font-weight:600">External AI tools</div><div>For Claude / ChatGPT fallback: use enterprise accounts where available. Update acceptable use policy accordingly.</div></div>
+    <div class="divider"></div>
+    <div class="info-row" style="margin-bottom:0.75rem"><div class="info-label" style="font-weight:600">SharePoint permissions</div><div>Prompt library is internal only. No anonymous access. All access via corporate identity (Entra ID).</div></div>
+    <div class="divider"></div>
+    <div class="info-row"><div class="info-label" style="font-weight:600">AI output accuracy</div><div>All AI output is clearly labelled as a draft requiring human review. No AI output goes directly to Workday without leader approval in MVP phase.</div></div>
+  </div>
+
+  <div class="section-title">Risk register</div>
+  <div class="card">
+    <div class="risk-row"><div class="badge badge-coral" style="min-width:64px;text-align:center;flex-shrink:0">High</div><div><div style="font-size:13px;font-weight:500">Low adoption — leaders revert to HR</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Executive sponsor mandate. HR actively directs all new objective requests to the tool first. HR tracks adoption and escalates to CPO.</div></div></div>
+    <div class="risk-row"><div class="badge badge-coral" style="min-width:64px;text-align:center;flex-shrink:0">High</div><div><div style="font-size:13px;font-weight:500">AI output quality below expectation</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Pilot prompts with 10 executives first. Iterate before broad rollout. Governance committee reviews quality monthly.</div></div></div>
+    <div class="risk-row"><div class="badge badge-amber" style="min-width:64px;text-align:center;flex-shrink:0">Medium</div><div><div style="font-size:13px;font-weight:500">Users paste sensitive data into external AI</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Acceptable use policy. Training on what is and isn't appropriate to share. Use placeholders in prompts that guide safe inputs.</div></div></div>
+    <div class="risk-row"><div class="badge badge-amber" style="min-width:64px;text-align:center;flex-shrink:0">Medium</div><div><div style="font-size:13px;font-weight:500">Prompt library becomes stale / outdated</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Annual mandatory review in governance calendar. Strategy-pivot triggers ad hoc review. Version status visible on every prompt.</div></div></div>
+    <div class="risk-row"><div class="badge badge-amber" style="min-width:64px;text-align:center;flex-shrink:0">Medium</div><div><div style="font-size:13px;font-weight:500">Copilot license gaps across org</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Free fallback options documented and tested. Power Automate flow for non-licensed users in Phase 3.</div></div></div>
+    <div class="risk-row"><div class="badge badge-gray" style="min-width:64px;text-align:center;flex-shrink:0">Low</div><div><div style="font-size:13px;font-weight:500">SharePoint governance overhead</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Keep governance lightweight in MVP. Power Automate handles approvals automatically. Committee meets monthly not weekly.</div></div></div>
+    <div class="risk-row" style="border-bottom:none"><div class="badge badge-gray" style="min-width:64px;text-align:center;flex-shrink:0">Low</div><div><div style="font-size:13px;font-weight:500">Workday AI launches sooner than expected</div><div style="font-size:12px;color:var(--text2);margin-top:4px">Mitigation: Prompt library is an asset not a liability. Prompts, governance model and feedback data all transfer directly to Workday AI onboarding.</div></div></div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div id="checklist" class="page">
+  <div class="page-title">POC implementation checklist</div>
+  <div class="page-sub">What must be done before go-live</div>
+
+  <div class="section-title">Pre-launch checklist</div>
+  <div class="card" id="checks"></div>
+
+  <div class="section-title">Top 10 prompts to build first</div>
+  <div class="card">
+    <div class="step-row"><div class="step-num">1</div><div><div class="step-title">C-Suite annual strategic objective</div><div class="step-desc">Highest visibility. Used by most senior leaders. Demonstrates transformative value immediately.</div></div></div>
+    <div class="step-row"><div class="step-num">2</div><div><div class="step-title">VP annual department objective</div><div class="step-desc">Largest volume of users. VP tier writes the most objectives each cycle.</div></div></div>
+    <div class="step-row"><div class="step-num">3</div><div><div class="step-title">Director quarterly objective refresh</div><div class="step-desc">Quarterly cycle drives ongoing usage. High repeat-use potential.</div></div></div>
+    <div class="step-row"><div class="step-num">4</div><div><div class="step-title">Technology — digital transformation OKR</div><div class="step-desc">Technology leaders are most AI-literate. Strong pilot group candidate.</div></div></div>
+    <div class="step-row"><div class="step-num">5</div><div><div class="step-title">Finance — cost efficiency objective</div><div class="step-desc">Finance leaders have specific language requirements. High-value prompt to get right.</div></div></div>
+    <div class="step-row"><div class="step-num">6</div><div><div class="step-title">HR — people strategy objective</div><div class="step-desc">HR team uses first. Builds credibility that HR trusts the tool.</div></div></div>
+    <div class="step-row"><div class="step-num">7</div><div><div class="step-title">Operations — operational excellence objective</div><div class="step-desc">Broad applicability across the organization. High impact at volume.</div></div></div>
+    <div class="step-row"><div class="step-num">8</div><div><div class="step-title">Product — roadmap and innovation objective</div><div class="step-desc">Product leaders often struggle to frame strategic (not tactical) objectives.</div></div></div>
+    <div class="step-row"><div class="step-num">9</div><div><div class="step-title">Risk and compliance — enterprise risk objective</div><div class="step-desc">High governance sensitivity. Getting this right builds trust with compliance stakeholders.</div></div></div>
+    <div class="step-row"><div class="step-num">10</div><div><div class="step-title">Stretch / development objective (all roles)</div><div class="step-desc">Universal use case. Every leader needs at least one development objective per cycle.</div></div></div>
+  </div>
+</div>
+
+<!-- EXEC PRESENTATION -->
+<div id="exec" class="page">
+  <div class="page-title">Executive presentation outline</div>
+  <div class="page-sub">Recommended 7-slide structure for leadership sign-off</div>
+
+  <div class="card">
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">01</div><div><div class="step-title">The problem (2 slides)</div><div class="step-desc">Current state: HR hours spent, inconsistency, leader frustration, planning cycle delays. One stat from HR time tracking. One quote from a leader.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">02</div><div><div class="step-title">The opportunity (1 slide)</div><div class="step-desc">What could look different: self-serve, consistent, high-quality, scalable. Bridge to future Workday AI.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">03</div><div><div class="step-title">The recommended approach (2 slides)</div><div class="step-desc">Prompt library on SharePoint. Why not a chatbot now. Why Microsoft 365 is the right platform. Minimal cost, fast delivery.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">04</div><div><div class="step-title">Live demo (3–5 min)</div><div class="step-desc">Show a VP-level prompt. Fill in real example data live. Paste into Copilot. Show output. Show how you'd refine it. Takes 4 minutes total.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">05</div><div><div class="step-title">The plan (2 slides)</div><div class="step-desc">4-phase roadmap visual. 6-week to MVP. Effort and cost. Team required. Future Workday AI connection.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">06</div><div><div class="step-title">Governance and risk (1 slide)</div><div class="step-desc">Committee structure. Security stance. Acceptable use policy. AI output is always a draft — leader reviews and owns final objectives.</div></div></div>
+    <div class="step-row"><div class="step-num" style="background:#EEEDFE;color:#3C3489">07</div><div><div class="step-title">Decision requested (1 slide)</div><div class="step-desc">Approve POC. Fund 6-week delivery sprint. Assign executive sponsor. Identify 10 pilot leaders. Target go-live date.</div></div></div>
+  </div>
+
+  <div class="section-title">Adoption strategy</div>
+  <div class="card">
+    <div class="grid2">
+      <div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:0.5rem">Pull strategy (make it desirable)</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          • Leader testimonials and success stories<br>
+          • "Prompt of the month" highlight<br>
+          • Leaderboard of active users (opt-in)<br>
+          • Recognition for pilot participants<br>
+          • Time savings reported publicly
+        </div>
+      </div>
+      <div>
+        <div style="font-size:14px;font-weight:500;margin-bottom:0.5rem">Push strategy (make it expected)</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.9">
+          • HR directs all new objective requests to tool<br>
+          • Planning cycle comms include prompt library link<br>
+          • Executive sponsor includes in planning kick-off<br>
+          • HR reports adoption rate to CPO monthly<br>
+          • Objectives quality review tied to prompt usage
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end main -->
+</div><!-- end shell -->
+
+<script>
+const PROMPTS = [
+  {cat:'executive',role:'C-Suite',dept:'Enterprise',id:'PLB-001',name:'C-Suite annual strategic objective',purpose:'Generate 3–5 board-aligned strategic objectives for a C-level executive covering growth, transformation, and risk.',when:'Annual planning cycle. When the CEO/CFO/COO/CTO/CPO needs to set strategic objectives aligned to corporate strategy.',inputs:['Name and title','Corporate strategy pillars (2–4)','Prior year headline achievements','Key challenges for the coming year','Top 3 KPIs for your function'],optional:['Board priorities verbatim','External market trends relevant to role'],sample:'Name: Sarah Chen, CFO | Strategy: Growth, Efficiency, Resilience | Prior year: Reduced OPEX 12%, closed Series D | Challenges: FX volatility, rising interest rates | KPIs: EBITDA margin, cash conversion cycle, credit rating',prompt:`You are a senior HR consultant and strategic advisor helping senior executives write high-quality annual strategic objectives for a Fortune 500 company.
+
+Context:
+- Name and title: [NAME AND TITLE]
+- Corporate strategy pillars: [STRATEGY PILLARS]
+- Prior year highlights: [PRIOR YEAR HIGHLIGHTS]
+- Key challenges this year: [KEY CHALLENGES]
+- Primary KPIs: [TOP 3 KPIs]
+
+Generate exactly 5 annual strategic objectives for this executive. Each objective must:
+1. Begin with a strong action verb (Drive, Accelerate, Transform, Build, Deliver, Scale, Establish)
+2. Be SMART: Specific, Measurable, Achievable, Relevant, and Time-bound
+3. Include a clear measurable outcome with a target metric and deadline
+4. Align explicitly to at least one corporate strategy pillar
+5. Be written at the appropriate strategic (not tactical) level for a C-suite leader
+
+Format each objective as:
+Objective [N]: [One sentence, action verb + outcome + metric + timeline]
+Strategy pillar: [Which pillar this supports]
+Key result: [Specific measurable outcome]
+Supporting initiatives: [2–3 bullet points of how this will be achieved]
+
+After the 5 objectives, provide a brief "Strategic coherence note" explaining how the objectives work together as a portfolio.`,output:`Objective 1: Accelerate EBITDA margin expansion to 24% by Q4 2025 through disciplined cost management and revenue mix optimization.
+Strategy pillar: Efficiency
+Key result: EBITDA margin from 21% to 24% by December 2025
+Supporting initiatives:
+• Implement zero-based budgeting in top 5 cost centres by Q2
+• Renegotiate top 20 vendor contracts delivering 8% unit cost reduction
+• Rationalize SaaS portfolio reducing software spend by $4M annually
+
+[...3 more objectives in same format...]
+
+Strategic coherence note: These five objectives form a balanced portfolio spanning financial performance, capital optimization, risk management, enterprise transformation, and team capability — collectively supporting the corporate Growth and Resilience pillars.`,tips:'Paste the strategy pillars exactly as written in your corporate strategy document for best alignment. The more specific your KPIs, the more precise the measurable outcomes will be.'},
+
+  {cat:'vp',role:'VP',dept:'Any',id:'PLB-002',name:'VP annual department objective',purpose:'Create 4–5 annual objectives for a VP-level leader aligned to both corporate strategy and department-level accountability.',when:'Annual planning cycle. VP needs objectives that cascade from C-suite and connect to their team deliverables.',inputs:['Name, title, department','Corporate strategy pillars','Manager\'s objectives (if available)','Department size and budget','Prior year performance summary'],optional:['Team capability gaps','Key cross-functional dependencies'],sample:'Name: Marcus Reid, VP Product | Strategy: Innovation, Growth | Manager\'s OKRs: scale ARR to $200M, launch 2 new markets | Department: 45 staff, $8M OpEx | Prior year: shipped 3 major features, NPS 62',prompt:`You are an expert HR consultant helping senior leaders write compelling annual objectives that cascade from corporate strategy through to team-level accountability.
+
+Context:
+- Name and title: [VP NAME AND TITLE]
+- Department: [DEPARTMENT NAME]
+- Corporate strategy pillars: [STRATEGY PILLARS]
+- My manager's key objectives: [MANAGER OBJECTIVES]
+- Department: [TEAM SIZE] staff, [BUDGET]
+- Prior year summary: [PERFORMANCE HIGHLIGHTS]
+
+Generate 4–5 annual objectives for this VP. Requirements:
+- Each must show clear line-of-sight to corporate strategy AND manager's objectives
+- Mix of outcomes: one customer/market objective, one operational, one people/capability, one innovation/transformation
+- SMART format with specific metrics and quarterly milestones
+- Appropriate for performance review and board visibility
+
+Format:
+Objective [N]: [Statement]
+Aligns to: [Corporate pillar → Manager objective → This objective]
+Success metric: [Quantified target]
+Q1 milestone | Q2 milestone | Q3 milestone | Q4 milestone`,output:`Objective 1: Scale product-led growth to drive $45M incremental ARR by Q4 2025 through two new market entries and enhanced self-serve conversion funnel.
+Aligns to: Growth pillar → CEO: Scale ARR to $200M → VP Product: $45M contribution
+Success metric: $45M new ARR from product-led motions, 22% self-serve conversion rate
+Q1: Ship self-serve onboarding v2 | Q2: Launch APAC market | Q3: Launch EMEA market | Q4: $45M ARR confirmed`,tips:'Get your manager\'s objectives in writing before using this prompt. The cascade alignment is the most valuable part and requires accurate input data.'},
+
+  {cat:'director',role:'Director',dept:'Any',id:'PLB-003',name:'Director quarterly OKR refresh',purpose:'Refresh quarterly objectives mid-cycle based on business changes, prior quarter performance, and updated priorities.',when:'Start of Q2, Q3, or Q4. After a significant strategic shift. After a poor-performing quarter requiring course correction.',inputs:['Name, title, department','Current annual objectives','Q[N-1] performance vs. targets','Any strategy or priority changes','Top 3 focus areas for this quarter'],optional:['Blockers or dependencies','Team capacity changes'],sample:'Name: Amira Hassan, Director Operations | Annual OKR: Reduce cost-per-transaction by 18% | Q1: Achieved 6% reduction, behind target | Priority change: New supplier consolidation programme launched | Q2 focus: Supplier renegotiation, process automation POC, team upskilling',prompt:`You are an experienced business coach and HR consultant helping directors write focused quarterly objectives that stay connected to annual goals while adapting to current business reality.
+
+Context:
+- Name and title: [DIRECTOR NAME AND TITLE]
+- Annual objectives (summary): [ANNUAL OBJECTIVES]
+- Last quarter performance: [Q[N-1] PERFORMANCE VS TARGETS]
+- Changes in priorities or context: [PRIORITY CHANGES]
+- This quarter's top focus areas: [TOP 3 FOCUS AREAS]
+
+Generate 3–4 sharp quarterly objectives for this director. Each must:
+- Show connection to the annual objective it supports
+- Have a clear, single measurable outcome achievable in 90 days
+- Include 2–3 specific key results (OKR format)
+- Acknowledge last quarter's performance and build on it (or correct course)
+
+Format as OKRs:
+Objective: [Ambitious qualitative statement]
+Key Result 1: [Measurable outcome]
+Key Result 2: [Measurable outcome]
+Key Result 3: [Measurable outcome]
+Links to annual objective: [Which annual objective this advances]`,output:`Objective: Accelerate supplier consolidation to close the Q1 cost reduction gap and deliver 8% cumulative reduction by Q2 end.
+Key Result 1: Complete renegotiation with top 12 suppliers, achieving average 9% unit cost reduction by June 30
+Key Result 2: Consolidate 5 fragmented supplier categories into 2 preferred vendors by May 15
+Key Result 3: Launch automation POC in Invoice Processing achieving 30% cycle time reduction by June 30
+Links to annual objective: Cost-per-transaction reduction (-18% target; 6% achieved in Q1; Q2 must deliver 8% incremental)`,tips:'Be honest about Q1 performance in your input — accurate context produces better course-correction language. Use the OKR output directly in your Workday performance module.'},
+
+  {cat:'technology',role:'VP / Director',dept:'Technology',id:'PLB-004',name:'Digital transformation objective',purpose:'Generate technology leadership objectives focused on digital transformation, platform modernization, and AI enablement.',when:'Annual planning. When technology leaders need objectives that go beyond technical delivery to business value outcomes.',inputs:['Name and role','Technology strategy themes','Current technology debt or modernization priorities','Business outcomes technology must enable','Budget envelope'],optional:['Key stakeholders / business units served','Headcount and org structure changes'],sample:'Name: James O\'Brien, CTO | Tech strategy: Cloud-first, AI-enabled, security-first | Priorities: Legacy ERP migration, data platform build | Business outcomes: 30% faster time-to-market, 99.9% uptime | Budget: $24M CapEx',prompt:`You are a senior technology strategy consultant and HR advisor helping CTO/VP Engineering leaders write objectives that connect technology investment to business outcomes.
+
+Context:
+- Name and role: [NAME AND ROLE]
+- Technology strategy themes: [TECH STRATEGY THEMES]
+- Current priorities / technical debt: [MODERNIZATION PRIORITIES]
+- Business outcomes required: [BUSINESS OUTCOMES]
+- Budget: [BUDGET ENVELOPE]
+
+Generate 5 technology leadership objectives. Requirements:
+- At least 2 must be outcome-focused (business value), not activity-focused (tech delivery)
+- Include one AI/data objective, one security/resilience objective, one people/capability objective
+- Each must include a clear success metric that a non-technical executive would understand
+- Avoid jargon — frame in business language with technical notes in parentheses where needed
+
+Format:
+Objective [N]: [Statement — business outcome language]
+Business value: [What this enables for the organization]
+Technical approach: [Brief — 1 sentence]
+Success metric: [Measurable business outcome]
+Timeline: [Key milestones]`,output:`Objective 1: Reduce product time-to-market by 35% by migrating core commerce platform to cloud-native architecture by Q3 2025.
+Business value: Enables faster feature delivery, reducing competitive lag from 6-month to 4-month release cycles
+Technical approach: Phased migration of ERP and commerce stack to Azure PaaS with strangler-fig pattern
+Success metric: Average feature deployment cycle reduced from 26 weeks to 17 weeks by September 2025
+Timeline: Q1 architecture finalized | Q2 core platform migrated | Q3 legacy decommissioned | Q4 velocity metrics confirmed`,tips:'Frame every objective in business value language first, then add the technical approach. Non-technical executives and HR evaluate objectives — they need to understand why it matters, not how it works.'},
+
+  {cat:'operations',role:'VP / Director',dept:'Operations',id:'PLB-005',name:'Operational excellence objective',purpose:'Generate objectives focused on process efficiency, cost reduction, quality improvement, and operational resilience.',when:'Annual or quarterly planning for COO, VP Operations, Directors of Supply Chain, Manufacturing, Customer Operations, or Shared Services.',inputs:['Name and role','Key operational processes owned','Primary efficiency or quality metrics','Prior year performance','Transformation initiatives underway'],optional:['Benchmark data vs. industry','Customer satisfaction metrics'],sample:'Name: Priya Sharma, VP Customer Operations | Processes: Contact centre, complaint resolution, onboarding | Metrics: NPS 58, FCR 72%, Cost per contact $14.20 | Prior year: 8% volume growth, flat costs | Transformation: AI chatbot pilot underway',prompt:`You are a senior operational excellence consultant helping operations leaders write objectives that balance efficiency, quality, and resilience.
+
+Context:
+- Name and role: [NAME AND ROLE]
+- Key operational processes owned: [PROCESSES]
+- Primary KPIs (current performance): [METRICS AND CURRENT LEVELS]
+- Prior year performance: [PRIOR YEAR HIGHLIGHTS]
+- Transformation initiatives underway: [CURRENT INITIATIVES]
+
+Generate 5 operational objectives. Requirements:
+- Balance between efficiency (cost reduction), quality (customer/stakeholder experience), and resilience (risk and continuity)
+- Each metric must be a specific improvement target above current baseline, not just "improve X"
+- At least one objective must address people / capability
+- At least one must address technology or process innovation
+
+Format:
+Objective [N]: [Statement]
+Current baseline: [Current metric]
+Target: [Target metric and date]
+Primary lever: [What will drive improvement]
+Risk if not achieved: [Brief statement]`,output:`Objective 1: Improve first-call resolution rate from 72% to 82% by Q4 2025, reducing average handle time cost by $2.1M annually.
+Current baseline: FCR 72%, Cost per contact $14.20
+Target: FCR 82%, Cost per contact $11.80 by December 2025
+Primary lever: AI-assisted agent guidance tool reducing average handling time and re-contact rate
+Risk if not achieved: Cost-per-contact rises to $16+ as contact volume grows; NPS declines below 55`,tips:'Enter your current baseline metrics as precisely as possible. "Improve NPS" is weak; "Improve NPS from 58 to 67 by Q4" is strong. The AI uses your current numbers to calculate realistic targets.'},
+
+  {cat:'finance',role:'VP / Director',dept:'Finance',id:'PLB-006',name:'Finance and cost efficiency objective',purpose:'Generate objectives for finance leaders covering cost management, financial controls, treasury, FP&A, and business partnership.',when:'Annual planning for CFO, VP Finance, Finance Directors, FP&A Leads, Controllers.',inputs:['Name and role','Finance function responsibilities','Key financial KPIs and current performance','Business growth context','Key initiatives (e.g. ERP, reporting transformation)'],optional:['External environment (rates, FX, regulation)','Audit findings or control gaps'],sample:'Name: David Kim, VP Finance | Responsibilities: FP&A, Treasury, AP/AR | KPIs: EBITDA margin 21%, Cash conversion cycle 47 days, Forecast accuracy 78% | Growth: 25% revenue growth expected | Initiatives: Oracle Fusion implementation',prompt:`You are a CFO advisor and HR consultant helping finance leaders write objectives that demonstrate both technical financial leadership and business partnership.
+
+Context:
+- Name and role: [NAME AND ROLE]
+- Finance responsibilities: [RESPONSIBILITIES]
+- Current financial KPIs: [KPIS AND CURRENT PERFORMANCE]
+- Business context: [GROWTH CONTEXT]
+- Key initiatives: [INITIATIVES]
+
+Generate 5 finance leadership objectives covering: financial performance, control/compliance, business partnership, transformation/efficiency, and team/capability. Requirements:
+- Include at least 2 objectives that demonstrate finance as a strategic business partner
+- All metrics must be realistic given the business context provided
+- Frame objectives at a leadership level, not at a transactional level
+
+Format:
+Objective [N]: [Statement]
+Strategic rationale: [Why this matters to the business]
+KPI: [Specific measurable target]
+Key milestones: [Quarterly]`,output:`Objective 1: Transform FP&A into a real-time decision-support capability, improving forecast accuracy from 78% to 92% and reducing monthly close cycle from 8 to 5 days by Q3 2025.
+Strategic rationale: 25% growth requires faster, more accurate financial intelligence to support pricing, investment, and M&A decisions
+KPI: Forecast accuracy ≥92%; Close cycle ≤5 business days; 100% of BU leaders accessing self-serve dashboards by Q3
+Key milestones: Q1 data model finalized | Q2 dashboards live | Q3 close acceleration achieved | Q4 sustained at target`,tips:'If your organization has a corporate efficiency target (e.g. 200bps margin improvement), input that number — the AI will reverse-engineer what finance needs to deliver as its contribution to the group target.'},
+
+  {cat:'hr',role:'VP / Director',dept:'HR',id:'PLB-007',name:'People strategy objective',purpose:'Generate HR leadership objectives covering talent acquisition, development, culture, DE&I, engagement, and organizational effectiveness.',when:'Annual planning for CPO, VP HR, HR Directors, HRBPs, and Talent leaders.',inputs:['Name and HR role','Key HR responsibilities','Current people metrics (engagement, attrition, time-to-fill)','Business growth context','HR transformation priorities'],optional:['DE&I baseline data','Leadership pipeline status'],sample:'Name: Nadia Volkov, VP People | Responsibilities: TA, L&D, HRBP, DE&I | Metrics: Engagement 68%, Attrition 18%, Time-to-fill 42 days | Growth: 200 new hires needed | Priorities: Manager capability, hybrid culture, skills-based talent model',prompt:`You are a Chief People Officer advisor and HR transformation consultant helping HR leaders write objectives that connect people strategy to business outcomes.
+
+Context:
+- Name and role: [HR LEADER NAME AND ROLE]
+- HR responsibilities: [RESPONSIBILITIES]
+- Current people metrics: [METRICS AND CURRENT LEVELS]
+- Business growth context: [BUSINESS CONTEXT]
+- HR priorities this year: [HR TRANSFORMATION PRIORITIES]
+
+Generate 5 HR leadership objectives. Requirements:
+- Connect each people outcome to a business outcome (avoid HR jargon in isolation)
+- Include metrics that demonstrate ROI, not just activity completion
+- Cover: talent supply, capability/development, culture/engagement, organizational effectiveness, and HR operational excellence
+- Write at a strategic level appropriate for CPO or board visibility
+
+Format:
+Objective [N]: [Statement — outcome language]
+Business case: [Why this matters to business performance]
+People metric: [HR-specific KPI target]
+Business metric: [Business outcome this enables]
+Key milestones: [Quarterly]`,output:`Objective 1: Reduce voluntary attrition from 18% to 12% by Q4 2025, retaining $8.4M in annualized recruitment and onboarding cost.
+Business case: At current 18% attrition and $42K average replacement cost, the organization loses $8.4M annually — reduction directly funds growth hiring
+People metric: Voluntary attrition ≤12%; Manager satisfaction ≥4.2/5; Stay interview completion ≥85%
+Business metric: $3.8M cost saving; 200 net new hires achievable within budget
+Key milestones: Q1 Stay interviews launched | Q2 Manager capability programme | Q3 Compensation benchmarking | Q4 12% target confirmed`,tips:'Lead with cost and business impact — boards and CEOs respond to people metrics framed as business outcomes. "Reduce attrition" is weak; "Save $3.8M in replacement costs" is compelling.'},
+
+  {cat:'product',role:'VP / Director',dept:'Product',id:'PLB-008',name:'Product and innovation objective',purpose:'Generate product leadership objectives covering roadmap delivery, customer outcomes, innovation, and product-led growth.',when:'Annual or quarterly planning for CPO, VP Product, Product Directors, and Head of Product roles.',inputs:['Name and role','Product portfolio / lines','Key product metrics (NPS, DAU, ARR, retention)','Strategic product bets for the year','Customer segments served'],optional:['Competitive landscape','Technical debt constraints'],sample:'Name: Lena Park, VP Product | Portfolio: Core SaaS platform + 2 add-on modules | Metrics: NPS 54, Monthly retention 91%, ARR $85M | Strategic bets: AI-assisted features, enterprise tier launch | Customers: SMB 60%, Mid-market 35%, Enterprise 5%',prompt:`You are a Chief Product Officer advisor helping product leaders write objectives that balance innovation, customer outcomes, and commercial growth.
+
+Context:
+- Name and role: [NAME AND ROLE]
+- Product portfolio: [PRODUCTS AND LINES]
+- Current product metrics: [METRICS]
+- Strategic product bets: [STRATEGIC PRIORITIES]
+- Customer segments: [SEGMENTS AND MIX]
+
+Generate 5 product leadership objectives. Requirements:
+- At least 2 must be customer outcome-focused (not feature delivery)
+- One must address product innovation or AI enablement
+- One must address enterprise or segment growth
+- Include leading indicators (engagement, retention) AND lagging indicators (ARR, NPS)
+- Write at the level where objectives drive portfolio decisions, not sprint planning
+
+Format:
+Objective [N]: [Statement]
+Customer impact: [What customers experience differently]
+Commercial metric: [Revenue/growth target]
+Product metric: [Usage/retention/NPS target]
+Key bets: [What product investments deliver this]`,output:`Objective 1: Drive enterprise tier from 5% to 18% of ARR by Q4 2025 through dedicated enterprise product surface and white-glove onboarding programme.
+Customer impact: Enterprise customers get purpose-built admin controls, SSO, and SLA guarantees — removing procurement blockers
+Commercial metric: Enterprise ARR from $4.25M to $15.3M; 45 new enterprise logos by Q4
+Product metric: Enterprise logo retention ≥95%; Enterprise NPS ≥70
+Key bets: Enterprise admin suite (Q1), SSO/SCIM (Q2), dedicated CSM (Q2), enterprise pricing tier (Q3)`,tips:'Start with your "strategic bets" — these are the product investments you\'ve already committed to. The AI will frame them as objectives rather than project plans, which is exactly what performance management requires.'},
+
+  {cat:'risk',role:'VP / Director',dept:'Risk & Compliance',id:'PLB-009',name:'Enterprise risk and compliance objective',purpose:'Generate risk and compliance leadership objectives covering enterprise risk management, regulatory compliance, audit readiness, and cyber resilience.',when:'Annual planning for CRO, Chief Compliance Officer, VP Risk, VP Legal, Data Privacy Officers.',inputs:['Name and role','Risk domains owned','Regulatory landscape (key regulations)','Current risk appetite and tolerance','Recent audit findings or material risks'],optional:['Emerging risks for the year','Board risk committee priorities'],sample:'Name: Robert Achebe, VP Enterprise Risk | Domains: Operational, cyber, regulatory | Regulations: GDPR, SOX, ISO27001 | Risk appetite: Moderate | Recent findings: 3 medium control gaps in vendor risk; cyber maturity at Level 2 of 5',prompt:`You are a Chief Risk Officer advisor and governance consultant helping risk leaders write objectives that demonstrate proactive risk management and business enablement.
+
+Context:
+- Name and role: [NAME AND ROLE]
+- Risk domains: [RISK DOMAINS]
+- Regulatory requirements: [KEY REGULATIONS]
+- Risk appetite: [RISK APPETITE STATEMENT]
+- Recent audit findings: [FINDINGS OR MATERIAL RISKS]
+
+Generate 5 risk and compliance objectives. Requirements:
+- Frame risk as business enablement where possible (risk management that enables growth, not just prevents loss)
+- Include one cyber/digital risk objective
+- Include one regulatory compliance objective with specific regulation named
+- Include one culture/awareness objective (risk is everyone's job)
+- All objectives must be measurable — audit scores, control coverage %, training completion — not just "improve risk culture"
+
+Format:
+Objective [N]: [Statement]
+Risk addressed: [Category and severity]
+Regulatory link: [Regulation if applicable]
+Success metric: [Specific target]
+Governance link: [Board / committee visibility]`,output:`Objective 1: Advance cyber risk maturity from Level 2 to Level 4 (NIST CSF) by Q3 2025, reducing cyber insurance premium exposure and enabling digital transformation initiatives.
+Risk addressed: Cyber / information security — currently rated High severity in Enterprise Risk Register
+Regulatory link: ISO 27001 certification renewal; SOC 2 Type II audit requirement
+Success metric: NIST CSF Level 4 by September; Zero critical findings in Q3 pen test; 15% cyber insurance premium reduction at renewal
+Governance link: Reported quarterly to Audit & Risk Committee; Board cyber dashboard updated monthly`,tips:'Name the specific regulation (GDPR, SOX, ISO 27001) in your input — generic compliance language produces generic objectives. Specific regulatory references create objectives that resonate with audit committees.'},
+
+  {cat:'transformation',role:'VP / Director',dept:'Transformation',id:'PLB-010',name:'Strategic transformation objective',purpose:'Generate transformation leadership objectives for enterprise-wide change programmes, operating model redesign, M&A integration, and organizational transformation.',when:'When leading a major transformation programme, M&A integration, operating model change, or enterprise technology transformation.',inputs:['Name and transformation role','Transformation scope and ambition','Target operating model or end state','Stakeholder landscape','Current programme status and risks'],optional:['Business case metrics','Board mandate or investment thesis'],sample:'Name: Claire Fontaine, VP Transformation | Scope: Enterprise operating model redesign (12,000 FTE) | End state: Shared services + AI-enabled support functions | Stakeholders: C-suite, 8 BU heads, Works Council | Status: 3 months in, design phase | Business case: $45M savings by year 3',prompt:`You are a transformation management consultant and HR advisor helping transformation leaders write objectives that hold a programme to account while managing human complexity.
+
+Context:
+- Name and role: [TRANSFORMATION LEADER NAME AND ROLE]
+- Transformation scope: [SCOPE AND SCALE]
+- Target end state: [WHAT SUCCESS LOOKS LIKE]
+- Stakeholder landscape: [KEY STAKEHOLDERS]
+- Programme status: [CURRENT STATUS AND PHASE]
+- Business case: [FINANCIAL OR STRATEGIC TARGETS]
+
+Generate 5 transformation leadership objectives. Requirements:
+- Balance hard programme delivery (milestones, savings) with change adoption (hearts and minds)
+- Include one stakeholder / executive alignment objective
+- Include one risk / programme integrity objective
+- Each must be appropriate for a quarterly board report — clear, specific, and outcome-focused
+- Avoid project management language ("complete phase 2") — write at the strategic impact level
+
+Format:
+Objective [N]: [Statement]
+Programme milestone: [Specific deliverable]
+Change indicator: [Human/adoption metric]
+Business value delivered: [Quantified outcome]
+Risk overlay: [Key risk to this objective]`,output:`Objective 1: Secure executive alignment and Works Council endorsement for target operating model by Q2 2025, maintaining programme timeline and protecting $45M business case.
+Programme milestone: Board-approved TOM design signed off by May; Works Council information and consultation process completed by June
+Change indicator: Executive sponsor engagement score ≥4.0/5; 0 unresolved escalations from BU heads by Q2
+Business value delivered: Programme timeline maintained — any delay costs $3.8M per quarter in delayed savings realization
+Risk overlay: Works Council consultation delay rated HIGH risk; mitigation: dedicated ER lead assigned, fortnightly check-ins established`,tips:'Transformation objectives are uniquely hard because success depends on people, not just milestones. Build both types into every objective. A programme that delivers on time with low adoption is still a failure.'}
+];
+
+const CHECKS = [
+  'SharePoint site created and permissions configured',
+  'Metadata columns: Role, Department, Use Case, Strategy Pillar, Status, Version',
+  'Governance committee formed with named members and charter signed',
+  'Acceptable use policy drafted and approved by Legal',
+  'Top 10 prompts authored, reviewed by AI SME, and approved by HR',
+  'Microsoft Forms feedback form live and linked from each prompt card',
+  'Power BI adoption dashboard connected to SharePoint analytics',
+  'Non-Copilot guidance page published (free options documented)',
+  'Pilot group of 10–20 executives identified and briefed',
+  'Executive sponsor email drafted and ready to send',
+  'Teams channel (#ai-objectives-help) created and HR team monitoring',
+  '30-minute onboarding session scheduled for all pilot participants',
+  '30-second video walkthrough recorded and published',
+  'Power Automate approval workflow for new prompt submissions tested',
+  'Go-live date confirmed and communications calendar set'
+];
+
+function getBadgeColor(cat){
+  const m={executive:'purple',vp:'teal',director:'blue',technology:'coral',operations:'gray',finance:'amber',hr:'pink',product:'green',risk:'coral',transformation:'teal'};
+  return m[cat]||'gray';
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderPrompts(filter){
+  const list=document.getElementById('prompt-list');
+  const filtered=filter==='all'?PROMPTS:PROMPTS.filter(p=>p.cat===filter);
+  list.innerHTML=filtered.map((p,i)=>`
+    <div class="prompt-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:11px;color:var(--text3)">${p.id}</span>
+            <span class="badge badge-${getBadgeColor(p.cat)}">${p.role}</span>
+            <span class="badge badge-gray">${p.dept}</span>
+          </div>
+          <div style="font-size:15px;font-weight:600">${p.name}</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px">${p.purpose}</div>
+        </div>
+        <button class="collapse-btn" onclick="togglePrompt(${i})" id="btn-${i}"><i class="ti ti-chevron-down"></i> Details</button>
+      </div>
+      <div class="collapse-content" id="pc-${i}">
+        <div class="info-row"><div class="info-label">When to use</div><div>${p.when}</div></div>
+        <div class="info-row"><div class="info-label">Required inputs</div><div>${p.inputs.join(' &nbsp;•&nbsp; ')}</div></div>
+        ${p.optional?`<div class="info-row"><div class="info-label">Optional inputs</div><div>${p.optional.join(' &nbsp;•&nbsp; ')}</div></div>`:''}
+        <div class="info-row"><div class="info-label">Sample data</div><div style="font-style:italic;color:var(--text2)">${p.sample}</div></div>
+        <div style="margin-top:1rem">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">Production prompt template</div>
+          <div class="prompt-box">${esc(p.prompt)}</div>
+        </div>
+        <div style="margin-top:1rem">
+          <div style="font-size:13px;font-weight:600;margin-bottom:6px">Example AI output (excerpt)</div>
+          <div class="output-box">${esc(p.output)}</div>
+        </div>
+        <div class="tip-box" style="margin-top:1rem">
+          <div class="tip-title"><i class="ti ti-bulb"></i> Tip for best results</div>
+          <div class="tip-text">${p.tips}</div>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:8px;align-items:center">
+          <button class="btn btn-primary" onclick="copyPrompt(${i})"><i class="ti ti-copy"></i> Copy prompt</button>
+          <span id="copied-${i}" style="font-size:12px;color:#0F6E56;display:none"><i class="ti ti-check"></i> Copied to clipboard!</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePrompt(i){
+  const c=document.getElementById('pc-'+i);
+  const b=document.getElementById('btn-'+i);
+  c.classList.toggle('open');
+  b.innerHTML=c.classList.contains('open')?'<i class="ti ti-chevron-down" style="transform:rotate(180deg);display:inline-block"></i> Hide':'<i class="ti ti-chevron-down"></i> Details';
+}
+
+function copyPrompt(i){
+  const txt=PROMPTS[i].prompt;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(txt).then(()=>showCopied(i));
+  } else {
+    const ta=document.createElement('textarea');
+    ta.value=txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showCopied(i);
+  }
+}
+function showCopied(i){
+  const m=document.getElementById('copied-'+i);
+  m.style.display='inline';
+  setTimeout(()=>m.style.display='none',2500);
+}
+
+function filterPrompts(cat,btn){
+  document.querySelectorAll('#filter-row .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPrompts(cat);
+}
+
+function show(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function switchTab(id,el){
+  ['mvp','future','maturity'].forEach(t=>document.getElementById(t+'-tab').style.display='none');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id+'-tab').style.display='block';
+  el.classList.add('active');
+}
+
+function renderChecks(){
+  document.getElementById('checks').innerHTML=CHECKS.map((c,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--border);font-size:13px">
+      <input type="checkbox" id="chk-${i}" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:#7F77DD">
+      <label for="chk-${i}" style="cursor:pointer">${c}</label>
+    </div>
+  `).join('');
+}
+
+renderPrompts('all');
+renderChecks();
+</script>
+</body>
+</html>
