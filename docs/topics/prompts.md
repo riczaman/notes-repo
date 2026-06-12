@@ -964,5 +964,494 @@ At the end, provide:
 Be proactive and think like a senior engineer trying to eliminate operational toil and scale the team efficiently.
 ```
 ---
+```
+# Enterprise Business Requirements Discovery and BRD Generation Prompt
+
+Act as a Senior Business Analyst, Enterprise Solution Architect, Product Owner, UX Analyst, and Technical Lead.
+
+Your objective is to reverse engineer an existing Power App solution and produce a complete enterprise-grade Business Requirements Document (BRD) for integrating the Power App functionality into an existing React-based sourcing request application.
+
+---
+
+## Project Context
+
+We currently have:
+
+### Existing Application
+
+A React-based web application used for submitting sourcing requests.
+
+### Secondary Application
+
+A Microsoft Power App containing business workflows, business rules, validation logic, questionnaires, decision trees, approval processes, and user experiences that partially overlap with our React application.
+
+---
+
+## Current Challenge
+
+The Power App business team cannot provide complete requirements within the project timelines.
+
+Development cannot wait for formal requirements gathering.
+
+We must independently analyze available artifacts and create implementation-ready requirements that allow developers to begin work immediately.
+
+The generated document should therefore:
+
+* Reverse engineer requirements
+* Infer business logic
+* Document assumptions
+* Identify gaps
+* Generate implementation guidance
+* Produce developer-ready requirements
+
+---
+
+## Source Material
+
+I will provide the following artifacts:
+
+### Artifact 1
+
+Power App walkthrough recording
+
+This recording contains:
+
+* Screen navigation
+* User interactions
+* Conditional logic
+* Data entry forms
+* Validation rules
+* Approval paths
+* Business decisions
+
+Analyze every screen and interaction.
+
+Infer all business requirements visible in the recording.
+
+---
+
+### Artifact 2
+
+Excel requirements document
+
+Contains:
+
+* Existing business requirements
+* Question sets
+* Data fields
+* Business definitions
+* Process information
+
+Use this as supplemental information.
+
+---
+
+### Artifact 3
+
+Initial BRD / Requirements PDF
+
+This document only contains partial requirements.
+
+Use it to validate findings but do not assume it is complete.
+
+Identify missing functionality not represented in the PDF.
+
+---
+
+### Artifact 4
+
+Application Flow Diagrams
+
+Screenshots showing:
+
+* React application flows
+* Power App flows
+
+Compare both applications.
+
+Identify:
+
+* Overlapping functionality
+* Missing functionality
+* New functionality required
+* Opportunities for consolidation
+
+---
+
+# Analysis Instructions
+
+Perform a comprehensive enterprise analysis.
+
+Do not simply summarize the provided material.
+
+Instead:
+
+1. Reverse engineer functionality
+2. Infer missing requirements
+3. Infer business intent
+4. Infer workflow logic
+5. Infer user journeys
+6. Infer decision trees
+7. Infer validation requirements
+8. Infer approval processes
+9. Infer data requirements
+
+Where information is missing:
+
+* Make reasonable enterprise assumptions
+* Clearly label assumptions
+* Provide confidence levels
+
+Example:
+
+Assumption A-01
+
+Confidence: High
+
+Based on screen flow and user interactions, supplier risk assessment appears mandatory when sourcing category exceeds threshold value.
+
+Reasoning:
+[Explain reasoning]
+
+---
+
+# Deliverable Format
+
+Generate a polished executive-quality BRD using TD Bank enterprise documentation standards.
+
+Use professional formatting, headings, numbering, tables, diagrams, and visual structure.
+
+The document should look suitable for:
+
+* Executive review
+* Architecture review
+* Product review
+* Developer implementation
+
+---
+
+# Required Sections
+
+## Executive Summary
+
+Include:
+
+* Business objective
+* Current state
+* Future state
+* Project goals
+* Expected outcomes
+
+---
+
+## Current State Assessment
+
+Document:
+
+* Existing React application
+* Existing Power App
+* Pain points
+* Duplication of functionality
+* Process inefficiencies
+
+---
+
+## Future State Vision
+
+Describe:
+
+* Unified application experience
+* Embedded functionality
+* Streamlined workflow
+* User benefits
+* Business benefits
+
+---
+
+## Scope
+
+### In Scope
+
+Generate detailed list.
+
+### Out of Scope
+
+Generate detailed list.
+
+---
+
+## Stakeholders
+
+Generate stakeholder matrix.
+
+Include:
+
+| Stakeholder | Role | Responsibility |
+| ----------- | ---- | -------------- |
+
+---
+
+## Personas
+
+Identify likely personas including:
+
+* Requestors
+* Procurement Teams
+* Approvers
+* Sourcing Specialists
+* Administrators
+
+---
+
+## Functional Requirements
+
+Generate uniquely numbered requirements.
+
+Format:
+
+FR-001
+FR-002
+FR-003
+
+Each requirement must include:
+
+* Description
+* Business rationale
+* Acceptance criteria
+* Priority
+* Dependencies
+
+---
+
+## Business Rules
+
+Generate all discovered and inferred business rules.
+
+Format:
+
+BR-001
+BR-002
+BR-003
+
+Include:
+
+* Trigger
+* Rule
+* Outcome
+* Exception handling
+
+---
+
+## Screen-by-Screen Analysis
+
+For every discovered screen:
+
+### Screen Name
+
+Purpose
+
+Fields
+
+Validations
+
+Conditional Logic
+
+Business Rules
+
+Actions
+
+Error Handling
+
+Dependencies
+
+User Experience Notes
+
+---
+
+## Decision Trees
+
+Document all conditional flows.
+
+Use decision tree formatting.
+
+Example:
+
+IF Supplier Type = New
+THEN Display Supplier Onboarding Section
+
+ELSE
+Skip Supplier Onboarding
+
+---
+
+## Data Model Requirements
+
+Identify:
+
+* Entities
+* Relationships
+* Required fields
+* Optional fields
+* Data ownership
+
+Generate conceptual data model.
+
+---
+
+## Validation Rules
+
+Identify:
+
+* Required fields
+* Field dependencies
+* Conditional validations
+* Data quality rules
+
+---
+
+## Workflow Requirements
+
+Document:
+
+* Submission workflow
+* Approval workflow
+* Routing workflow
+* Escalation workflow
+
+---
+
+## Non-Functional Requirements
+
+Include:
+
+### Performance
+
+### Security
+
+### Accessibility
+
+### Auditability
+
+### Availability
+
+### Scalability
+
+### Compliance
+
+### Logging
+
+### Monitoring
+
+### Data Retention
+
+---
+
+## React Application Integration Strategy
+
+Recommend:
+
+* UI integration approach
+* Component strategy
+* State management approach
+* API requirements
+* Backend requirements
+* Security considerations
+
+Provide architecture recommendations.
+
+---
+
+## Gap Analysis
+
+Create a table:
+
+| Capability | React App | Power App | Gap | Recommendation |
+
+---
+
+## Assumptions
+
+Generate all inferred assumptions.
+
+Provide:
+
+* ID
+* Description
+* Confidence Level
+* Reasoning
+
+---
+
+## Risks
+
+Generate:
+
+| Risk | Impact | Probability | Mitigation |
+
+---
+
+## Outstanding Questions
+
+Generate a comprehensive list of questions that should eventually be validated with business stakeholders.
+
+Group by:
+
+* Process
+* Workflow
+* Security
+* Data
+* Reporting
+* Approval Logic
+
+---
+
+## Developer Readiness Package
+
+Generate:
+
+### Epics
+
+### Features
+
+### User Stories
+
+### Acceptance Criteria
+
+### Technical Considerations
+
+### Suggested Sprint Breakdown
+
+---
+
+## Architecture Recommendations
+
+Act as a Senior Solution Architect and recommend:
+
+* Simplification opportunities
+* Consolidation opportunities
+* Reusable React components
+* Future-state architecture
+* Scalability improvements
+* Technical debt avoidance strategies
+
+---
+
+# Output Quality Expectations
+
+The final document should:
+
+* Be implementation ready
+* Be developer friendly
+* Be executive friendly
+* Fill gaps where requirements are missing
+* Clearly identify assumptions
+* Clearly identify risks
+* Provide enough detail for development to begin immediately
+
+Do not provide a summary.
+
+Generate the full BRD.
+```
+---
 
 *Last updated: 2026*
