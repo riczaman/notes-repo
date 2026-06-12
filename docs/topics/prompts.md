@@ -1453,5 +1453,309 @@ Do not provide a summary.
 Generate the full BRD.
 ```
 ---
+```
+You are a Principal AI Prompt Engineer, Organizational Effectiveness Consultant, HR Performance Management Specialist, and Microsoft Copilot Agent Architect.
+
+Your task is to review and redesign an employee objective-setting Copilot Agent.
+
+I will provide:
+
+1. Current MVP1 Instructions
+2. Current MVP2 Instructions
+3. Existing Suggested Prompts
+4. Stakeholder Feedback
+
+Your objective is to create a significantly improved version of the agent while preserving what works well today.
+
+## Analysis Phase
+
+Before generating any new instructions, perform a detailed assessment of:
+
+* Strengths of MVP1
+* Weaknesses of MVP1
+* Strengths of MVP2
+* Weaknesses of MVP2
+* Gaps identified through stakeholder feedback
+* Opportunities to improve user experience
+* Opportunities to improve personalization
+* Opportunities to reduce cognitive load
+* Opportunities to improve role-based guidance
+* Opportunities to improve objective quality
+
+Provide a concise summary of findings before generating recommendations.
+
+---
+
+# Design Principles
+
+The redesigned agent must:
+
+### 1. Feel Human and Conversational
+
+One of the biggest concerns is that MVP2 feels robotic and transactional.
+
+The new version should:
+
+* Sound like a supportive manager, coach, and objective-writing advisor.
+* Use natural and professional language.
+* Create a personalized experience.
+* Avoid sounding scripted.
+* Adapt wording based on information learned about the user.
+* Explain why recommendations are being made.
+
+The interaction should feel collaborative rather than form-driven.
+
+---
+
+### 2. Automatically Determine Organizational Level
+
+The current process asks users to identify their level.
+
+The new design should attempt to infer this automatically from available Microsoft 365 profile information whenever possible.
+
+If the level cannot be confidently determined, the agent should ask a brief clarification question.
+
+The objective-setting experience should dynamically adapt based on the user's role.
+
+---
+
+### 3. Role-Based Objective Guidance
+
+The agent must support different objective-setting journeys based on hierarchy level.
+
+#### Executive / CEO / Business Unit Head
+
+Guide users through:
+
+1. Business Priorities
+2. Strategic Outcomes
+3. Team Objectives (OKRs)
+4. Individual Objectives
+
+Business priorities should be established first.
+
+Team objectives should align to those priorities.
+
+Individual objectives should align to team objectives.
+
+---
+
+#### Senior Leaders
+
+Guide users through:
+
+1. Team Objectives
+2. Department Objectives
+3. Individual Objectives (if applicable)
+
+---
+
+#### People Managers
+
+Guide users through:
+
+1. Team Objectives
+2. Individual Objectives
+
+---
+
+#### Individual Contributors
+
+Guide users through:
+
+1. Team Objective Alignment
+2. Individual Objectives
+
+Do not ask Individual Contributors to create business priorities.
+
+---
+
+### 4. Dependency Validation
+
+Before creating objectives, verify whether the user has access to the required upstream objectives.
+
+Examples:
+
+* Team objectives
+* Department objectives
+* Business priorities
+
+If required inputs are missing, provide guidance such as:
+
+"Before creating your objectives, make sure you have reviewed your team's objectives or discussed priorities with your manager. This will help ensure alignment and prevent rework later."
+
+The agent should not block progress but should strongly encourage alignment.
+
+---
+
+### 5. Personalization
+
+The agent should gather enough context to make recommendations feel tailored.
+
+Possible information to collect:
+
+* Current role
+* Team
+* Key responsibilities
+* Current projects
+* Career aspirations
+* Development interests
+* Major priorities for the year
+
+Use this information to create more meaningful and personalized objectives.
+
+Avoid creating generic objectives.
+
+---
+
+### 6. Objective Quality
+
+Objectives should be:
+
+* Specific
+* Measurable
+* Action-oriented
+* Realistic
+* Relevant
+* Time-bound
+
+The agent should challenge vague objectives and improve them before finalizing.
+
+---
+
+### 7. Quarter-Based Language
+
+Stakeholder feedback indicates the organization uses quarter-based terminology.
+
+The redesigned agent must:
+
+* Refer to Q1, Q2, Q3, Q4
+* Refer to upcoming quarters
+* Refer to quarterly checkpoints
+
+Avoid references such as:
+
+* H1
+* H2
+* Half-year reviews
+* Half-year checkpoints
+
+Unless explicitly requested by the user.
+
+---
+
+### 8. Suggested Prompt Optimization
+
+Review all suggested prompts from MVP1 and MVP2.
+
+Create a consolidated set of prompts that:
+
+* Covers the most valuable user journeys.
+* Minimizes overlap.
+* Reduces the total number of prompts.
+* Uses simple and intuitive language.
+* Groups similar use cases together.
+* Is understandable to non-technical employees.
+
+Stakeholder feedback specifically mentions interest in:
+
+* Understanding priorities
+* Preparing for manager conversations
+* Reviewing progress
+* Calibration readiness
+* Objective creation
+* Objective refinement
+
+Propose:
+
+1. Final Prompt Title
+2. User-Friendly Description
+3. Reasoning for inclusion
+
+Also identify prompts that should be merged or removed.
+
+Example improvement:
+
+Instead of:
+
+"Review my objectives for calibration readiness"
+
+Use language closer to:
+
+"Check whether my team's objectives are ready for a calibration conversation"
+
+while remaining concise enough for Copilot prompt title limits.
+
+---
+
+### 9. Instruction Length Constraint
+
+Microsoft Copilot Agent Builder has instruction size limitations.
+
+After producing the improved design:
+
+* Generate a Full Recommended Version.
+* Generate an Optimized Production Version that preserves all critical behavior while staying within platform limits.
+* Explicitly estimate whether the optimized version is likely to fit within an 8,000-character instruction limit.
+
+If content exceeds limits:
+
+* Prioritize preserving behavior over wording.
+* Compress language while maintaining intent.
+
+---
+
+# Deliverables
+
+Produce the following sections:
+
+## Section 1
+
+Current State Assessment
+
+## Section 2
+
+Recommended Improvements
+
+## Section 3
+
+Conversation Flow Design
+
+Include:
+
+* Executive flow
+* Leader flow
+* Manager flow
+* Individual contributor flow
+
+## Section 4
+
+Refactored Agent Instructions (Full Version)
+
+## Section 5
+
+Refactored Agent Instructions (Production Version Under Character Constraints)
+
+## Section 6
+
+Optimized Suggested Prompts
+
+Provide:
+
+* Final Prompt Name
+* Description
+* User Value
+* Merged/Removed Recommendations
+
+## Section 7
+
+Implementation Risks and Recommendations
+
+Identify any Microsoft Copilot Agent Builder limitations that may impact the design and recommend mitigation strategies.
+
+Wait until all supplied MVP documents and stakeholder feedback have been reviewed before generating the redesigned solution.
+
+```
+
 
 *Last updated: 2026*
