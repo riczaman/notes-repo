@@ -1756,6 +1756,220 @@ Identify any Microsoft Copilot Agent Builder limitations that may impact the des
 Wait until all supplied MVP documents and stakeholder feedback have been reviewed before generating the redesigned solution.
 
 ```
+---
+```
+Act as a Senior Solutions Architect, Enterprise Integration Architect, Cloud Security Architect, and Lead Technical Business Analyst.
 
+Your objective is to create a concise interim solution requirements document (5–10 pages maximum) for a temporary integration between an existing Power Apps ecosystem and a React-based application hosted in Azure.
+
+This interim solution must prioritize:
+
+* Minimal development effort
+* Low operational overhead
+* Enterprise security compliance
+* Reusability of existing application capabilities
+* Ease of future migration to the strategic target-state solution
+
+## Background
+
+A comprehensive 40-page requirements document already exists for the long-term integration approach.
+
+The strategic future-state solution is not currently feasible due to timeline constraints.
+
+An interim solution is required.
+
+### Current Environment
+
+* Source application consists of multiple Power Apps applications and Power Automate flows.
+* Power Apps persists data into SharePoint Lists.
+* Target application is a React web application hosted in Azure.
+* The React application has an ASP.NET backend and its own database.
+* The target environment is network-restricted and does not allow inbound connectivity from Power Apps.
+* Because of network restrictions, the source application cannot push data directly into the target application.
+
+### Interim Business Requirement
+
+Every hour:
+
+1. Retrieve new user records from the source system.
+2. Create a draft intake within the target application.
+3. Store the intake in the target database.
+4. Send a notification email to the user informing them that a draft intake has been created.
+
+### Candidate Solutions
+
+#### Option A – SharePoint Pull Model
+
+* An Azure-hosted scheduled process reads SharePoint List data hourly.
+* The scheduled process uses Microsoft Graph or SharePoint APIs.
+* The process calls an internal intake API exposed by the target application.
+* The target application performs validation and persistence.
+* The target application sends notification emails.
+
+#### Option B – Email File Transfer Model
+
+* The source application sends hourly emails with attached files.
+* A mailbox is monitored by a scheduled process.
+* The scheduled process parses attachments.
+* Draft intakes are created in the target application.
+* Notification emails are sent to end users.
+
+## Existing Information
+
+[INSERT SUMMARY FROM EXISTING REQUIREMENTS DOCUMENT]
+
+Include:
+
+* Intake data model
+* Required fields
+* Volume estimates
+* Current business workflow
+* Email requirements
+* Network constraints
+* Existing APIs
+* Security requirements
+* Compliance requirements
+* Retention requirements
+* SharePoint schema
+
+## Required Deliverables
+
+Produce the following sections.
+
+### 1. Executive Summary
+
+Provide a concise summary of the interim solution.
+
+### 2. Problem Statement
+
+Describe the business problem and constraints.
+
+### 3. Assumptions
+
+Document all technical and business assumptions.
+
+### 4. In Scope
+
+Define the scope of the interim solution.
+
+### 5. Out of Scope
+
+Clearly identify future-state capabilities that are excluded.
+
+### 6. Business Requirements
+
+Document functional and non-functional requirements.
+
+Include:
+
+* Batch frequency
+* Intake creation requirements
+* Email notification requirements
+* Error handling expectations
+* Audit requirements
+* Reporting requirements
+
+### 7. Architecture Decision Analysis
+
+Compare Option A and Option B.
+
+Evaluate:
+
+* Security
+* Operational complexity
+* Cost
+* Reliability
+* Scalability
+* Maintainability
+* Compliance
+* Future migration effort
+
+Provide a weighted decision matrix.
+
+Select the preferred option and justify the recommendation.
+
+### 8. High-Level Solution Design
+
+Include:
+
+* End-to-end workflow
+* Sequence of events
+* Major components
+* Integration points
+* Authentication approach
+* Error handling approach
+* Monitoring approach
+
+### 9. Security and Identity Requirements
+
+Identify:
+
+* Required Microsoft Graph permissions
+* SharePoint permissions
+* Entra ID requirements
+* Managed identity requirements
+* Service account requirements
+* Network connectivity requirements
+
+Recommend least-privilege access patterns.
+
+### 10. API Strategy
+
+Determine whether:
+
+* Microsoft Graph APIs are sufficient
+* SharePoint REST APIs are required
+* A custom API should be created
+* Existing internal APIs can be reused
+
+Provide recommendations.
+
+### 11. Risks and Mitigations
+
+Document:
+
+* Technical risks
+* Operational risks
+* Security risks
+* Data quality risks
+* Interim solution permanence risks
+
+Provide mitigations.
+
+### 12. Team Dependencies
+
+Identify all required stakeholder teams and responsibilities.
+
+### 13. Open Questions
+
+Generate a list of unanswered questions required before implementation can begin.
+
+### 14. Developer Implementation Guidance
+
+Provide high-level implementation guidance only.
+
+Include:
+
+* Recommended Azure services
+* Batch orchestration pattern
+* Idempotency strategy
+* Retry strategy
+* Monitoring approach
+* Logging approach
+* Deployment considerations
+
+Do not provide low-level code.
+
+## Output Requirements
+
+* Use concise language.
+* Focus on decision-making information.
+* Challenge assumptions where appropriate.
+* Identify hidden dependencies.
+* Highlight security implications.
+* Explicitly call out areas requiring validation.
+* Ensure the interim solution can be decommissioned easily when the strategic solution is implemented.
+
+```
 
 *Last updated: 2026*
