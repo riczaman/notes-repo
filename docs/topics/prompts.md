@@ -1971,5 +1971,325 @@ Do not provide low-level code.
 * Ensure the interim solution can be decommissioned easily when the strategic solution is implemented.
 
 ```
+---
+```
+You need to position this request as a data extraction initiative with architectural, operational, and capacity implications, not as a simple enhancement.
+
+Right now, there are several unknowns that need to be resolved before development can begin.
+
+Current State
+Contract documents are stored within the SAP Ariba platform.
+The existing Azure data pipeline only ingests structured, tabular data.
+The target platform, Rahona, is designed primarily for datasets defined by tables and fields.
+Bulk downloading through the Ariba web interface is operationally impractical due to performance limitations.
+An API has been identified that can download approximately 27,000 files per day.
+The API is synchronous, which introduces performance and execution constraints.
+The API does not appear to support selective extraction of contract files only, meaning non-contract attachments may also be downloaded.
+Implementation would require custom development work.
+Current development capacity is limited to a single developer who is fully allocated.
+Key Unknowns and Risks
+
+Before committing to a solution, the following questions need answers:
+
+1. Data Destination Compatibility
+Can Rahona ingest and store binary files such as PDFs, Word documents, and attachments?
+If yes:
+What storage pattern is supported?
+Are there file size limits?
+What metadata schema is required?
+If no:
+Is an intermediate repository required, such as Azure Blob Storage or Data Lake?
+2. Scope Definition
+What qualifies as a "contract file"?
+Which Ariba object types should be included?
+Should historical contracts be extracted?
+Are amendments, supporting documents, and attachments in scope?
+
+Without clear business rules, the extraction process risks pulling large volumes of irrelevant content.
+
+3. API Limitations
+What are the API rate limits?
+Is the 27,000-file limit hard-coded or configurable?
+Does the API support:
+Incremental extraction?
+Filtering by document type?
+Retry mechanisms?
+Checkpointing?
+Parallel processing?
+
+The synchronous nature of the API may create long-running jobs and operational instability.
+
+4. Security and Compliance
+Do downloaded contracts contain sensitive or regulated information?
+What encryption, retention, and access controls are required?
+Are there audit requirements for document access and storage?
+5. Operational Ownership
+Who owns monitoring and support?
+How will failed downloads be retried?
+How will duplicate files be handled?
+What is the expected refresh frequency?
+Recommended Path Forward
+
+Instead of proceeding directly to development, I recommend a phased approach.
+
+Phase 1: Discovery and Feasibility
+
+Conduct a short architecture spike to answer the open questions.
+
+Deliverables:
+
+Confirm Rahona's capability to store unstructured files.
+Validate Ariba API capabilities and limitations.
+Estimate expected file volumes and storage requirements.
+Define business rules for file selection.
+Identify security and compliance requirements.
+Produce a high-level solution design.
+
+Estimated effort: 1–2 weeks.
+
+Phase 2: Proof of Concept
+
+If the feasibility assessment is positive:
+
+Build a lightweight proof of concept outside the production data pipeline.
+Download a limited set of contracts.
+Store files temporarily in Azure Blob Storage or Data Lake.
+Validate ingestion into Rahona.
+Measure performance, throughput, and operational impacts.
+
+Estimated effort: 2–3 weeks.
+
+Phase 3: Production Implementation
+
+Only after the proof of concept succeeds should the team:
+
+Build production-grade orchestration.
+Implement monitoring and alerting.
+Add retry and checkpoint mechanisms.
+Integrate with the enterprise data pipeline.
+Establish support processes.
+Architectural Recommendation
+
+Given that your current pipeline handles structured data only, avoid forcing binary documents directly into the existing ingestion process.
+
+A more scalable architecture would be:
+
+SAP Ariba API
+      ↓
+Azure Function / Containerized Worker
+      ↓
+Azure Blob Storage or Data Lake
+      ↓
+Metadata Extraction
+      ↓
+Rahona (metadata and references)
+
+This approach separates:
+
+Unstructured content storage
+Metadata management
+Analytics consumption
+
+Rahona can consume metadata and file references while the actual documents remain in dedicated object storage.
+
+Communicating Resource Constraints
+
+You also need to set expectations clearly.
+
+Here's language you can use with stakeholders:
+
+Based on our initial assessment, bulk extraction of contract documents from SAP Ariba is not a simple extension of the existing data pipeline.
+
+While an API exists that may support downloading approximately 27,000 files per day, several critical unknowns remain, including whether Rahona can store unstructured files, the API's filtering capabilities, security requirements, and the operational model for handling failures and ongoing synchronization.
+
+In addition, our current Azure ingestion framework is designed for structured tabular data rather than binary document storage, which means this capability would require architectural changes and custom development.
+
+Given current team capacity constraints, with only one development resource available and fully allocated to existing priorities, we are unable to begin implementation at this time.
+
+Our recommendation is to initiate a short discovery and feasibility phase to validate technical assumptions, define business requirements, and produce an effort estimate and implementation roadmap. Once this assessment is complete, we can prioritize the work appropriately against other team commitments.
+
+After looking into SAP Ariba's contract capabilities, the key point to communicate to stakeholders is this:
+
+The limitation is not that downloading contracts is impossible. The limitation is that SAP Ariba was not designed for high-volume document extraction through the user interface.
+
+Why the Ariba Web Application Struggles
+
+SAP Ariba Contracts organizes documents inside individual contract workspaces rather than as a centralized document repository optimized for bulk export. Each workspace can contain:
+
+Main agreement documents
+Amendments and addenda
+Reference documents
+Contract line item documents (CLIDs)
+Supporting attachments
+Multiple document versions
+Folder hierarchies
+
+Documents are retrieved workspace-by-workspace through the UI. There is no native "Export all contracts" function for thousands of workspaces.
+
+The performance issues you're experiencing are typically caused by:
+
+Browser-based downloads that require user interaction
+Sequential retrieval of files rather than parallel processing
+Permission checks performed for each workspace and document
+Document version management
+Large file sizes (up to 100 MB per document)
+Network latency between the browser and Ariba's SaaS environment
+
+The UI was designed for contract managers reviewing and updating individual contracts, not for enterprise-scale extraction.
+
+Is Bulk Download Available Out of the Box?
+
+For exporting existing contract documents in bulk, there is no standard self-service capability that allows users to select all workspaces and download all attachments in one operation.
+
+SAP provides bulk capabilities primarily for:
+
+Bulk creation of contract workspaces
+Bulk updates to metadata
+Bulk upload of contract documents
+
+These processes are import-oriented rather than export-oriented.
+
+If there were a simple native export button, SAP would document it alongside the bulk administration features. The absence of this functionality is usually why customers resort to APIs or custom integrations.
+
+Alternatives to Custom Development
+
+Before building a custom Azure solution, evaluate these options.
+
+Option 1: SAP Managed Data Export Services
+
+Check whether your organization licenses:
+
+SAP Ariba Reporting
+Operational Reporting
+Data Extraction APIs
+SAP-managed data export services
+
+Some Ariba environments include scheduled exports of metadata, though document binaries are often excluded.
+
+Ask your SAP account team or Ariba administrator:
+
+Is there a standard export capability or premium service available for bulk extraction of contract workspace documents and attachments?
+
+This may already exist within your licensing agreement.
+
+Option 2: SAP Support Request
+
+Open a case with SAP Support Portal and ask specifically:
+
+Is bulk export of contract workspace attachments supported?
+Are there undocumented APIs or recommended patterns?
+Are there roadmap items for document extraction?
+
+SAP Knowledge Base Article 3179200 specifically addresses extracting contract workspace attachments via web services, although full details require customer access.
+
+Option 3: Third-Party Integration Platforms
+
+Many organizations avoid custom code by using integration platforms that already support Ariba.
+
+Examples include:
+
+Boomi
+Informatica
+MuleSoft
+
+These platforms sometimes provide prebuilt Ariba connectors that can handle:
+
+Authentication
+Incremental extraction
+Retry logic
+Monitoring
+File movement to object storage
+
+However, verify whether their connectors support document binaries rather than metadata only.
+
+Option 4: Professional Services Engagement
+
+If this is a one-time migration or archive exercise, custom development may be unnecessary.
+
+Consider engaging:
+
+SAP Professional Services
+Your Ariba implementation partner
+A specialized Ariba consulting firm
+
+They may already have reusable tooling for bulk extraction.
+
+This is often faster and lower risk than building a permanent integration for a one-time need.
+
+Option 5: Manual Administrative Export
+
+Determine whether the business requirement is truly:
+
+"Download every contract ever created"
+
+or instead:
+
+"Access a subset of active contracts."
+
+If the scope can be reduced by:
+
+Contract status
+Business unit
+Date range
+Workspace type
+
+manual extraction may become operationally feasible.
+
+Options You Should Avoid
+Browser Automation
+
+Using:
+
+Selenium
+Power Automate Desktop
+RPA bots
+
+to simulate clicks in the Ariba UI is generally a poor long-term solution because:
+
+UI changes break automation
+Session timeouts interrupt downloads
+Large-scale downloads perform poorly
+Supportability is low
+
+This should only be considered for emergency one-time extraction efforts.
+
+Extending the Existing Tabular Pipeline Directly
+
+Your current Azure pipeline was built for structured datasets.
+
+Contract files are unstructured binary objects.
+
+Forcing binary documents through a tabular ingestion framework creates:
+
+Increased complexity
+Poor observability
+Difficult retry handling
+Storage inefficiencies
+
+A separate document ingestion architecture is preferable.
+
+Recommended Next Step
+
+Before any development work begins, answer these questions in order:
+
+Does Rahona support binary file storage?
+Is this a one-time migration or an ongoing synchronization?
+How many total files exist?
+What is the average file size?
+Can the business narrow the scope?
+Does SAP already provide an export mechanism through existing licenses?
+Would a consulting engagement cost less than building and maintaining a custom integration?
+
+Only after these questions are answered should the team evaluate the API approach.
+
+Given the current unknowns and the lack of available development capacity, the recommendation should be:
+
+Complete a discovery exercise with SAP, the Rahona platform team, and business stakeholders before committing engineering resources.
+
+At this stage, the biggest risk is not the API itself.
+
+The biggest risk is building an integration before understanding where the files will live, how they will be governed, and whether a supported alternative already exists.
+```
+---
 
 *Last updated: 2026*
