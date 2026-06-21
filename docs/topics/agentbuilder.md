@@ -588,3 +588,45 @@ DESCRIPTION / SUCCESS MEASURES:
 • [measure]
 • [measure]
 ```
+---
+```
+DEMO SCRIPT — Enterprise Agent
+Scene 1: HR Manager (L11) — role auto-detected, full cascade present
+Setup: knowledge sources loaded — CEO Strategy (HR), Group Head Objectives (HR), Risk Culture, and an SVP-level HR objective for whichever sub-function you're showing (this is the rung you need to add — see note at the end).
+You say to the room: "I'm going to open this with nothing about my role at all — just see if it can figure out who I am."
+You type: Generate my team objectives for this cycle.
+What should happen: the agent reads your actual profile (L11, HR) via role data, since you stated no explicit role to override it. It should either generate directly (if everything's inferable) or ask a single intake question for whatever's missing.
+You say to the room: "Notice it didn't ask me who I am — it already knew, because I let it read my profile instead of telling it myself."
+Scene 2: Same flow, but explicitly overriding role
+You type: I'm a manager in HR Talent Acquisition. Generate my team objectives for this cycle.
+You say to the room: "Now watch — I'm telling it who I am directly. This always wins over whatever it could infer on its own, which matters if someone's profile is wrong, outdated, or they're testing on someone else's behalf."
+Expected output: two cards, Business Objective and Risk Culture Objective, each in its own copyable block, followed by one short grounding line — e.g. "Aligned to SVP HR Talent's objective from Group Head Objectives — HR."
+You say to the room: "That last line is the agent telling us how confident this output is — whether it's properly cascaded or inferred. That's the honesty check built in."
+Scene 3: The honest gap — missing upstream rung
+Setup for this scene: deliberately remove or don't mention the SVP-level HR document, so only CEO Strategy + Group Head are present.
+You type: I'm a manager in HR Shared Services. Generate my team objectives for this cycle.
+Expected output: cards still generate (never blocked), but the grounding line should read something like "Inferred — based on Group Head Objectives; upstream objective from SVP Team Objectives was not available."
+You say to the room: "This is the part I actually want you to see — it doesn't pretend. It tells us exactly which rung is missing and still gives us something usable, rather than stalling or quietly guessing."
+Scene 4: The function mismatch — Procurement, but only HR data loaded
+You type: I'm a manager in Procurement. Generate my team objectives for this cycle.
+Expected output: a short, plain statement — "I don't have Procurement-related upstream data. To generate this properly, please provide: CEO Strategy, Group Head objectives, and Risk Culture expectations for Procurement." — no cards generated on unrelated data, no listing of the unrelated HR sources, no links.
+You say to the room: "This is the safety net — it refuses to fake alignment to a function it has no real data for, and tells us exactly what it needs instead of guessing."
+
+DEMO SCRIPT — SVP+ Agent (HR only)
+Scene 1: Vague function — shows the elicitation working
+You type: I'm SVP in HR. Generate my team objectives for this cycle.
+Expected output: the agent should now ask which specific team/mandate within HR, since "HR" alone isn't granular enough per the fix from earlier.
+You say to the room: "Even though I gave it a real function, it's pushing back — because HR alone isn't specific enough to give me something genuinely mine, not generic."
+Scene 2: Specific function — clean output
+You type: I'm SVP, HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected output: two cards, properly differentiated from any other HR sub-function, grounding line included.
+You say to the room: "Same Group Head input as before — completely different, specific output, because now it knows exactly which team I run."
+Scene 3: Cascading to individual, same person
+You type: Now generate my individual objective based on the team objective above.
+Expected output: individual objective cascades from the team objective just created, not back up to Group Head.
+You say to the room: "It's building on what it just gave me, not jumping back to the enterprise level — that's the proper cascade, one step at a time."
+
+One honest gap in this script you should close before you run it for real
+Scene 1 of the enterprise script and the "wow moment" depend on having an SVP-level HR objective document as a knowledge source — which you don't currently have (we only built CEO Strategy, Group Head, and Risk Culture). Without it, Scene 1 will degrade into Scene 3's behavior (inferred, with the honest gap line) even on your best-case run. If you want a true clean wow-moment scene, that's the one file still worth building before your next session — want me to create it now, using a plausible SVP-level HR objective consistent with the Group Head data you already have?
+```
+---
