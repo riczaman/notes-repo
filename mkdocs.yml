@@ -40,6 +40,7 @@ nav:
       - Oracle Generative AI Professional: topics/genAI.md
       - Scripts: topics/scripts.md
       - ADF: topics/adf.md
+      - Agents: topics/agentbuilder.md
 
 # Ensure proper URL handling
 strict: false
