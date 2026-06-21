@@ -630,3 +630,51 @@ One honest gap in this script you should close before you run it for real
 Scene 1 of the enterprise script and the "wow moment" depend on having an SVP-level HR objective document as a knowledge source — which you don't currently have (we only built CEO Strategy, Group Head, and Risk Culture). Without it, Scene 1 will degrade into Scene 3's behavior (inferred, with the honest gap line) even on your best-case run. If you want a true clean wow-moment scene, that's the one file still worth building before your next session — want me to create it now, using a plausible SVP-level HR objective consistent with the Group Head data you already have?
 ```
 ---
+
+```
+DEMO SCRIPT v2 — Enterprise Agent
+Knowledge sources for this run: CEO Strategy (HR), Group Head Objectives (HR), Risk Culture Objectives. No SVP-level or Senior Manager-level HR documents loaded.
+Scene 1: SVP asking for their own team objective — the one clean pass available with current data
+You say to the room: "Let's start at the top of the chain I actually have data for — I'm going to act as the SVP."
+You type: I'm SVP, HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected behavior: No gate fires — SVP's correct upstream (Group Head objective) is genuinely present. Two cards generate directly, followed by a grounding line naming the Group Head source.
+You say to the room: "This is the clean case — every rung this role needs is actually loaded, so it goes straight to output."
+Scene 2: Senior Manager (L11) — the gate fires correctly, by design
+You say to the room: "Now I'm going to drop down a level — I'm a Senior Manager reporting to that SVP. Watch what changes."
+You type: I'm a Senior Manager in HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected behavior: The Pre-Generation Check fires — the agent says something like "I don't have your SVP's team objective. I can generate from what's available now, or you can provide it for a stronger result." — then generates anyway, immediately after.
+You say to the room: "This is the honest gap, and I want you to see it clearly — it's telling us exactly which rung is missing, then still giving us something usable instead of stalling. The grounding line below the cards will say the same thing."
+Scene 3: Give it the missing rung — show the upgrade live
+You say to the room: "Let's close that gap right now and see the difference."
+You type: Here's my SVP's team objective: [paste the SVP-level team objective generated back in Scene 1].
+Expected behavior: No gate fires this time — the agent now has the real upstream input. Regenerates with a cleaner, more specifically cascaded card and a grounding line confirming real alignment, no "inferred" language.
+You say to the room: "Same person, same request — just one piece of real data added, and the gate disappears. That's the system rewarding good inputs, not punishing missing ones."
+Scene 4: Manager (L10) with no upstream at all — two-rung gap
+You say to the room: "Now I'm dropping two levels below the SVP — a Manager, with neither their Senior Manager's nor their SVP's objective on hand."
+You type: I'm a Manager in HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected behavior: Gate fires for the Senior Manager rung specifically (the level directly above a Manager), names that exact missing level, then generates from whatever's available, with the grounding line reflecting the gap honestly.
+You say to the room: "Notice it's specific about which level is missing — not just a generic 'something's missing' message."
+Scene 5: Function mismatch — hard block, not just a soft note
+You say to the room: "Last one — what happens when someone's in a completely different part of the business that this agent has zero data for."
+You type: I'm a Manager in Procurement. Generate my team objectives for this cycle.
+Expected behavior: Full stop before any cards — "I don't have Procurement-related upstream data. To generate this properly, please provide: CEO Strategy, Group Head objectives, and Risk Culture expectations for Procurement." No cards, no guessing, no naming the unrelated HR sources.
+You say to the room: "This is the hard line — it won't fake alignment to a function it has nothing real for. Compare that to the Manager scenario a moment ago, where it still gave us something because at least the function matched."
+
+DEMO SCRIPT v2 — SVP+ Agent (HR only)
+Scene 1: Broad function — the gate fires every time now
+You type: I'm SVP in HR. Generate my team objectives for this cycle.
+Expected behavior: The agent now always asks which specific team or mandate within HR — this fires unconditionally, not intermittently.
+You say to the room: "Even with a real level and a real function stated, it's not specific enough — and now it catches that every single time."
+Scene 2: Specific function — clean generation
+You type: I'm SVP, HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected behavior: Two cards, properly differentiated, grounding line naming the Group Head source.
+You say to the room: "Same Group Head data as before — but because I told it exactly which team, this time it goes straight through."
+Scene 3: Individual objective, same person, same session
+You type: Now generate my individual objective based on the team objective above.
+Expected behavior: Cascades from the team objective just created, not back to Group Head, with its own grounding line — and no bracket-style citation artifacts.
+You say to the room: "It's building on what it just gave me, one step at a time — and you'll notice no stray reference tags this time either."
+
+One thing to lock down before you actually run this
+Scene 3 of the enterprise script depends on you having saved or being able to quickly re-paste the SVP-level team objective text generated in Scene 1 — make sure you copy that output somewhere accessible the moment it appears, since you'll need to feed it back in two scenes later. If you'd rather not depend on a live copy-paste mid-demo, I can build you a standalone SVP-level HR team objective as a backup file now, so Scene 3 has a guaranteed clean input regardless of how Scene 1 actually renders live.
+```
+---
