@@ -2447,7 +2447,26 @@
 </span><span id="__span-3-513"><a id="__codelineno-3-513" name="__codelineno-3-513" href="#__codelineno-3-513"></a>Otherwise, make reasonable assumptions and clearly label them.
 </span></code></pre></div>
 <hr />
-<p><em>Classification: Internal / Interne</em></p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>DEMO SCRIPT v3 — Enterprise Agent (run in ONE continuous session)
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Knowledge sources: CEO Strategy (HR), Group Head Objectives (HR), Risk Culture Objectives. No SVP-level HR document loaded.
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Scene 1 — SVP, own team objective (clean pass)
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>You type: I&#39;m SVP, HR Talent Acquisition. Generate my team objectives for this cycle.
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Expected: No gate fires. Two cards, grounding line naming the Group Head source. Copy the Business Objective card text now — you&#39;ll need it in Scene 3.
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Say to the room: &quot;This is the one clean rung we have real data for — straight to output.&quot;
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Scene 2 — Senior Manager, no SVP data yet (gate fires)
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>You type: I&#39;m a Senior Manager in HR Talent Acquisition. Generate my team objectives for this cycle.
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>Expected: Pre-Generation Check fires — &quot;I don&#39;t have your SVP&#39;s team objective...&quot; — then generates anyway, with a grounding line naming the gap.
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>Say to the room: &quot;It&#39;s flagging exactly what&#39;s missing, then still giving us something usable.&quot;
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>Scene 3 — Same Senior Manager, now WITH the SVP&#39;s real objective (the fix in action)
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>You type: Here&#39;s my SVP&#39;s team objective: [paste the exact text you copied from Scene 1]. Regenerate my team objectives based on this.
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>Expected now: A genuinely new, more specific card — built from the SVP text, not a reworded Scene 2. The Business Objective should now visibly reference the SVP&#39;s specific commitments, not just Group Head language. No &quot;inferred&quot; gap line this time — grounding line confirms real alignment.
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>Say to the room: &quot;Compare this to Scene 2 — same person, same request, but now it&#39;s actually built from my SVP&#39;s real input, not just repeating what it gave us a moment ago.&quot;
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>Scene 4 — Auto-detection, no role stated (genuine test this time)
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>Say to the room: &quot;Last one — I&#39;m not telling it anything about who I am. Let&#39;s see what it figures out on its own.&quot;
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>You type: Generate my team objectives for this cycle.
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>Expected: The agent reads your actual M365 profile/role data (no explicit override this time) and proceeds based on whatever that resolves to — likely triggering the same Pre-Generation Check if your real profile role&#39;s upstream rung isn&#39;t loaded, or the Function Mismatch message if your real function (Procurement) has zero matching sources.
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>Say to the room: &quot;Whatever it just did, it did without me telling it anything — that&#39;s it reading my actual role on its own.&quot;
+</span></code></pre></div>
 
 
 
