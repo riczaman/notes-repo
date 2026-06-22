@@ -1117,3 +1117,245 @@ You type: Generate my team objectives for this cycle.
 Expected: The agent reads your actual M365 profile/role data (no explicit override this time) and proceeds based on whatever that resolves to — likely triggering the same Pre-Generation Check if your real profile role's upstream rung isn't loaded, or the Function Mismatch message if your real function (Procurement) has zero matching sources.
 Say to the room: "Whatever it just did, it did without me telling it anything — that's it reading my actual role on its own."
 ```
+---
+```
+You are a Senior Business Analyst, Solutions Architect, and Technical Product Manager.
+
+Your task is to analyze all attached documents and produce a concise implementation-ready requirements document for software engineers.
+
+The audience is:
+
+* React developers
+* Solution architects
+* QA analysts
+* Product owners
+
+The document must prioritize implementation clarity over business narrative.
+
+# Context
+
+Two intake applications are being consolidated into a single React web application.
+
+Current React Application:
+
+* Primary use cases: vendor spend and procurement requests
+* Funding confirmation occurs near the end of the workflow
+
+Current Power Apps Solution:
+
+* Primary use cases: hiring requests, procurement spend, and other spend requests
+* Additional approval stages exist
+* Funding approval occurs at the beginning of the workflow
+
+Future State:
+
+* Users select "Create New Request"
+* A new routing screen determines the correct workflow
+* Supported workflows will include:
+
+  * Hiring
+  * Procurement
+  * Vendor spend
+  * Other spend
+* Existing React functionality remains where possible
+* Missing Power App capabilities, fields, approvals, and business rules must be incorporated
+
+# Source Material
+
+Analyze all attached documents and perform the following:
+
+1. Remove duplicate information.
+2. Resolve conflicting requirements.
+3. Flag unresolved conflicts separately.
+4. Eliminate historical context unless required for implementation.
+5. Extract only information needed to design, build, test, and deploy the solution.
+
+# Required Output Rules
+
+* Maximum length: 10 pages
+* Use concise language
+* Use bullet points instead of paragraphs whenever possible
+* Avoid repeating information
+* Summarize large field lists into tables
+* Move supporting detail into appendices
+* Clearly separate current state from future state
+* Highlight assumptions and open questions
+
+# Output Structure
+
+## 1. Executive Summary
+
+Provide:
+
+* Objective
+* Scope
+* Out of scope
+* Success metrics
+
+Maximum: 1 page.
+
+## 2. User Journey
+
+Describe the end-to-end future-state flow.
+
+Include:
+
+1. User clicks "Create New Request"
+2. User selects request category
+3. System routes user to appropriate intake flow
+4. User completes form
+5. Approval workflow executes
+6. Funding confirmation occurs
+7. Request is completed
+
+Present as a numbered sequence.
+
+## 3. Request Routing Matrix
+
+Create a table:
+
+| Request Type | Trigger Conditions | Route To | Required Approvals | Funding Step Position |
+
+Include all supported request types.
+
+## 4. Functional Requirements
+
+Format each requirement as:
+
+FR-001
+FR-002
+FR-003
+
+Structure:
+
+* Requirement
+* Business rationale
+* Priority (Must/Should/Could)
+
+Focus on:
+
+* New intake screen
+* Routing logic
+* Form behavior
+* Conditional fields
+* Approval workflows
+* Funding logic
+* Notifications
+* Role-based access
+* Audit history
+* Data migration needs
+
+Limit to implementation-relevant requirements only.
+
+## 5. Field Gap Analysis
+
+Create a consolidated table:
+
+| Field Name | Request Type | Source Application | New/Existing | Required | Validation Rules | Notes |
+
+Group fields by request type.
+
+Do not list obsolete fields.
+
+Identify:
+
+* Missing fields to add
+* Fields to retire
+* Fields to rename
+* Fields with conflicting definitions
+
+## 6. Approval Workflow Matrix
+
+Create a table:
+
+| Request Type | Approvers | Sequence | Funding Timing | Escalations | Exceptions |
+
+Clearly identify differences between current React workflows and Power App workflows.
+
+## 7. Integration Impact Assessment
+
+Create a table:
+
+| Integration | Upstream/Downstream | Impact | Change Required | Owner |
+
+Include:
+
+* Existing integrations
+* New integrations
+* APIs
+* Notifications
+* Reporting dependencies
+* Identity and access management impacts
+
+## 8. Non-Functional Requirements
+
+Include only implementation-critical items:
+
+* Security
+* Performance
+* Availability
+* Auditability
+* Accessibility
+* Logging
+* Compliance
+* Data retention
+
+## 9. Assumptions, Risks, and Open Questions
+
+Create three separate tables.
+
+Examples:
+
+Assumptions:
+
+* Existing APIs remain available
+
+Risks:
+
+* Approval workflow conflicts
+
+Open Questions:
+
+* Which workflow takes precedence when request types overlap?
+
+## 10. Acceptance Criteria
+
+Provide concise, testable criteria using the format:
+
+Given...
+When...
+Then...
+
+Create acceptance criteria for:
+
+* Request routing
+* Form rendering
+* Approval workflows
+* Funding timing
+* Notifications
+* Error handling
+
+# Appendices
+
+Appendix A: Detailed field inventory
+
+Appendix B: Process diagrams referenced in source material
+
+Appendix C: Deferred requirements
+
+# Quality Checks
+
+Before finalizing the document, verify:
+
+* Total length is under 10 pages
+* Every requirement is actionable
+* No duplicate requirements exist
+* Every field appears in only one canonical definition
+* Approval conflicts are highlighted
+* Open questions are explicitly identified
+* Developers can implement the solution without reading the source documents
+
+If information is missing, do not make assumptions.
+
+Instead, add the item to the Open Questions section.
+```
