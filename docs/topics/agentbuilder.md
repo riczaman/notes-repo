@@ -1359,3 +1359,41 @@ If information is missing, do not make assumptions.
 
 Instead, add the item to the Open Questions section.
 ```
+
+---
+
+```
+DEMO SCRIPT v4 — Individual Objectives Only
+Enterprise Agent (one continuous session for Scenes 1-2; fresh session for Scene 3)
+Knowledge sources: CEO Strategy (HR), Group Head Objectives (HR), Risk Culture Objectives, The TD Way.
+Scene 1 — Senior Manager (L11), a people manager — full 5-card set
+Say to the room: "Let's start with a Senior Manager in HR Talent — someone who manages people."
+You type: I'm a Senior Manager in HR Talent. Generate my individual objectives for this cycle.
+Expected: Disclaimer line first. Then 3 Business Objective cards (each a distinct theme), 1 Risk Culture card (wording closely matching the People Manager tier in the Risk Culture deck), 1 How We Lead card (drawn from The TD Way). Grounding line, then the double-check line.
+Say to the room: "Five cards — three business priorities, plus how this role is expected to manage risk, plus how this role is expected to lead people. Notice the Risk Culture wording — that's intentionally close to our actual source language, not paraphrased."
+Scene 2 — Individual Contributor in the same line of business — 4-card set, no leadership card
+You type: I'm an individual contributor in HR Talent. Generate my individual objectives for this cycle.
+Expected: Disclaimer, 3 Business Objective cards, 1 Risk Culture card (Individual Contributor tier wording this time), no How We Lead card.
+Say to the room: "Same line of business, different level — and the card set itself changes. No leadership card here, because this role doesn't manage people."
+Scene 3 — Auto-detect, fresh session, no role stated
+Say to the room: "New conversation, nothing about who I am stated."
+You type: Generate my individual objectives for this cycle.
+Expected: Agent reads actual profile/role data and proceeds accordingly — likely triggering the Pre-Generation Check or Function Mismatch message depending on your real role and function.
+Say to the room: "Whatever happens here, it's reading my actual role on its own — I haven't told it anything."
+
+SVP+ Agent (HR only, one continuous session)
+Scene 1 — Vague level/LOB — the gate fires
+You type: Generate my individual objectives for this cycle.
+Expected: Agent asks for both level (SVP+ or Senior Manager) and HR line of business together, in one message.
+Say to the room: "It won't guess either of these — it asks for both at once, not one at a time."
+Scene 2 — SVP, HR Talent, confirmed people manager — full 5-card set
+You type: I'm SVP, HR Talent, and I manage people. Generate my individual objectives.
+Expected: Disclaimer, 3 Business cards, 1 Risk Culture card (SVP+ tier), 1 How We Lead card. Grounding line, double-check line. "Talent" recognized immediately, no re-ask.
+Say to the room: "Confirmed once, recognized correctly, full five-card set because this SVP manages people."
+Scene 3 — Same SVP, building on the prior objective
+You type: Give me one more business objective building on what you just gave me.
+Expected: Cascades from the prior objective, stays distinct from the first 3 cards, no Risk Culture/How We Lead repeated unnecessarily.
+Say to the room: "It's adding to what it already built, not starting over or repeating the leadership and risk cards unnecessarily."
+
+One thing worth deciding before you run this: Scene 1 of the SVP+ script and Scene 2 of the enterprise script both rely on the Risk Culture PPTX having genuinely distinct wording per tier (SVP+, People Manager, Individual Contributor) — if any tier's wording in that deck is thin or overlaps heavily with another tier, the "match closely" instruction won't have much to differentiate on. Worth a quick look at that file before the demo to confirm each tier's language is distinct enough to showcase the difference between Scene 1 and Scene 2 clearly.
+```
