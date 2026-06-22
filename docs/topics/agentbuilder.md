@@ -1397,3 +1397,279 @@ Say to the room: "It's adding to what it already built, not starting over or rep
 
 One thing worth deciding before you run this: Scene 1 of the SVP+ script and Scene 2 of the enterprise script both rely on the Risk Culture PPTX having genuinely distinct wording per tier (SVP+, People Manager, Individual Contributor) — if any tier's wording in that deck is thin or overlaps heavily with another tier, the "match closely" instruction won't have much to differentiate on. Worth a quick look at that file before the demo to confirm each tier's language is distinct enough to showcase the difference between Scene 1 and Scene 2 clearly.
 ```
+---
+```
+You are an award-winning enterprise product marketing agency producing a launch video for a corporate web application.
+
+I will provide:
+
+* Screen recordings of my application
+* Screenshots
+* Product information
+* Business benefits
+* User personas
+
+Your objective is to transform these assets into a professional executive-facing promotional video suitable for:
+
+* Executives
+* Senior Vice Presidents
+* Vice Presidents
+* Directors
+* Business Stakeholders
+
+The final video should feel similar to a Microsoft, Salesforce, ServiceNow, or Atlassian product launch video.
+
+The video should NOT begin by showing the application.
+
+The video must first establish the business problem and create a compelling story.
+
+The final video should combine:
+
+* Stock footage
+* Product demonstrations
+* Motion graphics
+* Text overlays
+* Executive messaging
+* Professional narration
+* Background music
+
+The tone should be:
+
+* Modern
+* Professional
+* Enterprise-focused
+* Executive-friendly
+* Business-oriented
+
+Avoid technical jargon.
+
+Translate technical features into business outcomes.
+
+---
+
+APPLICATION INFORMATION
+
+Application Name:
+[INSERT]
+
+One-Sentence Description:
+[INSERT]
+
+Current Process:
+[INSERT]
+
+Business Problem:
+[INSERT]
+
+Target Users:
+[INSERT]
+
+Key Benefits:
+[INSERT]
+
+Key Metrics:
+[INSERT]
+
+Demo Recording:
+[INSERT]
+
+Screenshots:
+[INSERT]
+
+Testimonials:
+[INSERT]
+
+Call To Action:
+[INSERT]
+
+---
+
+REQUIRED OUTPUT
+
+Create a complete 2–3 minute corporate launch video package.
+
+Provide:
+
+1. Full storyboard
+2. Scene breakdown
+3. Editing timeline
+4. Voiceover script
+5. On-screen text
+6. Motion graphics recommendations
+7. Stock footage recommendations
+8. Music recommendations
+9. Clipchamp editing instructions
+
+---
+
+VIDEO STRUCTURE
+
+SCENE 1 – THE CHALLENGE
+
+Duration:
+20–30 seconds
+
+Use stock footage showing realistic workplace frustrations.
+
+Examples:
+
+* Employees switching between systems
+* Long email chains
+* Spreadsheet tracking
+* Delayed approvals
+* Process bottlenecks
+* Lack of visibility
+
+Deliver:
+
+* Recommended stock footage search terms
+* Suggested clips
+* Voiceover
+* On-screen text
+
+Do not show the application.
+
+---
+
+SCENE 2 – A BETTER WAY
+
+Duration:
+15–20 seconds
+
+Show positive workplace collaboration.
+
+Introduce the concept of a simpler, more streamlined experience.
+
+Do not fully show the product yet.
+
+Deliver:
+
+* Voiceover
+* Visual recommendations
+* Text overlays
+
+---
+
+SCENE 3 – PRODUCT EXPERIENCE
+
+Duration:
+60–90 seconds
+
+Analyze my screen recording.
+
+Identify the strongest workflows.
+
+Select only the most compelling portions.
+
+For each segment provide:
+
+* Start timestamp
+* End timestamp
+* Purpose
+* Key message
+* Zoom recommendations
+* Cursor highlight instructions
+* Text callouts
+* Transition recommendations
+
+Trim:
+
+* Waiting times
+* Repetitive clicks
+* Typing delays
+* Loading screens
+
+Combine demo footage with stock footage where appropriate.
+
+Focus on:
+
+* Ease of use
+* Simplicity
+* Speed
+* Efficiency
+* Visibility
+
+---
+
+SCENE 4 – BUSINESS IMPACT
+
+Duration:
+20–30 seconds
+
+Show:
+
+* Metrics
+* Before-and-after comparisons
+* Business outcomes
+* User satisfaction
+
+Create recommendations for:
+
+* Animated statistics
+* KPI visuals
+* Executive summaries
+
+---
+
+SCENE 5 – FUTURE VISION & CALL TO ACTION
+
+Duration:
+15–20 seconds
+
+End with:
+
+* Vision statement
+* Business value summary
+* Call to action
+
+Show:
+
+* Successful employees
+* Collaboration
+* Modern workplace visuals
+
+Display:
+
+* Application logo
+* Tagline
+* Contact information
+
+---
+
+VOICEOVER REQUIREMENTS
+
+Create a complete professional narration script.
+
+The voice should be:
+
+* Executive-friendly
+* Professional
+* Conversational
+* Confident
+
+Focus on:
+
+* Business outcomes
+* User experience
+* Organizational impact
+
+Avoid:
+
+* Technical jargon
+* Feature-heavy explanations
+
+---
+
+CLIPCHAMP PRODUCTION GUIDE
+
+For every scene provide:
+
+* Clipchamp stock footage keywords
+* Suggested transitions
+* Suggested text animations
+* Suggested motion graphics
+* Suggested timing
+* Suggested music style
+
+Output the final result as if you were handing instructions to a professional video editor who must build the video in Microsoft Clipchamp.
+```
