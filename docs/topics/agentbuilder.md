@@ -1096,4 +1096,24 @@ Otherwise, make reasonable assumptions and clearly label them.
 
 ---
 
-*Classification: Internal / Interne*
+```
+DEMO SCRIPT v3 — Enterprise Agent (run in ONE continuous session)
+Knowledge sources: CEO Strategy (HR), Group Head Objectives (HR), Risk Culture Objectives. No SVP-level HR document loaded.
+Scene 1 — SVP, own team objective (clean pass)
+You type: I'm SVP, HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected: No gate fires. Two cards, grounding line naming the Group Head source. Copy the Business Objective card text now — you'll need it in Scene 3.
+Say to the room: "This is the one clean rung we have real data for — straight to output."
+Scene 2 — Senior Manager, no SVP data yet (gate fires)
+You type: I'm a Senior Manager in HR Talent Acquisition. Generate my team objectives for this cycle.
+Expected: Pre-Generation Check fires — "I don't have your SVP's team objective..." — then generates anyway, with a grounding line naming the gap.
+Say to the room: "It's flagging exactly what's missing, then still giving us something usable."
+Scene 3 — Same Senior Manager, now WITH the SVP's real objective (the fix in action)
+You type: Here's my SVP's team objective: [paste the exact text you copied from Scene 1]. Regenerate my team objectives based on this.
+Expected now: A genuinely new, more specific card — built from the SVP text, not a reworded Scene 2. The Business Objective should now visibly reference the SVP's specific commitments, not just Group Head language. No "inferred" gap line this time — grounding line confirms real alignment.
+Say to the room: "Compare this to Scene 2 — same person, same request, but now it's actually built from my SVP's real input, not just repeating what it gave us a moment ago."
+Scene 4 — Auto-detection, no role stated (genuine test this time)
+Say to the room: "Last one — I'm not telling it anything about who I am. Let's see what it figures out on its own."
+You type: Generate my team objectives for this cycle.
+Expected: The agent reads your actual M365 profile/role data (no explicit override this time) and proceeds based on whatever that resolves to — likely triggering the same Pre-Generation Check if your real profile role's upstream rung isn't loaded, or the Function Mismatch message if your real function (Procurement) has zero matching sources.
+Say to the room: "Whatever it just did, it did without me telling it anything — that's it reading my actual role on its own."
+```
