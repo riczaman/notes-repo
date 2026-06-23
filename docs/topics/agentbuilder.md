@@ -1997,3 +1997,275 @@ YOUR TASK:
 Output as an actual designed PowerPoint slide (.pptx), not a text 
 description.
 ```
+---
+```
+Option A (Best): PowerPoint Becomes Your Video Editor
+
+Think of PowerPoint as a timeline.
+
+Each slide is a scene.
+
+Example:
+
+Slide	Content	Duration
+1	Stock footage: employee struggling	10 sec
+2	Stock footage: approval delays	10 sec
+3	Stock footage: team collaboration	10 sec
+4	Demo embedded in laptop frame	20 sec
+5	Demo embedded in laptop frame	20 sec
+6	Benefits and metrics	10 sec
+7	Call to action	10 sec
+
+When exported as MP4, PowerPoint plays:
+
+Slide 1
+↓
+Transition
+↓
+Slide 2
+↓
+Transition
+↓
+Slide 3
+↓
+Transition
+↓
+Slide 4
+↓
+Transition
+↓
+Slide 5
+↓
+Transition
+↓
+Slide 6
+↓
+Transition
+↓
+Slide 7
+
+and becomes a single video.
+
+How the Videos Actually Play
+
+Let's say Slide 1 contains a 10-second stock footage MP4.
+
+Select the video.
+
+Playback Settings:
+
+Start Automatically
+Play Full Screen (optional)
+
+Now PowerPoint waits for the video to finish.
+
+Then the slide advances.
+
+Then Slide 2 begins.
+
+Then Slide 2 video finishes.
+
+Then Slide 3 begins.
+
+etc.
+
+So yes, the clips play sequentially.
+
+Your Laptop Mockup Idea
+
+This is actually what a lot of marketing teams do.
+
+Example:
+
+Slide background:
+
+Office environment
+
+Center:
+
+Laptop PNG
+
+Inside laptop screen:
+
+Your demo recording
+
+Like this:
+
++----------------------+
+|                      |
+|      Laptop          |
+|   +--------------+   |
+|   | Demo Video   |   |
+|   | Playing Here |   |
+|   +--------------+   |
+|                      |
++----------------------+
+
+Looks much more polished than showing a raw screen recording.
+
+Even Better
+
+Instead of a laptop image:
+
+Use a device frame.
+
+Search:
+
+MacBook mockup PNG
+Laptop frame PNG
+Device frame PNG
+
+Transparent PNG.
+
+Put it on top of the demo.
+
+Now it looks like the application is running inside a real device.
+
+Transitions
+
+Between slides:
+
+Use:
+
+Fade
+Morph
+Push
+
+Avoid:
+
+Fly In
+Bounce
+Swivel
+Checkerboard
+
+Executives hate flashy transitions.
+
+My recommendation:
+
+Fade
+Duration: 0.75 sec
+
+everywhere.
+
+Animations
+
+You can animate:
+
+Benefits:
+
+✓ Faster Requests
+
+✓ Improved Visibility
+
+✓ Reduced Manual Effort
+
+Use:
+
+Appear
+
+or
+
+Fade
+
+One after another.
+
+What About Voiceover?
+
+Two approaches.
+
+Easier
+
+Use the voiceover already generated in Clipchamp.
+
+Export each Clipchamp scene as its own MP4.
+
+Example:
+
+ProblemScene.mp4
+
+SolutionScene.mp4
+
+CTA.mp4
+
+Insert them into PowerPoint.
+
+Voiceover comes with them.
+
+More Advanced
+
+Export narration separately.
+
+Insert audio into PowerPoint.
+
+Synchronize slides manually.
+
+I would not do this.
+
+Too much effort.
+
+What I Would Build
+
+Slide 1
+
+Problem footage from Clipchamp
+
+Voiceover:
+
+Teams waste valuable time navigating disconnected processes.
+
+Slide 2
+
+Problem footage
+
+Voiceover:
+
+Visibility is limited and approvals are often delayed.
+
+Slide 3
+
+Future state footage
+
+Voiceover:
+
+Imagine a simpler experience.
+
+Slide 4
+
+Laptop mockup
+
+Demo clip
+
+Voiceover:
+
+Users can create sourcing requests in minutes.
+
+Slide 5
+
+Laptop mockup
+
+Demo clip
+
+Voiceover:
+
+Built-in visibility keeps stakeholders informed every step of the way.
+
+Slide 6
+
+Metrics
+
+Animated numbers
+
+75% Less Manual Effort
+
+50% Faster Processing
+
+100% Visibility
+
+Slide 7
+
+Logo
+
+Tagline
+
+Call To Action
+```
