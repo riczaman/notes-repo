@@ -1673,3 +1673,327 @@ For every scene provide:
 
 Output the final result as if you were handing instructions to a professional video editor who must build the video in Microsoft Clipchamp.
 ```
+---
+```
+One-Page Promotional Job Aid Creation Prompt
+
+You are a Senior Marketing Analyst, Learning Experience Designer, and Corporate Communications Specialist.
+
+Your task is to transform a detailed end-user job aid into a visually appealing, executive-quality, one-page PDF designed for awareness, adoption, and promotion of the application.
+
+Objective
+
+I will provide a comprehensive job aid (approximately 30 pages) containing:
+
+Detailed step-by-step instructions
+Screenshots
+Business process information
+User workflows
+Feature descriptions
+Navigation guidance
+
+Your goal is NOT to recreate the training guide.
+
+Instead, create a concise, visually engaging, one-page promotional job aid that serves as a companion piece to a promotional/demo video.
+
+The audience should be able to quickly understand:
+
+What the application does
+Why they should use it
+Key business benefits
+Major capabilities
+High-level process flow
+Where the application fits into their work
+
+without needing to read detailed instructions.
+
+Required Deliverables
+1. Executive Summary
+
+Create a short introduction (2-3 sentences) that explains:
+
+What the application is
+Who it is for
+Why it was created
+The primary business value
+
+Use business-friendly language.
+
+2. Key Benefits Section
+
+Identify and summarize the most important benefits.
+
+Examples:
+
+Saves time
+Reduces manual work
+Improves visibility
+Streamlines approvals
+Centralizes information
+Improves compliance
+Provides real-time insights
+
+Present benefits as concise callout cards or icon-based highlights.
+
+3. Core Capabilities
+
+Extract the application's most important capabilities.
+
+Do NOT list every feature.
+
+Focus on:
+
+Top 5–7 capabilities
+User-facing value
+Business outcomes
+
+Each capability should include:
+
+Capability name
+One sentence description
+Suggested icon
+4. High-Level User Journey
+
+Convert the detailed process into a simple visual workflow.
+
+Example:
+
+Login
+↓
+Create Request
+↓
+Review Details
+↓
+Submit
+↓
+Track Progress
+↓
+Complete
+
+Only include major milestones.
+
+Avoid detailed steps.
+
+5. Screenshot Recommendations
+
+Review all screenshots in the source job aid and identify:
+
+Essential Screenshots
+
+Screens that:
+
+Showcase primary functionality
+Demonstrate application value
+Highlight key dashboards
+Show important user interactions
+Remove Screenshots That
+Show repetitive clicks
+Show navigation details
+Demonstrate obvious actions
+Exist solely for training purposes
+
+For each recommended screenshot provide:
+
+Screenshot title
+Why it should be included
+Suggested placement within the one-page layout
+6. Visual Design Guidance
+
+Design the output as a professional corporate marketing asset.
+
+Recommended layout:
+
+Header:
+
+Application name
+Tagline
+Hero screenshot
+
+Middle:
+
+Benefits
+Core capabilities
+
+Lower section:
+
+High-level workflow
+Key screenshots
+
+Footer:
+
+Support information
+QR code placeholder
+Link to full job aid
+7. Graphic Recommendations
+
+Identify opportunities to enhance the document using:
+
+Icons
+Infographics
+Process diagrams
+Callout cards
+KPI highlights
+Statistics
+Feature badges
+
+Recommend specific visual elements that would improve adoption and engagement.
+
+8. Promotional Messaging
+
+Generate:
+
+Elevator Pitch (30 seconds)
+
+A concise statement explaining the application.
+
+Tagline Options
+
+Provide 5 tagline options.
+
+Examples:
+
+"One Place. One Process. Complete Visibility."
+"Simplifying Work from Start to Finish."
+"Faster Decisions. Better Outcomes."
+9. PDF Content Draft
+
+Create the actual one-page content draft.
+
+The draft should be:
+
+Ready for PowerPoint, Canva, Adobe Express, or PDF creation
+Professionally written
+Marketing-focused
+Visually organized
+Limited to one page
+
+Do NOT create detailed instructions.
+
+Do NOT include training content.
+
+Do NOT exceed one page of content.
+
+Output Format
+
+Provide your response in the following order:
+
+Executive Summary
+Key Benefits
+Core Capabilities
+High-Level Workflow
+Screenshot Recommendations
+Graphic Recommendations
+Tagline Options
+Elevator Pitch
+Complete One-Page PDF Draft
+Suggested Layout Mockup (wireframe)
+
+Optimize for:
+
+Executive readability
+User adoption
+Visual appeal
+Professional corporate communications
+One-page PDF format
+Companion asset for a promotional video
+
+The final output should feel like a professionally designed internal marketing flyer, not a training manual.
+```
+---
+```
+You are acting as a senior marketing analyst creating a polished, promotional 
+one-page PDF job aid for [APPLICATION NAME]. 
+
+CONTEXT: I am attaching our existing 30-page detailed job aide, which contains 
+step-by-step instructions and screenshots covering the application end-to-end. 
+That document is for internal/operational use. This new one-pager is DIFFERENT 
+— it is a supplemental marketing asset that will accompany a promotional video 
+about the application, so it needs to feel aspirational and visual, not 
+instructional.
+
+YOUR TASK:
+1. Review the attached 30-page job aide and identify:
+   - The 3–5 most visually compelling and representative screenshots/graphics 
+     (prioritize ones showing the app's UI, key features, or "wow" moments — 
+     not generic login screens or error states)
+   - The core value proposition of the application (what problem it solves, 
+     who it's for)
+   - The 4–6 highest-level capabilities or features (NOT granular steps)
+   - Any existing brand colors, logos, or icons used in the original document
+
+2. Design a SINGLE PAGE PDF (8.5x11 or 16:9 landscape — recommend landscape 
+   since this supplements a video) that includes:
+   - A strong headline and one-line subheadline communicating what the app 
+     does and why it matters
+   - 2–3 of the selected screenshots, cropped/framed cleanly (not full raw 
+     screenshots with toolbars/clutter — crop to the relevant UI moment)
+   - 4–6 key capabilities as short benefit-driven phrases (5-8 words each, 
+     NOT instructions — e.g. "Automates approval routing in seconds" not 
+     "Click the Approve button")
+   - A visual hierarchy using icons, color blocks, or a simple layout grid 
+     (not paragraphs of text)
+   - A QR code or short link placeholder pointing to the full job aide or 
+     a help resource
+   - Light, modern, professional aesthetic — generous white space, consistent 
+     color palette, sans-serif typography
+
+3. EXPLICITLY DO NOT:
+   - Reproduce step-by-step instructions
+   - Include more than ~40-60 words of body text total
+   - Use more than 3 screenshots
+   - Make this feel like a manual — it should feel like a product one-sheet 
+     or app store feature page
+
+4. Output as a polished PDF with the visual design fully realized (not just 
+   a text outline) — treat this like a marketing collateral piece, not a 
+   documentation page.
+
+Before finalizing, summarize back to me: which screenshots you selected and 
+why, and the headline/subheadline you're proposing — so I can approve before 
+you generate the final PDF.
+```
+
+---
+```
+You are acting as a senior marketing analyst designing a single, visually 
+striking PowerPoint TITLE SLIDE for [APPLICATION NAME]. This slide is the 
+opening shot of a promotional video — it will be on screen for a few seconds 
+while a voiceover/music intro plays, so it must work as a piece of branded 
+visual design, not a typical presentation slide.
+
+CONTEXT: I am attaching our 30-page job aide as a reference for the 
+application's existing branding — logo, color palette, icon style, and any 
+hero screenshots that represent the product well.
+
+YOUR TASK:
+1. Pull from the attached document: the application's logo/name styling, 
+   dominant brand colors, and 1 standout screenshot or UI element that could 
+   serve as a background or supporting visual.
+
+2. Design ONE slide (16:9, video-ready) that includes:
+   - The application name as the dominant visual element (large, bold, 
+     well-kerned typography)
+   - A short, punchy tagline (under 10 words) capturing what the app does 
+     or its core benefit
+   - A tasteful background treatment — options: a softly blurred/darkened 
+     hero screenshot, a gradient using the brand colors, or an abstract 
+     pattern echoing the app's icon/logo shapes
+   - The application logo placed cleanly (not stretched/pixelated)
+   - Balanced composition with clear focal point — this should look like a 
+     title card for a tech product launch video, not a corporate PowerPoint
+
+3. Aesthetic direction:
+   - Modern, premium, "product launch" feel (think Apple keynote title 
+     slides or SaaS product demo intros)
+   - Strong contrast so text is legible over any background imagery
+   - Consistent color story pulled directly from the app's existing branding 
+     — do not invent an unrelated palette
+   - No bullet points, no body paragraphs, no slide titles/footers — this is 
+     a single cinematic frame
+
+4. Before generating, tell me what background treatment you're proposing 
+   and what tagline you've drafted, so I can confirm direction first.
+
+Output as an actual designed PowerPoint slide (.pptx), not a text 
+description.
+```
