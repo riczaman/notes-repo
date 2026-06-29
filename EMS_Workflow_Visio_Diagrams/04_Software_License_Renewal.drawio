@@ -1,0 +1,76 @@
+<mxfile host="app.diagrams.net" modified="2026-06-28T00:00:00.000Z" agent="USFF-EMS-Workflow-Generator" version="24.0.0">
+  <diagram name="Software License Renewal &gt;$100K" id="diagram1">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="c2" value="Software License Renewal &gt;$100K" style="text;html=1;fontSize=14;fontStyle=1;align=left;verticalAlign=middle;fontColor=#0E2E1C;" vertex="1" parent="1"><mxGeometry x="20" y="10" width="900" height="30" as="geometry"/></mxCell>
+<mxCell id="c3" value="1. EMS Intake Triage
+(User enters EMS)" style="shape=document;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c4" value="2. Pipeline Form Completion
+(Spend &gt; $100K triggers pipeline)" style="shape=document;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="240" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c5" value="Must be submitted min. 90 days before procurement." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="240" y="144" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c7" value="3. VP Approval
+(If VP exists in segment)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c8" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="460" y="144" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c10" value="3a. Skip VP -&gt; SVP
+(If no VP in segment)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="680" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c11" value="Skip logic applied automatically." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="680" y="144" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c13" value="4. SVP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="900" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c14" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="900" y="144" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c16" value="5. EVP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1120" y="60" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c17" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="1120" y="144" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c19" value="6. FinEVP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="220" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c20" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="20" y="304" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c22" value="7. Expense Review Committee" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="240" y="220" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c23" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="240" y="304" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c25" value="8. SEVP Approval
+(Final pipeline approval)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="220" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c26" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="460" y="304" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c28" value="PHASE: Offline Procurement &amp; Re-entry" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F2F7F3;strokeColor=#C7E0CD;fontSize=12;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontColor=#1F6B3A;" vertex="1" parent="1"><mxGeometry x="10" y="344" width="900" height="26" as="geometry"/></mxCell>
+<mxCell id="c29" value="9. Pipeline Closed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=40;" vertex="1" parent="1"><mxGeometry x="20" y="380" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c30" value="10. Complete Procurement / SSG Process
+(Outside EMS)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;dashed=1;" vertex="1" parent="1"><mxGeometry x="240" y="380" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c31" value="External procurement process." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="240" y="464" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c33" value="11. Return to EMS: Enter Pipeline # and SR #" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="380" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c34" value="User re-enters EMS to link records." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="460" y="464" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c36" value="PHASE: SPID (Contract Execution Approval)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F2F7F3;strokeColor=#C7E0CD;fontSize=12;fontStyle=1;verticalAlign=top;align=left;spacingLeft=10;spacingTop=6;fontColor=#1F6B3A;" vertex="1" parent="1"><mxGeometry x="10" y="504" width="900" height="26" as="geometry"/></mxCell>
+<mxCell id="c37" value="12. SPID Template Completion
+(Auto-populated)" style="shape=document;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1"><mxGeometry x="20" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c38" value="Data pulled from prior approved requests." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="20" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c39" value="13. SPID: VP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="240" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c40" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="240" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c42" value="14. SPID: SVP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="460" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c43" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="460" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c45" value="15. SPID: EVP Approval" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="680" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c46" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="680" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c48" value="16. SPID: Expense Review Committee" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="900" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c49" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="900" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c51" value="17. SPID: SEVP Approval
+(Final SPID approval)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1"><mxGeometry x="1120" y="540" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c52" value="Agenda &amp; Meeting." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="1120" y="624" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c54" value="18. SPID Record Closed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;arcSize=40;" vertex="1" parent="1"><mxGeometry x="20" y="700" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c56" value="19. Ariba DocuSign Process
+(Outside EMS)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;dashed=1;" vertex="1" parent="1"><mxGeometry x="240" y="700" width="160" height="70" as="geometry"/></mxCell>
+<mxCell id="c57" value="Contract execution." style="shape=note;whiteSpace=wrap;html=1;fillColor=#fff9b2;strokeColor=#d6b656;fontSize=10;size=14;" vertex="1" parent="1"><mxGeometry x="240" y="784" width="160" height="60" as="geometry"/></mxCell>
+<mxCell id="c6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c3" target="c4"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c4" target="c7"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c12" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c7" target="c10"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c10" target="c13"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c18" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c13" target="c16"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c16" target="c19"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c19" target="c22"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c27" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c22" target="c25"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c32" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c29" target="c30"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c35" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c30" target="c33"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c41" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c37" target="c39"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c44" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c39" target="c42"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c47" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c42" target="c45"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c50" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c45" target="c48"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c53" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c48" target="c51"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c55" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c51" target="c54"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="c58" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" edge="1" parent="1" source="c54" target="c56"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
