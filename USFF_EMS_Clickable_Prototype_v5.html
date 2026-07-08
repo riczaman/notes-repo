@@ -1,0 +1,2772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified Storefront — Combined Intake Prototype v5</title>
+<style>
+  :root{
+    --td-green-darkest:#0c2418;
+    --td-green-dark:#123822;
+    --td-green:#1c4d2e;
+    --td-green-mid:#1f6b3a;
+    --td-green-light:#e7f3ea;
+    --td-green-border:#c7e0cd;
+    --amber-bg:#fdf3df;
+    --amber-border:#e9c573;
+    --amber-text:#7a5511;
+    --red-bg:#fbeaea;
+    --red-border:#e3a3a3;
+    --red-text:#8c2c2c;
+    --blue-bg:#e6f1fb;
+    --blue-text:#0c447c;
+    --ink:#1c1f1d;
+    --ink-soft:#54584f;
+    --ink-faint:#8b8e85;
+    --line:#dfe2da;
+    --paper:#fafaf7;
+    --card:#ffffff;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(20,30,20,0.06);
+    --shadow-lift:0 6px 24px rgba(15,30,18,0.14);
+    font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);}
+  .app-shell{max-width:1280px;margin:0 auto;background:var(--paper);min-height:600px;}
+
+  .nav{background:var(--td-green);color:#fff;display:flex;align-items:center;
+    justify-content:space-between;padding:14px 28px;}
+  .nav-left{display:flex;align-items:center;gap:30px;}
+  .nav-title{font-size:19px;font-weight:700;letter-spacing:.2px;cursor:pointer;}
+  .nav-links{display:flex;gap:26px;font-size:14px;font-weight:500;}
+  .nav-links a{color:#eaf3ec;text-decoration:none;display:flex;align-items:center;gap:6px;opacity:.92;cursor:pointer;}
+  .nav-links a.active{opacity:1;border-bottom:2px solid #fff;padding-bottom:3px;}
+  .nav-badge{background:#2f7a48;color:#eafff0;font-size:10.5px;font-weight:700;
+    padding:2px 7px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;}
+
+  .page{padding:28px 32px 60px;}
+  .crumbs{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px;display:flex;gap:6px;align-items:center;}
+  .crumbs .seg{cursor:pointer;}
+  .crumbs .seg:hover{text-decoration:underline;color:var(--td-green-mid);}
+  .crumbs b{color:var(--ink-soft);}
+
+  .note-banner{background:var(--td-green-light);border:1px solid var(--td-green-border);
+    border-radius:var(--radius);padding:13px 18px;display:flex;gap:10px;align-items:flex-start;
+    font-size:13.5px;color:#2c4a36;margin-bottom:26px;}
+  .note-banner b{color:var(--td-green-dark);}
+  .note-banner a{color:var(--td-green-mid);font-weight:600;text-decoration:underline;cursor:pointer;}
+
+  h1.page-h{font-size:21px;font-weight:600;margin:0 0 22px;color:var(--ink);}
+  h2.page-h2{font-size:18px;font-weight:600;margin:0 0 6px;color:var(--ink);}
+  p.page-sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 24px;}
+
+  .home-tiles{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1040px;}
+  .home-tile{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:26px;display:flex;flex-direction:column;align-items:flex-start;}
+  .home-illustration{width:100%;height:180px;border-radius:10px;margin-bottom:18px;
+    background:var(--td-green-light);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .home-illustration svg{width:100%;height:100%;}
+  .home-tile h3{margin:0 0 8px;font-size:17px;font-weight:700;color:var(--ink);}
+  .home-tile p{margin:0 0 20px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
+  .home-cta{background:var(--td-green);color:#fff;border:none;border-radius:7px;
+    padding:13px 24px;font-size:14px;font-weight:700;width:100%;cursor:pointer;transition:background .15s;}
+  .home-cta:hover{background:var(--td-green-dark);}
+
+  .tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:8px;}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 20px 18px;cursor:pointer;transition:border-color .15s, box-shadow .15s, transform .1s;
+    display:flex;flex-direction:column;gap:10px;position:relative;}
+  .tile:hover{border-color:var(--td-green-mid);box-shadow:var(--shadow-lift);transform:translateY(-1px);}
+  .tile-icon{width:42px;height:42px;border-radius:9px;background:var(--td-green-light);
+    color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:700;}
+  .tile h3{margin:0;font-size:15px;font-weight:600;color:var(--ink);}
+  .tile p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+
+  .section-divider{display:flex;align-items:center;gap:10px;margin:34px 0 16px;}
+  .section-divider span{font-size:12px;font-weight:700;color:var(--ink-faint);
+    text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+  .section-divider .line{flex:1;height:1px;background:var(--line);}
+
+  .btn{font-size:13.5px;font-weight:600;border-radius:7px;padding:10px 20px;
+    border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s, opacity .15s;font-family:inherit;}
+  .btn-primary{background:var(--td-green);color:#fff;}
+  .btn-primary:hover{background:var(--td-green-dark);}
+  .btn-outline{background:#fff;color:var(--ink-soft);border-color:var(--line);}
+  .btn-outline:hover{background:#f3f4f0;}
+  .btn-disabled{background:#e7e9e3;color:#a8aba1;cursor:not-allowed;}
+  .btn-sm{padding:7px 14px;font-size:12.5px;}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,20,12,0.55);display:none;
+    align-items:center;justify-content:center;z-index:50;padding:24px;}
+  .modal-overlay.show{display:flex;}
+  .modal-card{background:#fff;border-radius:14px;max-width:560px;width:100%;
+    box-shadow:0 18px 50px rgba(0,0,0,0.28);overflow:hidden;max-height:90vh;overflow-y:auto;}
+  .modal-head{padding:24px 26px 0;text-align:center;}
+  .modal-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:800;margin:0 auto 14px;}
+  .modal-icon.danger{background:var(--red-bg);color:var(--red-text);}
+  .modal-icon.success{background:var(--td-green-light);color:var(--td-green-dark);}
+  .modal-head h2{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);}
+  .modal-head p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.55;padding:0 6px;}
+  .modal-body{padding:20px 26px;}
+  .modal-rule{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  .modal-rule b{color:var(--ink);}
+  .modal-row{display:flex;justify-content:space-between;align-items:center;
+    padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
+  .modal-row:last-child{border-bottom:none;}
+  .modal-row span:first-child{color:var(--ink-soft);}
+  .modal-row input[type=number]{width:130px;text-align:right;border:1px solid var(--line);
+    border-radius:6px;padding:6px 9px;font-size:13px;font-family:inherit;}
+  .pill-blocked{background:var(--red-bg);color:var(--red-text);font-weight:700;
+    font-size:11px;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;}
+  .pill-ok{background:var(--td-green-light);color:var(--td-green-dark);font-weight:700;
+    font-size:11px;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;}
+  .modal-foot{padding:18px 26px 24px;display:flex;gap:10px;justify-content:flex-end;
+    border-top:1px solid var(--line);margin-top:6px;}
+
+  .wizard-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:26px 30px 32px;margin-top:10px;}
+  .wizard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .step-pill{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber-text);
+    font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:20px;margin-left:10px;}
+  .wizard-top-left{display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--ink);}
+  .progressbar{height:5px;background:var(--line);border-radius:6px;margin:14px 0 6px;overflow:hidden;}
+  .progressbar > div{height:100%;background:var(--td-green-mid);transition:width .3s;}
+  .progress-meta{font-size:12px;color:var(--ink-faint);margin-bottom:22px;}
+
+  .stepper{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:8px 0;}
+  .step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px;}
+  .step .node{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:13px;font-weight:700;z-index:2;}
+  .step.done .node{background:var(--td-green-mid);color:#fff;}
+  .step.current .node{background:var(--td-green-mid);color:#fff;box-shadow:0 0 0 4px var(--td-green-light);}
+  .step.todo .node{background:#fff;color:var(--ink-faint);border:2px solid var(--line);}
+  .step .lbl{font-size:11.5px;font-weight:600;color:var(--ink);margin-top:8px;text-align:center;}
+  .step .sub{font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-top:2px;}
+  .step.done .sub{color:var(--td-green-mid);}
+  .step.current .sub{color:var(--amber-text);}
+  .step.todo .sub{color:var(--ink-faint);}
+  .step .connector{position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--line);z-index:1;}
+  .step.done .connector, .step.current .connector{background:var(--td-green-mid);}
+  .step:last-child .connector{display:none;}
+
+  .form-card{border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px 26px;background:#fff;}
+  .form-card h2{font-size:15px;font-weight:700;margin:0 0 18px;padding-left:12px;
+    border-left:3px solid var(--td-green-mid);color:var(--ink);}
+  .form-card h2.alt-accent{border-left-color:var(--amber-border);}
+  .form-card h2.red-accent{border-left-color:var(--red-border);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+  .field label .req{color:#b23b3b;margin-left:2px;}
+  .field label .tag{font-size:10px;font-weight:700;color:var(--ink-faint);background:#f0f1ec;
+    padding:2px 7px;border-radius:5px;margin-left:7px;text-transform:none;letter-spacing:0;}
+  .field label .tag.new{color:var(--amber-text);background:var(--amber-bg);border:1px solid var(--amber-border);}
+  .field label .tag.gts{color:var(--blue-text);background:var(--blue-bg);border:1px solid #b9d8f0;}
+  .field .help{font-size:11.5px;color:var(--ink-faint);margin-top:4px;line-height:1.45;}
+  input.fld, select.fld, textarea.fld{width:100%;border:1px solid var(--line);border-radius:7px;
+    padding:10px 12px;font-size:13px;color:var(--ink);background:#fff;font-family:inherit;}
+  input.fld:focus, select.fld:focus, textarea.fld:focus{outline:none;border-color:var(--td-green-mid);
+    box-shadow:0 0 0 3px var(--td-green-light);}
+  input.fld.locked, select.fld.locked{background:#f5f6f3;color:var(--ink-soft);cursor:not-allowed;}
+  textarea.fld{resize:vertical;min-height:64px;}
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .radio-opt{border:1px solid var(--line);border-radius:7px;padding:9px 16px;font-size:13px;
+    display:flex;align-items:center;gap:7px;color:var(--ink-soft);cursor:pointer;user-select:none;}
+  .radio-opt.sel{border-color:var(--td-green-mid);color:var(--td-green-dark);font-weight:600;background:var(--td-green-light);}
+  .radio-opt .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;}
+  .radio-opt.sel .dot{border-color:var(--td-green-mid);background:var(--td-green-mid);position:relative;}
+
+  .source-pill-row{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;}
+  .src-pill{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.2px;}
+  .src-usff{background:var(--blue-bg);color:var(--blue-text);}
+  .src-ems{background:#faeeda;color:#854f0b;}
+  .src-both{background:var(--td-green-light);color:var(--td-green-dark);}
+  .src-gts{background:#f4e9fb;color:#5b2c8a;}
+
+  .wizard-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;}
+
+  .section-label-pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;
+    text-transform:uppercase;color:#fff;background:var(--td-green-mid);padding:4px 12px;
+    border-radius:20px;margin-bottom:14px;}
+  .section-label-pill.purple{background:#6b3fa0;}
+  .section-label-pill.amber{background:#a87412;}
+
+  .conditional-box{border-left:3px solid var(--amber-border);background:var(--amber-bg);
+    border-radius:0 8px 8px 0;padding:12px 16px;margin:6px 0 18px;font-size:12px;color:var(--amber-text);}
+  .conditional-box.danger{border-left-color:var(--red-border);background:var(--red-bg);color:var(--red-text);}
+  .conditional-box.purple{border-left-color:#b08fd6;background:#f4e9fb;color:#5b2c8a;}
+  .conditional-box b{color:#5c4109;}
+
+  .rule-note{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--ink-faint);
+    margin-top:4px;line-height:1.45;}
+  .rule-note .icn{flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);
+    color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;}
+
+  .callout-strip{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;}
+  .mini-card{flex:1;min-width:220px;border:1px solid var(--line);border-radius:var(--radius);background:#fff;padding:16px 18px;}
+  .mini-card h4{margin:0 0 6px;font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:7px;}
+  .mini-card p{margin:0;font-size:12px;color:var(--ink-soft);line-height:1.5;}
+  .mini-dot{width:8px;height:8px;border-radius:50%;}
+
+  .status-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .status-table th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--ink-faint);padding:10px 14px;border-bottom:2px solid var(--line);}
+  .status-table td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;}
+  .sb-progress{background:var(--amber-bg);color:var(--amber-text);}
+  .sb-approved{background:var(--td-green-light);color:var(--td-green-dark);}
+  .sb-blocked{background:var(--red-bg);color:var(--red-text);}
+  .sb-skipped{background:#f4e9fb;color:#5b2c8a;}
+  .chain-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:4px;}
+  .chain-a{background:var(--blue-bg);color:var(--blue-text);}
+  .chain-b{background:var(--amber-bg);color:var(--amber-text);}
+  .chain-c{background:var(--red-bg);color:var(--red-text);}
+
+  .timeline{display:flex;gap:0;margin:22px 0 6px;flex-wrap:wrap;}
+  .tl-step{flex:1;min-width:90px;text-align:center;position:relative;margin-bottom:14px;}
+  .tl-step .tl-node{width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+  .tl-step.done .tl-node{background:var(--td-green-mid);color:#fff;}
+  .tl-step.current .tl-node{background:var(--amber-border);color:#5c4109;}
+  .tl-step.skipped .tl-node{background:#d8bce8;color:#5b2c8a;}
+  .tl-step.todo .tl-node{background:#fff;border:2px solid var(--line);color:var(--ink-faint);}
+  .tl-step .tl-lbl{font-size:10.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+  .tl-step .tl-sub{font-size:9px;color:var(--ink-faint);margin-top:2px;}
+  .tl-line{position:absolute;top:15px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0;}
+  .tl-step.done .tl-line, .tl-step.current .tl-line{background:var(--td-green-mid);}
+  .tl-step:first-child .tl-line{display:none;}
+  .tl-phase-label{width:100%;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.4px;color:var(--ink-faint);margin:18px 0 6px;border-top:1px dashed var(--line);padding-top:14px;}
+  .tl-phase-label:first-child{border-top:none;padding-top:0;margin-top:0;}
+
+  footer.page-footer{text-align:center;font-size:11.5px;color:var(--ink-faint);padding:24px 0 10px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .reset-bar{position:sticky;top:0;background:#fff3cd;border-bottom:1px solid var(--amber-border);
+    padding:8px 28px;font-size:12px;color:var(--amber-text);display:flex;justify-content:space-between;
+    align-items:center;z-index:40;flex-wrap:wrap;gap:6px;}
+  .reset-bar button{background:none;border:1px solid var(--amber-border);color:var(--amber-text);
+    border-radius:6px;padding:4px 10px;font-size:11.5px;cursor:pointer;font-weight:600;font-family:inherit;}
+  .reset-bar button:hover{background:var(--amber-border);color:#fff;}
+
+  .triage-q{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:16px;}
+  .triage-q .qnum{font-size:11px;font-weight:700;color:var(--td-green-mid);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+  .triage-q h3{margin:0 0 14px;font-size:15px;font-weight:600;color:var(--ink);}
+  .triage-progress{display:flex;gap:6px;margin-bottom:24px;}
+  .triage-progress .dot{height:5px;flex:1;border-radius:4px;background:var(--line);}
+  .triage-progress .dot.done{background:var(--td-green-mid);}
+  .triage-progress .dot.current{background:var(--amber-border);}
+
+  .pipeline-banner{background:#f4e9fb;border:1px solid #d8bce8;border-radius:var(--radius);
+    padding:14px 18px;margin-bottom:18px;font-size:12.5px;color:#5b2c8a;display:flex;gap:10px;align-items:flex-start;}
+  .pipeline-banner b{display:block;margin-bottom:2px;}
+
+  /* ===== Consolidated field label (matches USFF terminology) ===== */
+  .consolidated-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+    color:var(--blue-text);background:var(--blue-bg);border:1px solid #b9d8f0;padding:2px 8px;
+    border-radius:5px;margin-left:7px;letter-spacing:0;text-transform:none;}
+  .consolidated-tag .ic{font-size:10px;}
+  .delta-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+    color:var(--amber-text);background:var(--amber-bg);border:1px solid var(--amber-border);padding:2px 8px;
+    border-radius:5px;margin-left:7px;letter-spacing:0;text-transform:none;}
+
+  /* ===== EMS multi-section form navigation ===== */
+  .ems-section-nav{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+  .ems-section-tab{font-size:12px;font-weight:600;padding:8px 14px;border-radius:7px;
+    background:#f0f1ec;color:var(--ink-faint);cursor:default;border:1px solid transparent;}
+  .ems-section-tab.done{background:var(--td-green-light);color:var(--td-green-dark);}
+  .ems-section-tab.current{background:var(--td-green-mid);color:#fff;}
+  .ems-section-tab.todo{background:#f0f1ec;color:var(--ink-faint);}
+
+  .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px 24px;}
+  .field-row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px 20px;}
+
+  .inline-conditional{animation:fadein .2s ease-in;}
+  @keyframes fadein{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ===== v5: dashboard toolbar, export, matrix, agenda builder ===== */
+  .dash-toolbar{display:flex;gap:10px;align-items:center;margin:0 0 14px;flex-wrap:wrap;}
+  .dash-toolbar input.fld, .dash-toolbar select.fld{width:auto;min-width:150px;padding:8px 10px;font-size:12.5px;}
+  .dash-toolbar input.fld{min-width:220px;}
+  .dash-spacer{flex:1;}
+  .dash-count{font-size:12px;color:var(--ink-faint);margin:2px 0 12px;}
+  .export-note{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--ink-faint);
+    margin:10px 0 0;line-height:1.45;}
+  .bom-badge{background:#f4e9fb;color:#5b2c8a;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+  .matrix-remove{background:none;border:1px solid var(--line);color:var(--red-text);border-radius:6px;
+    padding:4px 10px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;}
+  .matrix-remove:hover{background:var(--red-bg);border-color:var(--red-border);}
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+  .gallery-card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;
+    display:flex;flex-direction:column;gap:6px;}
+  .gallery-card h4{margin:0;font-size:13.5px;font-weight:700;color:var(--ink);}
+  .gallery-card .meta{font-size:11.5px;color:var(--ink-soft);line-height:1.55;}
+  .agenda-rec{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;margin-top:12px;}
+  .agenda-rec.closed{opacity:.6;}
+  .agenda-rec h4{margin:0 0 4px;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .agenda-rec .meta{font-size:11.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .ab-step{animation:fadein .2s ease-in;}
+</style>
+</head>
+<body>
+<div class="reset-bar">
+  <span><b>Interactive prototype v5</b> — click through the flow like a real user. Nothing here is wired to a backend. New in v5: separate Pipeline Requests dashboard, filterable Excel/CSV exports on every dashboard (the downstream hand-off), Financial Approval Matrix tab (replaces SharePoint list + Power App), and a BOM-Lead Agenda Builder with drill-down + generate/modify/close.</span>
+  <button onclick="goTo('home')">&#8634; Restart from homepage</button>
+</div>
+<div class="app-shell" id="appShell">
+
+  <div class="nav">
+    <div class="nav-left">
+      <div class="nav-title" onclick="goTo('home')">Unified Storefront</div>
+      <div class="nav-links">
+        <a class="active" data-nav="status" onclick="goTo('status')">Intakes</a>
+        <a data-nav="pipelines" onclick="goTo('pipelines')">Pipeline Requests</a>
+        <a data-nav="agenda" onclick="goTo('agenda')">Agendas (BOM)</a>
+        <a data-nav="matrix" onclick="goTo('matrix')">Approval Matrix</a>
+        <a>AutoFil</a>
+        <a>Admin</a>
+      </div>
+    </div>
+    <div class="nav-badge">USFF + EMS combined &middot; concept v5</div>
+  </div>
+
+  <div id="screens">
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: HOME -->
+    <!-- ===================================================== -->
+    <div class="screen active" id="screen-home">
+      <div class="page">
+        <div class="note-banner">
+          <span>&#9432;</span>
+          <span><b>Note</b> — Please ensure all necessary requirements and approvals are completed before submitting requests to avoid requests being sent back. <a onclick="goTo('status')">View request history</a></span>
+        </div>
+
+        <h1 class="page-h">Your single-entry point to start your expense and sourcing journey.</h1>
+
+        <div class="home-tiles">
+          <div class="home-tile">
+            <div class="home-illustration">
+              <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="220" fill="#e7f3ea"/>
+                <rect x="40" y="36" width="180" height="130" rx="8" fill="#ffffff" stroke="#c7e0cd" stroke-width="2"/>
+                <rect x="56" y="52" width="110" height="10" rx="3" fill="#1f6b3a" opacity="0.85"/>
+                <rect x="56" y="74" width="148" height="8" rx="3" fill="#cfe5d6"/>
+                <rect x="56" y="90" width="148" height="8" rx="3" fill="#cfe5d6"/>
+                <rect x="56" y="106" width="100" height="8" rx="3" fill="#cfe5d6"/>
+                <circle cx="64" cy="128" r="6" fill="#1f6b3a"/>
+                <path d="M61 128l2 2 4-5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="78" y="124" width="90" height="8" rx="3" fill="#1f6b3a" opacity="0.5"/>
+                <rect x="56" y="142" width="60" height="14" rx="4" fill="#1f6b3a"/>
+                <circle cx="290" cy="120" r="58" fill="#cfe5d6"/>
+                <circle cx="290" cy="95" r="22" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <path d="M255 165c0-22 16-38 35-38s35 16 35 38" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <rect x="270" y="150" width="40" height="34" rx="4" fill="#1c4d2e"/>
+                <circle cx="284" cy="167" r="2.4" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>Start an expense request</h3>
+            <p>Kick off any procurement, vendor, hiring, project, or invoice request — we'll guide you to the right form with a few quick questions.</p>
+            <button class="home-cta" onclick="goTo('triage')">Start new request</button>
+          </div>
+          <div class="home-tile">
+            <div class="home-illustration">
+              <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="220" fill="#e7f3ea"/>
+                <circle cx="120" cy="110" r="60" fill="#cfe5d6"/>
+                <circle cx="120" cy="84" r="22" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <path d="M85 156c0-22 16-38 35-38s35 16 35 38" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <rect x="105" y="140" width="30" height="28" rx="4" fill="#1c4d2e"/>
+                <rect x="230" y="40" width="140" height="130" rx="8" fill="#ffffff" stroke="#c7e0cd" stroke-width="2"/>
+                <circle cx="260" cy="64" r="7" fill="#1f6b3a"/>
+                <rect x="276" y="58" width="76" height="9" rx="3" fill="#cfe5d6"/>
+                <line x1="260" y1="80" x2="354" y2="80" stroke="#e3e7df" stroke-width="2"/>
+                <circle cx="260" cy="96" r="7" fill="#1f6b3a" opacity="0.55"/>
+                <rect x="276" y="90" width="60" height="9" rx="3" fill="#e3e7df"/>
+                <circle cx="296" cy="96" r="9" fill="none" stroke="#1f6b3a" stroke-width="2"/>
+                <path d="M293 96l2 2 4-5" stroke="#1f6b3a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <line x1="260" y1="112" x2="354" y2="112" stroke="#e3e7df" stroke-width="2"/>
+                <circle cx="260" cy="128" r="7" fill="#e9c573"/>
+                <rect x="276" y="122" width="50" height="9" rx="3" fill="#e3e7df"/>
+                <rect x="245" y="148" width="95" height="12" rx="6" fill="#f0f1ec"/>
+                <rect x="245" y="148" width="58" height="12" rx="6" fill="#1f6b3a"/>
+              </svg>
+            </div>
+            <h3>Track existing requests</h3>
+            <p>Quickly find and manage requests already in our system and view their status, approvals, and history.</p>
+            <button class="home-cta" onclick="goTo('status')">Track requests</button>
+          </div>
+        </div>
+
+        <footer class="page-footer">Concept prototype for stakeholder walkthrough &middot; built from USFF and EMS field references + Business Notes</footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: TRIAGE FRONT DOOR (replaces tile picker) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-triage">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>New request</b></div>
+        <h2 class="page-h2">Let's find the right form for you</h2>
+        <p class="page-sub">Answer a few questions and we'll route you automatically — no need to guess which intake to use.</p>
+
+        <div class="triage-progress" id="triageProgress"></div>
+
+        <div id="triageContent"></div>
+
+        <div class="rule-note" style="margin-top:6px;">
+          <span class="icn">i</span>
+          <span><b>Why a form, not tiles:</b> picking a tile directly risks selecting the wrong intake. This guided front door applies EMS's own triage logic (Business Notes rule 2: "intake answers automatically route the requestor to the correct next step") so the system decides, not the user.</span>
+        </div>
+
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: PIPELINE CHECK / RE-ENTRY -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-pipelineCheck">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b>Pipeline check</b></div>
+        <h2 class="page-h2">Pipeline approval check</h2>
+        <p class="page-sub">Your answers indicate this request needs an approved Pipeline before continuing (Business Notes rules 9 &amp; 12).</p>
+
+        <div class="form-card">
+          <h2 style="border-left-color:#b08fd6;">Do you already have an approved Pipeline?</h2>
+          <div class="radio-row" id="pipelineHaveRow">
+            <div class="radio-opt" onclick="setPipelineHave(false,this)"><span class="dot"></span> No, I need to start one</div>
+            <div class="radio-opt" onclick="setPipelineHave(true,this)"><span class="dot"></span> Yes, I have a Pipeline ID</div>
+          </div>
+          <div id="pipelineDynamicArea" style="margin-top:18px;"></div>
+        </div>
+
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: PIPELINE INTAKE SHELL -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-pipelineIntake">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b id="plCrumb">Pipeline intake</b></div>
+        <h2 class="page-h2" id="plTitle">Pipeline (Vendor Expense Management) intake</h2>
+        <p class="page-sub">The strategic go-ahead approval, separate from and upstream of SPID/ATH contract execution approval (Business Notes rule 41).</p>
+
+        <div class="pipeline-banner" id="plBanner">
+          <span>&#9888;</span>
+          <span><b>This is a separate approval cycle.</b> Once approved, you'll return here with your Pipeline ID to continue your original request.</span>
+        </div>
+
+        <div id="plFormContent"></div>
+
+        <div class="wizard-foot">
+          <button class="btn btn-outline" onclick="goTo('pipelineCheck')">&larr; Previous</button>
+          <button class="btn btn-primary" onclick="submitPipelineIntake()">Submit pipeline intake &rarr;</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: ATH RESOURCE TYPE SELECT (EMS front-door branching) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-athResourceType">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b>Approval to hire</b></div>
+        <h2 class="page-h2">Approval to hire — resource type</h2>
+        <p class="page-sub">This reproduces EMS's front-door branching logic, now reached automatically from your triage answers.</p>
+
+        <div class="form-card">
+          <h2 class="alt-accent">Resource type <span class="req" style="color:#b23b3b;">*</span> <span class="tag new">EMS rule</span></h2>
+          <select class="fld" id="athResourceSelect" onchange="onAthResourceChange()" style="max-width:420px;">
+            <option value="">Select an option...</option>
+            <option value="Employee">Employee</option>
+            <option value="Contractor">Contractor</option>
+            <option value="Contingent">Contingent</option>
+            <option value="GD-Staff">Global Delivery - Staff Augmentation</option>
+            <option value="GD-LTC">Global Delivery - Long Term Capability</option>
+          </select>
+          <div id="athDynamicArea" style="margin-top:20px;"></div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: GENERIC EMS-STYLE INTAKE SHELL (project / other / invoice) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-emsForm">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b id="emsFormCrumb">Project request</b></div>
+
+        <div class="legend-row" style="display:flex;gap:14px;align-items:center;margin:0 0 16px;font-size:12px;color:var(--ink-soft);flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:6px;"><span class="consolidated-tag" style="margin:0;">&#8776; USFF</span> field name matches/consolidated with an existing USFF field</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span class="delta-tag" style="margin:0;">+ NEW</span> EMS-only delta field (not in USFF today)</span>
+        </div>
+
+        <div class="wizard-wrap">
+          <div class="wizard-top">
+            <div class="wizard-top-left"><span id="emsFormStepLabel">Section 1 of 3</span> <span class="step-pill" id="emsFormStepPill">General Info</span></div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-outline btn-sm" id="emsFormPrevTop" onclick="emsFormPrev()">&larr; Previous</button>
+              <button class="btn btn-primary btn-sm" id="emsFormNextTop" onclick="emsFormNext()">Next &rarr;</button>
+            </div>
+          </div>
+          <div class="progressbar"><div id="emsFormProgressBar" style="width:33%;"></div></div>
+          <div class="ems-section-nav" id="emsFormSectionNav"></div>
+
+          <div id="emsFormContent"></div>
+
+          <div class="wizard-foot">
+            <button class="btn btn-outline" onclick="emsFormPrev()" id="emsFormPrevBottom">&larr; Previous</button>
+            <button class="btn btn-primary" onclick="emsFormNext()" id="emsFormNextBottom">Next &rarr;</button>
+          </div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: MAIN WIZARD (Vendor Expense / Product Intake) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-wizard">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b id="wizardCrumb">Vendor expense</b></div>
+
+        <div class="legend-row" id="wizardLegendRow" style="display:flex;gap:14px;align-items:center;margin:0 0 18px;font-size:12px;color:var(--ink-soft);flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#0c447c;display:inline-block;"></span> USFF field</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#854f0b;display:inline-block;"></span> EMS field</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#27500a;display:inline-block;"></span> Merged field</span>
+          <span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:3px;background:#5b2c8a;display:inline-block;"></span> GTS / Mgmt Consulting field</span>
+        </div>
+
+        <div class="wizard-wrap">
+          <div class="wizard-top">
+            <div class="wizard-top-left">Step&nbsp;<span id="wzStepNum">1</span>&nbsp;of 4 <span class="step-pill" id="wzStepPill">Business details</span></div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-outline btn-sm" onclick="wizardPrev()" id="wzPrevTop">&larr; Previous</button>
+              <button class="btn btn-primary btn-sm" onclick="wizardNext()" id="wzNextTop">Next &rarr;</button>
+            </div>
+          </div>
+          <div class="progressbar"><div id="wzProgressBar" style="width:25%;"></div></div>
+          <div class="progress-meta" id="wzProgressMeta">8 required fields left in this step &bull; 5/27 complete</div>
+
+          <div class="stepper" id="wzStepper"></div>
+          <div id="wzStepContent"></div>
+
+          <div class="wizard-foot">
+            <button class="btn btn-outline" onclick="wizardPrev()" id="wzPrevBottom">&larr; Previous</button>
+            <button class="btn btn-primary" onclick="wizardNext()" id="wzNextBottom">Next &rarr;</button>
+          </div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: SUBMITTED CONFIRMATION (with full approval chain) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-submitted">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Request submitted</b></div>
+        <div style="max-width:760px;margin:20px auto 0;text-align:center;">
+          <div class="modal-icon success" style="margin:0 auto 18px;">&#10003;</div>
+          <h2 class="page-h2" style="margin-bottom:6px;">Request submitted</h2>
+          <p class="page-sub" id="submittedSub">Your request has been submitted and is now moving through the approval workflow.</p>
+          <div id="submittedChainBadge" style="margin-bottom:10px;"></div>
+        </div>
+        <div id="submittedTimelineWrap" style="max-width:900px;margin:0 auto;"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;">
+          <button class="btn btn-outline" onclick="goTo('status')">View in tracker</button>
+          <button class="btn btn-primary" onclick="goTo('home')">Back to home</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: STATUS / TRACKER -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-status">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>All requests</b></div>
+        <h2 class="page-h2">Intake dashboard — all requests</h2>
+        <p class="page-sub">Every intake (sourcing/SPID request) lives in this tracker. Pipeline requests are a DIFFERENT record type and have <a onclick="goTo('pipelines')" style="color:var(--td-green-mid);font-weight:600;cursor:pointer;text-decoration:underline;">their own dashboard</a>. Filter, then download the filtered set as Excel or CSV — that file IS the hand-off to downstream processes (no downstream app integration required).</p>
+
+        <div class="dash-toolbar">
+          <input class="fld" id="inSearch" placeholder="Search requests..." oninput="renderIntakeDash()">
+          <select class="fld" id="inTypeFilter" onchange="renderIntakeDash()">
+            <option value="">All types</option>
+            <option>Vendor Expense</option><option>Approval to Hire</option><option>Project Request</option>
+            <option>Other Approval Requests</option><option>Invoice Submission Request</option>
+          </select>
+          <select class="fld" id="inStatusFilter" onchange="renderIntakeDash()">
+            <option value="">All statuses</option>
+            <option>In progress</option><option>Approved</option><option>Skipped &mdash; requeued</option><option>Declined</option>
+          </select>
+          <span class="dash-spacer"></span>
+          <button class="btn btn-outline btn-sm" onclick="exportIntakes('csv')">&#8681; Download CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="exportIntakes('xls')">&#8681; Download Excel</button>
+        </div>
+        <div class="dash-count" id="inCount"></div>
+        <div id="intakeTableWrap"></div>
+
+        <div class="export-note"><span class="icn" style="flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;">i</span>
+          <span><b>Why export instead of integrate (business call):</b> downstream apps stay untouched — teams filter this dashboard and send the exported Excel/CSV to the downstream process. Exports respect the active filters above.</span></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: AGENDA DASHBOARD (BOM view) — new in v4 -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-agenda">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Approval agendas (BOM view)</b></div>
+        <h2 class="page-h2">Approval agendas — BOM view</h2>
+        <p class="page-sub">Agendas are built automatically from intake STATUS: a request at "VP Pending" appears on the VP agenda. The BOM member runs the meeting from this screen, records the outcome, and the status advances. Skipped items auto-requeue to the TOP of the next agenda with their original scheduled date kept for audit (Business Notes rules 22–24).</p>
+
+        <div class="conditional-box" style="background:var(--red-bg,#fdeaea);border-color:var(--red-border,#e5b3b3);color:var(--red-text,#9b1c1c);">
+          <b>Not provided by the business:</b> the BOM agenda-builder website, the agenda reference table, and the skip-logic reference table. This dashboard is our proposed replacement — it needs those tables to route items correctly. <b>Better solution (our recommendation):</b> approvers — including Management Consulting — record decisions directly in this app instead of the email + external-site loop, giving one audit trail.
+        </div>
+
+        <!-- ===== v5: AGENDA BUILDER (BOM Leads only, access via Approval Matrix) ===== -->
+        <div class="form-card" style="margin-top:18px;">
+          <h2 style="border-left-color:#b08fd6;">Agenda builder <span class="tag new">BOM Leads only</span> <span class="bom-badge">signed in as J. Smith (BOM Lead)</span></h2>
+          <p class="page-sub" style="margin-bottom:16px;">Drill down to the exact pipeline intakes for a meeting, preview them as a gallery, then generate the agenda as an Excel file. The <b>levels you can build agendas for are controlled by the <a onclick="goTo('matrix')" style="color:var(--td-green-mid);cursor:pointer;text-decoration:underline;">Financial Approval Matrix</a></b> — most BOM Leads only see 1&ndash;2 levels.</p>
+
+          <div class="grid2" style="max-width:760px;">
+            <div class="field">
+              <label>1. Select a segment <span class="req">*</span></label>
+              <select class="fld" id="abSegment" onchange="abOnSegment()"><option value="">Select a segment...</option></select>
+            </div>
+            <div id="abLevelWrap"></div>
+          </div>
+          <div class="grid2" style="max-width:760px;">
+            <div id="abBuWrap"></div>
+            <div id="abDateWrap"></div>
+          </div>
+          <div id="abActions"></div>
+          <div id="abGallery"></div>
+
+          <div class="section-divider" id="abGeneratedDivider" style="display:none;"><span>Generated agendas</span><div class="line"></div></div>
+          <div id="abGeneratedList"></div>
+        </div>
+
+        <div class="form-card" style="margin-top:18px;">
+          <h2>VP Agenda — Thu Jul 9 <span class="tag new">run by BOM: J. Smith</span></h2>
+          <table class="status-table">
+            <tr><th>Item</th><th>Spend</th><th>Originally scheduled</th><th>Outcome</th><th style="width:230px;">Action</th></tr>
+            <tr>
+              <td>3rd party staff aug SOW — segment X (Pipeline)</td><td>$340,000</td><td>Jul 2 (skipped once)</td>
+              <td class="ag-outcome"><span class="status-badge sb-progress">Awaiting review</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'approved')">Approve</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'declined')">Decline</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'skipped')">Skip</button>
+              </td>
+            </tr>
+            <tr>
+              <td>Datadog observability renewal (Pipeline)</td><td>$210,000</td><td>Jul 9</td>
+              <td class="ag-outcome"><span class="status-badge sb-progress">Awaiting review</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'approved')">Approve</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'declined')">Decline</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'skipped')">Skip</button>
+              </td>
+            </tr>
+          </table>
+          <div class="help" style="margin-top:8px;">Recording an outcome updates the intake status, which places the item on the next agenda in the chain (or back on this one if skipped). Approvals recorded here are agenda records — they are NOT stamped on the intake.</div>
+        </div>
+
+        <div class="form-card" style="margin-top:18px;">
+          <h2 class="alt-accent">SEVP (Vlad) Agenda — final approvals</h2>
+          <table class="status-table">
+            <tr><th>Item</th><th>Spend</th><th>Chain</th><th>Outcome</th><th style="width:230px;">Action</th></tr>
+            <tr>
+              <td>GD contract amendment — segment Y (SPID)</td><td>$1,250,000</td><td><span class="chain-badge chain-c">Chain C</span></td>
+              <td class="ag-outcome"><span class="status-badge sb-progress">Awaiting review</span></td>
+              <td>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'approved')">Approve</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'declined')">Decline</button>
+                <button class="btn btn-outline btn-sm" onclick="agendaAction(this,'skipped')">Skip</button>
+              </td>
+            </tr>
+          </table>
+          <div class="help" style="margin-top:8px;"><b>This is the only approval stamped on the intake record itself</b> (Jul 6 call) — every prior level lives on the agendas above.</div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: PIPELINE REQUESTS DASHBOARD — new in v5 -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-pipelines">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Pipeline requests</b></div>
+        <h2 class="page-h2">Pipeline requests dashboard</h2>
+        <p class="page-sub">Pipeline requests (the strategic go-ahead approvals) are a <b>different record type</b> from intakes/sourcing requests, so they get their own tracker. Filter, then download the filtered set as Excel or CSV for downstream hand-off.</p>
+
+        <div class="dash-toolbar">
+          <input class="fld" id="plSearch" placeholder="Search pipelines..." oninput="renderPipelineDash()">
+          <select class="fld" id="plSegFilter" onchange="renderPipelineDash()"><option value="">All segments</option></select>
+          <select class="fld" id="plLevelFilter" onchange="renderPipelineDash()"><option value="">All levels</option></select>
+          <select class="fld" id="plStatusFilter" onchange="renderPipelineDash()">
+            <option value="">All statuses</option>
+            <option>Awaiting agenda</option><option>On agenda</option><option>Approved</option><option>Skipped &mdash; requeued</option><option>Declined</option>
+          </select>
+          <span class="dash-spacer"></span>
+          <button class="btn btn-outline btn-sm" onclick="exportPipelines('csv')">&#8681; Download CSV</button>
+          <button class="btn btn-primary btn-sm" onclick="exportPipelines('xls')">&#8681; Download Excel</button>
+        </div>
+        <div class="dash-count" id="plCount"></div>
+        <div id="pipelineTableWrap"></div>
+
+        <div class="export-note"><span style="flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;">i</span>
+          <span><b>Current approval level</b> = the agenda level the pipeline is waiting on (or was last actioned at). BOM Leads pull these same records into meeting agendas from the <a onclick="goTo('agenda')" style="color:var(--td-green-mid);cursor:pointer;text-decoration:underline;">Agenda Builder</a>.</span></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: FINANCIAL APPROVAL MATRIX — new in v5 -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-matrix">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Financial approval matrix</b></div>
+        <h2 class="page-h2">Financial approval matrix</h2>
+        <p class="page-sub">One place to manage who supports each approval step: map <b>delegates</b> to their approvers (delegates help set up and shepherd approvals) and flag <b>BOM Leads</b> — the flag is what grants access to create agendas in the Agenda Builder.</p>
+
+        <div class="note-banner">
+          <span>&#9432;</span>
+          <span><b>Replaces the SharePoint list + Power App</b> — today approvers are tracked in a SharePoint list and roles/access are added through a Power App that syncs back to SharePoint. In the unified app this becomes the dashboard below, with roles stored directly in the app database. Changes here take effect immediately in the Agenda Builder level restrictions.</span>
+        </div>
+
+        <div class="form-card">
+          <h2>Approver &rarr; delegate mapping</h2>
+          <div id="matrixTableWrap"></div>
+        </div>
+
+        <div class="form-card" style="margin-top:18px;">
+          <h2 class="alt-accent">Add a role</h2>
+          <div class="field-row3">
+            <div class="field"><label>Approver name <span class="req">*</span></label><input class="fld" id="mxApprover" placeholder="e.g. M. Chen"></div>
+            <div class="field"><label>Approval level <span class="req">*</span></label><select class="fld" id="mxLevel"></select></div>
+            <div class="field"><label>Delegate (user to add) <span class="req">*</span></label><input class="fld" id="mxDelegate" placeholder="Who supports this approver"></div>
+          </div>
+          <div class="field-row3">
+            <div class="field"><label>Segment <span class="req">*</span></label><select class="fld" id="mxSegment"></select></div>
+            <div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld" id="mxBu"></select></div>
+            <div class="field"><label>BOM Lead?</label>
+              <div class="radio-row" id="mxBomRow">
+                <div class="radio-opt sel" onclick="setMxBom(false,this)"><span class="dot"></span> No</div>
+                <div class="radio-opt" onclick="setMxBom(true,this)"><span class="dot"></span> Yes &mdash; can create agendas</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="addMatrixRow()">Add to matrix &rarr;</button>
+          <div class="help" id="mxMsg" style="margin-top:8px;"></div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============== SUBMIT CONFIRM MODAL ============== -->
+<div class="modal-overlay" id="submitConfirmModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-icon success">&#10148;</div>
+      <h2>Confirm submission</h2>
+      <p>Please review the details below before submitting.</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-rule">
+        <b>Your request will be:</b><br>
+        &#10003; Submitted for review<br>
+        &#10003; Processed through the approval workflow<br>
+        &#10003; Assigned to a vendor or approver once approved
+      </div>
+      <div class="modal-rule" id="submitConfirmChainPreview" style="display:none;"></div>
+      <div class="modal-rule" style="background:var(--red-bg);border-color:var(--red-border);color:var(--red-text);">
+        <b>Important:</b> Field values are locked once submitted. Incorrect information before approval requires a full restart (Business Notes rules 3\u20134). A decline at the approval stage allows editing without a restart (rule 5).
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('submitConfirmModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="onFinalSubmit()">Submit request &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE
+============================================================ */
+var STATE = {
+  screen: 'home',
+  // triage answers
+  isGTS: null,            // true/false
+  expenseType: null,      // vendor | product | ath | project | other | invoice
+  spend: 0,
+  pipelineRequired: false,
+  pipelineApproved: false,
+  pipelineId: '',
+  mcTriggered: false,     // policy-driven Management Consulting (GTS + >=100K is necessary, NOT sufficient)
+  mcExempt: null,         // true when Eagle-funded or exempt vendor (Wipro/Cognizant) — call notes Jul 6
+  athResource: '',
+  // wizard
+  wizardStep: 1,
+  resourceCount: 5,
+  onshore: 3,
+  offshore: 2,
+  // triage flow control
+  triageStep: 0,
+  triageMaxSteps: 4
+};
+
+var REQ_TYPE_LABELS = {
+  vendor: 'Vendor Expense',
+  ath: 'Approval to Hire',
+  project: 'Project Request',
+  other: 'Other Approval Requests',
+  invoice: 'Invoice Submission Request'
+};
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+function goTo(screenName){
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+  var target = document.getElementById('screen-' + screenName);
+  if(target){ target.classList.add('active'); }
+  STATE.screen = screenName;
+  window.scrollTo(0,0);
+  document.querySelectorAll('.nav-links a[data-nav]').forEach(function(a){
+    if(a.getAttribute('data-nav') === screenName){ a.classList.add('active'); } else { a.classList.remove('active'); }
+  });
+  if(screenName === 'status'){ renderIntakeDash(); }
+  if(screenName === 'pipelines'){ renderPipelineDash(); }
+  if(screenName === 'matrix'){ renderMatrix(); }
+  if(screenName === 'agenda'){ initAgendaBuilder(); }
+  if(screenName === 'triage'){
+    STATE.triageStep = 0;
+    STATE.mcExempt = null;
+    STATE.mcTriggered = false;
+    renderTriageStep();
+  }
+}
+
+function agendaAction(btn, outcome){
+  var row = btn.closest('tr');
+  var cell = row.querySelector('.ag-outcome');
+  if(outcome === 'approved'){
+    cell.innerHTML = '<span class="status-badge sb-approved">Approved</span><div class="help" style="margin-top:4px;">Status advanced to next approval level.</div>';
+  } else if(outcome === 'declined'){
+    cell.innerHTML = '<span class="status-badge" style="background:#fdeaea;color:#9b1c1c;">Declined</span><div class="help" style="margin-top:4px;">Requestor may edit &amp; resubmit without a full restart (rule 5).</div>';
+  } else {
+    cell.innerHTML = '<span class="status-badge sb-skipped">Skipped — requeued</span><div class="help" style="margin-top:4px;">Auto-added to the TOP of the next agenda; original date kept for audit.</div>';
+  }
+  row.querySelectorAll('button').forEach(function(b){ b.disabled = true; b.style.opacity = 0.45; });
+}
+
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+/* ============================================================
+   TRIAGE FRONT DOOR — question engine
+============================================================ */
+function renderTriageProgress(){
+  var total = STATE.triageMaxSteps;
+  var html = '';
+  for(var i=0;i<total;i++){
+    var cls = i < STATE.triageStep ? 'done' : (i === STATE.triageStep ? 'current' : '');
+    html += '<div class="dot ' + cls + '"></div>';
+  }
+  document.getElementById('triageProgress').innerHTML = html;
+}
+
+function triageQuestionHTML(qnum, title, bodyHtml){
+  return '<div class="triage-q"><div class="qnum">Question ' + qnum + '</div><h3>' + title + '</h3>' + bodyHtml + '</div>';
+}
+
+function renderTriageStep(){
+  renderTriageProgress();
+  var content = document.getElementById('triageContent');
+  var html = '';
+
+  if(STATE.triageStep === 0){
+    // Q1: GTS detection
+    html = triageQuestionHTML(1, 'Are you requesting on behalf of GTS (Global Technology & Strategy)?',
+      '<div class="radio-row">' +
+      '<div class="radio-opt" onclick="answerGTS(false,this)"><span class="dot"></span> No \u2014 I am not part of GTS</div>' +
+      '<div class="radio-opt" onclick="answerGTS(true,this)"><span class="dot"></span> Yes \u2014 I am part of GTS</div>' +
+      '</div>' +
+      '<div class="rule-note"><span class="icn">i</span><span>Business Notes confirms ~80% of EMS-GTS process logic is GTS-specific (rule 45). If you are not part of GTS, you will go straight into the standard USFF intake \u2014 none of the EMS-specific options apply to you.</span></div>');
+  }
+
+  else if(STATE.triageStep === 1){
+    // Only reached for GTS = true. Exactly the 5 EMS Type of Expense values.
+    html = triageQuestionHTML(2, 'What is the Type of Expense?',
+      '<div class="tile-grid" style="margin-top:4px;">' +
+      tileBtn('ath','A','Approval to Hire','Employees, Fieldglass contractors, Contingent and Global Delivery resources.') +
+      tileBtn('vendor','V','Vendor Expense','Professional Services SOWs, Global Delivery Contracts, License Agreements, Renewals.') +
+      tileBtn('project','R','Project Request','ATS, ATP & associated extensions.') +
+      tileBtn('other','O','Other Approval Requests','Travel, Education, Archer Findings, Risk Exceptions, Other.') +
+      tileBtn('invoice','I','Invoice Submission Request','Submit an Ariba invoice for approval, or a non-Ariba (BAU) invoice for approval & payment.') +
+      '</div>' +
+      '<div class="rule-note"><span class="icn">i</span><span>These are EMS\'s exact 5 Type of Expense values (EMS Field Reference, "EMS" sheet) \u2014 no extra options added.</span></div>');
+  }
+
+  else if(STATE.triageStep === 2){
+    // Q3: spend (only relevant for vendor/project paths; others skip silently)
+    if(['vendor','project'].indexOf(STATE.expenseType) === -1){
+      STATE.triageStep = 3;
+      renderTriageStep();
+      return;
+    }
+    html = triageQuestionHTML(3, 'What is the anticipated total spend (CAD)?',
+      '<input class="fld" type="number" id="triageSpendInput" value="' + (STATE.spend||'') + '" placeholder="e.g. 185000" style="max-width:300px;" oninput="onTriageSpendInput()">' +
+      '<div class="help" style="margin-top:8px;">Pipeline approval is required for ALL 3rd party spend exceeding $100,000, regardless of category (Business Notes rule 9) \u2014 this includes $0 amendments, which must still reflect actual contract value (rule 11). <b>New (Jul 6 call):</b> if you are adding a new service to an existing SOW, enter the increased total \u2014 any spend increase (e.g. +$10K) re-triggers the Pipeline.</div>' +
+      '<div style="margin-top:18px;"><button class="btn btn-primary" id="triageSpendNextBtn" onclick="onTriageSpendNext()">Continue \u2192</button></div>');
+  }
+
+  else if(STATE.triageStep === 3){
+    // Pipeline-required branch check happens here (auto-evaluated) — this is the
+    // Vendor Expense / Project Request pipeline (different from the ATH pipeline).
+    STATE.pipelineRequired = STATE.isGTS && STATE.spend > 100000 && ['vendor','project'].indexOf(STATE.expenseType) !== -1;
+
+    if(STATE.expenseType === 'ath'){
+      // ATH goes through its own resource-type sub-branch first; the ATH-specific
+      // Pipeline question happens inside that branch (different pipeline type).
+      // Call notes Jul 6: ATH NEVER routes to Management Consulting.
+      STATE.mcTriggered = false;
+      finishTriageToATH();
+      return;
+    }
+
+    // Management Consulting exemption check (call notes Jul 6): MC routing is defined
+    // by the PROCUREMENT POLICY (list still owed to us), with known exemptions.
+    if(STATE.isGTS && STATE.spend >= 100000 && STATE.mcExempt === null){
+      html = triageQuestionHTML(4, 'Management Consulting check',
+        '<p style="margin:0 0 10px;font-size:14px;">Is this engagement <b>Eagle-funded</b>, or with an <b>exempt vendor</b> (e.g. Wipro, Cognizant)?</p>' +
+        '<div class="radio-row">' +
+        '<div class="radio-opt" onclick="answerMcExempt(true,this)"><span class="dot"></span> Yes — exempt (no Management Consulting)</div>' +
+        '<div class="radio-opt" onclick="answerMcExempt(false,this)"><span class="dot"></span> No — not exempt</div>' +
+        '</div>' +
+        '<div class="rule-note" style="border-color:var(--red-border);"><span class="icn">!</span><span><b>Placeholder logic (Jul 6 call):</b> what actually routes to Management Consulting is defined by the <b>procurement policy</b>, which the EMS team has not provided yet. Known today: exempt vendors (Wipro, Cognizant), Eagle-funded work, and third-party expense not deemed management consulting are all OUT; Approval to Hire is NEVER in. Replace this question with the policy reference table once received.</span></div>');
+      content.innerHTML = html;
+      return;
+    }
+    STATE.mcTriggered = STATE.isGTS && STATE.spend >= 100000 && STATE.mcExempt === false;
+
+    if(STATE.pipelineRequired && !STATE.pipelineApproved){
+      STATE.pipelineKind = 'vendor';
+      goTo('pipelineCheck');
+      return;
+    }
+
+    routeFromTriage();
+    return;
+  }
+
+  content.innerHTML = html;
+}
+
+function answerMcExempt(val, el){
+  STATE.mcExempt = val;
+  var parent = el.parentElement;
+  Array.prototype.forEach.call(parent.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  setTimeout(function(){
+    STATE.triageStep = 3;
+    renderTriageStep();
+  }, 250);
+}
+
+function tileBtn(type, icon, title, desc){
+  return '<div class="tile" onclick="answerExpenseType(\'' + type + '\')">' +
+    '<div class="tile-icon">' + icon + '</div><h3>' + title + '</h3><p>' + desc + '</p></div>';
+}
+
+function answerGTS(val, el){
+  STATE.isGTS = val;
+  var parent = el.parentElement;
+  Array.prototype.forEach.call(parent.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  setTimeout(function(){
+    if(!val){
+      // Non-GTS: skip straight into the existing USFF wizard. No EMS options shown.
+      STATE.expenseType = 'vendor';
+      STATE.mcTriggered = false;
+      STATE.pipelineRequired = false;
+      startWizard();
+      return;
+    }
+    STATE.triageStep = 1;
+    renderTriageStep();
+  }, 250);
+}
+
+function answerExpenseType(type){
+  STATE.expenseType = type;
+  STATE.triageStep = 2;
+  renderTriageStep();
+}
+
+function onTriageSpendInput(){
+  STATE.spend = parseInt(document.getElementById('triageSpendInput').value || '0', 10);
+}
+
+function onTriageSpendNext(){
+  onTriageSpendInput();
+  STATE.triageStep = 3;
+  renderTriageStep();
+}
+
+function finishTriageToATH(){
+  document.getElementById('athResourceSelect').value = '';
+  document.getElementById('athDynamicArea').innerHTML = '';
+  goTo('athResourceType');
+}
+
+function routeFromTriage(){
+  if(STATE.expenseType === 'vendor'){
+    startEmsForm('vendor');
+  } else if(STATE.expenseType === 'project' || STATE.expenseType === 'other' || STATE.expenseType === 'invoice'){
+    startEmsForm(STATE.expenseType);
+  }
+}
+
+/* ============================================================
+   PIPELINE CHECK / RE-ENTRY FLOW
+============================================================ */
+function setPipelineHave(haveIt, el){
+  var parent = el.parentElement;
+  Array.prototype.forEach.call(parent.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  var area = document.getElementById('pipelineDynamicArea');
+
+  if(!haveIt){
+    area.innerHTML = '<div class="conditional-box purple"><b>Business Notes rule 5:</b> You\'ll be taken to the Pipeline intake now. Once approved, return to this app and re-enter with your Pipeline ID to continue this request automatically (rule 8 \u2014 your original answers are carried forward and locked).</div>' +
+      '<button class="btn btn-primary" onclick="goToPipelineIntake()">Start Pipeline intake \u2192</button>';
+  } else {
+    area.innerHTML = '<div class="field" style="margin-top:4px;"><label>Pipeline ID <span class="tag new">EMS</span></label>' +
+      '<input class="fld" id="pipelineIdReentry" placeholder="e.g. 12345" style="max-width:320px;" oninput="validatePipelineReentry()">' +
+      '<div class="help">System validates against the pipeline table \u2014 continue is disabled until a valid ID is entered.</div></div>' +
+      '<div id="pipelineReentryCta" style="margin-top:14px;"><button class="btn btn-disabled" disabled>Continue to intake \u2192</button></div>';
+  }
+}
+
+function pipelineReentryContinue(){
+  if(STATE.pipelineKind === 'ath'){
+    startEmsForm('ath');
+  } else {
+    routeFromTriage();
+  }
+}
+
+function validatePipelineReentry(){
+  var val = document.getElementById('pipelineIdReentry').value.trim();
+  var valid = /^\d{4,6}$/.test(val);
+  var cta = document.getElementById('pipelineReentryCta');
+  if(valid){
+    STATE.pipelineId = val;
+    STATE.pipelineApproved = true;
+    cta.innerHTML = '<button class="btn btn-primary" onclick="pipelineReentryContinue()">Continue to intake \u2192</button><div class="help" style="color:var(--td-green-mid);margin-top:6px;">Pipeline ID valid \u2713 \u2014 your original answers are still locked in.</div>';
+  } else {
+    cta.innerHTML = '<button class="btn btn-disabled" disabled>Continue to intake \u2192</button><div class="help">Enter a valid pipeline ID to continue.</div>';
+  }
+}
+
+function goToPipelineIntake(){
+  var kind = STATE.pipelineKind || 'vendor';
+  document.getElementById('plCrumb').textContent = kind === 'ath' ? 'Pipeline (ATH)' : 'Pipeline (Vendor)';
+  document.getElementById('plTitle').textContent = kind === 'ath' ? 'Pipeline (ATH Expense Pipeline) Intake' : 'Pipeline (Vendor Expense Management) Intake';
+
+  var content = document.getElementById('plFormContent');
+  if(kind === 'ath'){
+    content.innerHTML =
+      '<div class="rule-note" style="margin-bottom:14px;"><span class="icn">i</span><span>This is the <b>ATH-specific</b> Pipeline form \u2014 used for contractor tenure-extension overtenure approval. Its fields differ from the Vendor Expense pipeline (no Financials/Workforce/Justification sections; instead it captures contractor tenure details directly).</span></div>' +
+      '<div class="form-card"><h2>1. General Info</h2>' +
+      submissionStatusField('plath1') +
+      '<div class="grid2">' +
+      '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld">' + selectOpts(BUSINESS_UNITS) + '</select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Presenter <span class="req">*</span></label><select class="fld"><option>Auto via SSO...</option></select></div>' +
+      '<div class="field"><label>Business Sponsor <span class="req">*</span> ' + cTag('Business Sponsor') + '</label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '</div>' +
+      '<div class="field"><label>Is this a Regulatory Commitment? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plathReg\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'plathReg\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="plathReg_area"></div>' +
+      '<div class="field"><label>Funded by Risk &amp; Control <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plathRisk\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'plathRisk\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="plathRisk_area"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Contractor Name <span class="req">*</span></label><select class="fld"><option>Search by name...</option></select></div>' +
+      '<div class="field"><label>ACF2ID <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Current Tenure (in months) <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '<div class="field"><label>Extension (in months) <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Reason for Over Tenure <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>Hourly Rate <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Knowledge Transfer Plan <span class="req">*</span></label><select class="fld"><option>Plan for internal ownership</option><option>Engagement Governance</option><option>Knowledge Transfer to ensure continuity</option><option>KT not required, work will be complete</option></select></div>' +
+      '<div class="field"><label>Risk if Not Completed <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:300px;"><label>Finance Approval within Budget or Plan <span class="req">*</span></label><select class="fld"><option>Yes</option><option>No</option></select></div>' +
+      '</div>' +
+      '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">2. Attachments</h2>' +
+      '<div class="field"><label>Attachments</label><div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> Attachment Attestation \u2014 I confirm required documents are attached</label></div></div>';
+  } else {
+    content.innerHTML =
+      '<div class="rule-note" style="margin-bottom:14px;"><span class="icn">i</span><span>This is the <b>Vendor Expense</b> Pipeline form \u2014 used for 3rd party spend &gt;$100K. It includes Financials, Workforce, and Justification sections that the ATH pipeline does not have.</span></div>' +
+      '<div class="form-card"><h2>1. General Info</h2>' +
+      submissionStatusField('plv1') +
+      '<div class="grid2">' +
+      '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld">' + selectOpts(BUSINESS_UNITS) + '</select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Presenter <span class="req">*</span></label><select class="fld"><option>Auto via SSO...</option></select></div>' +
+      '<div class="field"><label>Business Sponsor <span class="req">*</span> ' + cTag('Business Sponsor') + '</label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Proposed Start Date <span class="req">*</span></label><input class="fld" type="date" id="plStartDate" oninput="validatePipelineLeadTime()"><div class="help" id="plLeadTimeMsg" style="color:var(--td-green-mid);font-weight:600;">Must be at least 90 days from today (Business Notes rule 12).</div></div>' +
+      '<div class="field"><label>Proposed End Date <span class="req">*</span></label><input class="fld" type="date"></div>' +
+      '</div>' +
+      '<div class="field"><label>Proposed Vendors <span class="req">*</span></label><select class="fld"><option>Search vendor...</option></select></div>' +
+      '<div class="field"><label>Is this a Regulatory Commitment? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plvReg\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'plvReg\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="plvReg_area"></div>' +
+      '<div class="field"><label>Funded by Risk &amp; Control <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plvRisk\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'plvRisk\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="plvRisk_area"></div>' +
+      '<div class="field"><label>Will RFP be completed? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plvRfp\',false,this)"><span class="dot"></span> Yes</div><div class="radio-opt" onclick="toggleInline(\'plvRfp\',true,this)"><span class="dot"></span> No</div></div></div>' +
+      '<div id="plvRfp_area"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>SR Number <span class="help" style="display:inline;">(only for In-Flight engagements)</span></label><input class="fld"></div>' +
+      '<div class="field"><label>SPID <span class="help" style="display:inline;">(only for In-Flight engagements)</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:300px;"><label>Finance Approval within Budget or Plan <span class="req">*</span></label><select class="fld"><option>Yes</option><option>No</option></select></div>' +
+      '</div>' +
+      '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">2. Intake Details</h2>' +
+      '<div class="rule-note" style="margin-bottom:14px;"><span class="icn">i</span><span><b>FINANCIALS</b> \u2014 if this relates to a TDSA-based initiative, One Time Cost Spend is for In-Flight Features and Ongoing Cost is for Maintenance of RTB Features.</span></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld"><option>CAD</option><option>USD</option><option>GBP</option><option>SGD</option></select></div>' +
+      '<div class="field"><label>Anticipated Spend CAD <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld locked" value="' + (STATE.spend||0) + '" disabled><div class="help">Locked \u2014 carried over from the EMS front door (Business Notes rule 8).</div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Total Contract Value <span class="req">*</span></label><input class="fld" type="number"><div class="help">TCV, including original SOW and all Change Orders.</div></div>' +
+      '<div class="field"><label>One Time Cost</label><input class="fld" type="number"></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:300px;"><label>Ongoing Cost</label><input class="fld" type="number"></div>' +
+      '<div class="section-label-pill" style="margin-top:8px;">Workforce Details</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Resource Type <span class="req">*</span></label><input class="fld locked" value="' + (STATE.athResource||'Vendor Expense') + '" disabled><div class="help">Locked \u2014 carried over from EMS front door.</div></div>' +
+      '<div class="field"><label>Billing Type <span class="req">*</span></label><select class="fld"><option>Fixed Cost</option><option>Time & Materials</option></select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Resource Mix <span class="req">*</span></label><input class="fld" placeholder="Onshore : Offshore split, e.g. 70:30"></div>' +
+      '<div class="field"><label>Number of Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResTotal" oninput="validatePlvResources()"><div class="help">Must equal sum of Onshore + Offshore.</div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Onshore Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResOn" oninput="validatePlvResources()"></div>' +
+      '<div class="field"><label>Offshore Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResOff" oninput="validatePlvResources()"></div>' +
+      '</div>' +
+      '<div class="help" id="plvResMsg" style="margin:-8px 0 14px;"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Knowledge Transfer Plan <span class="req">*</span></label><select class="fld"><option>Plan for internal ownership</option><option>Engagement Governance</option><option>Knowledge transfer to ensure continuity</option></select></div>' +
+      '<div class="field"><label>Hourly Rate <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field"><label>Risk if not completed</label><textarea class="fld"></textarea></div>' +
+      '</div>' +
+      '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">3. Justification</h2>' +
+      '<div class="field"><label>Business Process being solved with specific outcomes <span class="req">*</span> ' + cTag('Describe the problem we are solving') + '</label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>Business Impact <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>Expected benefits <span class="req">*</span> ' + cTag('Contribution to Departmental Goals') + '</label><textarea class="fld"></textarea></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Role of Consultant <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>Why External vs Internal Capacity <span class="req">*</span> ' + cTag('What did you do to complete this internally?') + '</label><textarea class="fld"></textarea></div>' +
+      '</div></div>' +
+      '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">4. Attachments</h2>' +
+      '<div class="field"><label>Attachments</label><div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> Attachment Attestation \u2014 I confirm required documents are attached</label></div></div>';
+  }
+
+  goTo('pipelineIntake');
+}
+
+function validatePlvResources(){
+  var total = parseInt(document.getElementById('plvResTotal').value || '0', 10);
+  var on = parseInt(document.getElementById('plvResOn').value || '0', 10);
+  var off = parseInt(document.getElementById('plvResOff').value || '0', 10);
+  var msg = document.getElementById('plvResMsg');
+  if(total === (on+off)){ msg.style.color = 'var(--td-green-mid)'; msg.textContent = 'Total matches onshore + offshore. \u2713'; }
+  else { msg.style.color = 'var(--red-text)'; msg.textContent = 'Total must equal onshore (' + on + ') + offshore (' + off + ') = ' + (on+off) + '.'; }
+}
+
+function validatePipelineLeadTime(){
+  var val = document.getElementById('plStartDate').value;
+  var msg = document.getElementById('plLeadTimeMsg');
+  if(!val){ return; }
+  var chosen = new Date(val);
+  var today = new Date();
+  var diffDays = Math.round((chosen - today) / (1000*60*60*24));
+  if(diffDays >= 90){
+    msg.style.color = 'var(--td-green-mid)';
+    msg.textContent = 'Lead time OK \u2014 ' + diffDays + ' days out. \u2713 (Business Notes rule 12: minimum 90 days.)';
+  } else {
+    msg.style.color = 'var(--red-text)';
+    msg.textContent = 'Only ' + diffDays + ' days out \u2014 minimum 90 days required (Business Notes rule 12).';
+  }
+}
+
+function submitPipelineIntake(){
+  // Simulate pipeline approval completing, generate a fake pipeline ID
+  STATE.pipelineApproved = true;
+  STATE.pipelineId = String(10000 + Math.floor(Math.random()*89999));
+  var kind = STATE.pipelineKind || 'vendor';
+  // v5: pipeline requests are their own record type — add to the Pipeline dashboard
+  PIPELINES.unshift({
+    id: 'PL-' + STATE.pipelineId,
+    title: (REQ_TYPE_LABELS[STATE.expenseType] || 'Vendor Expense') + ' pipeline — just submitted',
+    kind: kind === 'ath' ? 'ATH (overtenure)' : 'Vendor Expense',
+    segment: 'Canadian Banking Technology Solutions',
+    bu: 'AI Technology',
+    spend: STATE.spend || null,
+    level: 'VP',
+    status: 'Awaiting agenda',
+    requestor: 'R. Zaman',
+    scheduled: new Date().toISOString().slice(0,10),
+    linkedIntake: '—'
+  });
+  alert('Pipeline submitted for approval.\n\nIn the live app this triggers the VP\u2192SVP\u2192EVP\u2192...\u2192SEVP agenda/meeting chain (Business Notes rules 13, 22\u201326). For this prototype we\'ll simulate it as approved so you can continue.\n\nYour Pipeline ID: PL-' + STATE.pipelineId);
+  if(kind === 'ath'){
+    startEmsForm('ath');
+  } else {
+    routeFromTriage();
+  }
+}
+
+/* ============================================================
+   APPROVAL TO HIRE — EMS FRONT DOOR BRANCHING (with pipeline tie-in)
+============================================================ */
+function onAthResourceChange(){
+  var val = document.getElementById('athResourceSelect').value;
+  STATE.athResource = val;
+  var area = document.getElementById('athDynamicArea');
+  var html = '';
+
+  function ctaBox(label, enabled){
+    enabled = enabled !== false;
+    return '<div style="margin-top:18px;"><button class="btn ' + (enabled ? 'btn-primary' : 'btn-disabled') + '" ' +
+      (enabled ? 'onclick="startWizardAsATH()"' : 'disabled') + '>' + label + (enabled ? ' \u2192' : '') + '</button></div>';
+  }
+
+  if(val === 'Employee'){
+    html += '<div class="conditional-box"><b>EMS rule:</b> Resource Type = Employee \u2192 user is routed straight to the Approval to Hire intake.</div>';
+    html += ctaBox('Continue to Approval to Hire intake');
+  }
+  else if(val === 'Contractor'){
+    html += '<div class="field"><label>Is this an extension over tenure? <span class="tag new">EMS</span></label>' +
+      '<div class="radio-row" id="extTenureRow">' +
+      '<div class="radio-opt" onclick="setAthToggle(\'extTenure\',\'No\',this)"><span class="dot"></span> No</div>' +
+      '<div class="radio-opt" onclick="setAthToggle(\'extTenure\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+      '</div></div><div id="athSub1"></div>';
+  }
+  else if(val === 'Contingent'){
+    html += '<div class="field"><label>Does an approved SOW exist? <span class="tag new">EMS</span></label>' +
+      '<div class="radio-row">' +
+      '<div class="radio-opt" onclick="setAthToggle(\'sowExists\',\'No\',this)"><span class="dot"></span> No</div>' +
+      '<div class="radio-opt" onclick="setAthToggle(\'sowExists\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+      '</div></div><div id="athSub1"></div>';
+  }
+  else if(val === 'GD-Staff'){
+    html += '<div class="field"><label>Does an approved SOW exist? <span class="tag new">EMS</span></label>' +
+      '<div class="radio-row">' +
+      '<div class="radio-opt" onclick="setAthToggle(\'sowExistsGD\',\'No\',this)"><span class="dot"></span> No</div>' +
+      '<div class="radio-opt" onclick="setAthToggle(\'sowExistsGD\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+      '</div></div><div id="athSub1"></div>';
+  }
+  else if(val === 'GD-LTC'){
+    html += '<div class="field"><label>Has pre-intake been completed? <span class="tag new">EMS</span></label>' +
+      '<div class="radio-row">' +
+      '<div class="radio-opt" onclick="setAthToggle(\'preIntake\',\'No\',this)"><span class="dot"></span> No</div>' +
+      '<div class="radio-opt" onclick="setAthToggle(\'preIntake\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+      '</div></div><div id="athSub1"></div>';
+  }
+  area.innerHTML = html;
+}
+
+function setAthToggle(group, value, el){
+  var parent = el.parentElement;
+  Array.prototype.forEach.call(parent.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  var sub = document.getElementById('athSub1');
+  var html = '';
+
+  function ctaBox(label, enabled){
+    enabled = enabled !== false;
+    return '<div style="margin-top:18px;"><button class="btn ' + (enabled ? 'btn-primary' : 'btn-disabled') + '" ' +
+      (enabled ? 'onclick="startWizardAsATH()"' : 'disabled') + '>' + label + (enabled ? ' \u2192' : '') + '</button></div>';
+  }
+
+  if(group === 'extTenure'){
+    if(value === 'No'){
+      html = '<div class="conditional-box"><b>Business Notes rule 39:</b> No tenure extension \u2192 continue directly to the signing portal (ATH). No pipeline required.</div>' + ctaBox('Continue to Approval to Hire intake');
+    } else {
+      html = '<div class="conditional-box purple"><b>Business Notes rule 38/17:</b> Extension over tenure = Yes \u2192 a Pipeline intake (overtenure approval) is required before proceeding to ATH.</div>' +
+        '<div class="field"><label>Is Pipeline intake already approved?</label>' +
+        '<div class="radio-row">' +
+        '<div class="radio-opt" onclick="setAthToggle(\'pipelineApproved\',\'No\',this)"><span class="dot"></span> No</div>' +
+        '<div class="radio-opt" onclick="setAthToggle(\'pipelineApproved\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+        '</div></div><div id="athSub2"></div>';
+    }
+  }
+  else if(group === 'pipelineApproved'){
+    if(value === 'No'){
+      html = '<div class="conditional-box"><b>Business Notes rule 5 (Workflows sheet):</b> User must complete the Pipeline intake first, then return to EMS and re-enter the contractor ATH flow with the new Pipeline ID.</div>' +
+        '<button class="btn btn-primary" onclick="STATE.pipelineKind=\'ath\'; goTo(\'pipelineCheck\')">Go to Pipeline check \u2192</button>';
+    } else {
+      html = '<div class="field"><label>Pipeline ID <span class="tag new">EMS</span></label>' +
+        '<input class="fld" placeholder="e.g. 12345 (numeric portion only)" style="max-width:380px;" oninput="validatePipelineId(this)">' +
+        '<div class="help">System validates against the pipeline list. Invalid ID keeps the button disabled.</div></div>' +
+        '<div id="pipelineCta">' + ctaBox('Continue to Approval to Hire intake', false) + '</div>';
+    }
+  }
+  else if(group === 'sowExists' || group === 'sowExistsGD'){
+    var isGD = group === 'sowExistsGD';
+    if(value === 'No'){
+      html = '<div class="field"><label>Category of expense <span class="tag new">EMS</span></label>' +
+        '<select class="fld" style="max-width:420px;"><option>New Commitment</option><option>Existing Commitment</option>' +
+        '<option>Operational Consulting Not Anticipated in an Approved Business Case</option>' +
+        '<option>Operational Consulting Anticipated in an Approved Business Case</option></select></div>' +
+        '<div class="conditional-box"><b>EMS rule:</b> Regardless of category selected, user proceeds to the Vendor Expense intake (not ATH). Per Business Notes (GD Staff Aug workflow), Ariba data is pulled into this flow.</div>' +
+        '<button class="btn btn-primary" onclick="STATE.expenseType=\'vendor\'; startEmsForm(\'vendor\');">Continue to Vendor Expense intake \u2192</button>';
+    } else {
+      html = '<div class="grid2">' +
+        '<div class="field"><label>Vendor <span class="tag new">EMS</span></label>' +
+        '<select class="fld">' + (isGD ? '<option>Accenture</option><option>Cognizant</option><option>TATA Consulting Services</option><option>WIPRO</option>' : '<option>Select vendor...</option>') + '</select></div>' +
+        '<div class="field"><label>SOW SR#</label><input class="fld" placeholder="Auto-suggested once vendor is selected"></div>' +
+        '</div>' +
+        '<div class="field"><label>Is this a backfill position?</label>' +
+        '<div class="radio-row">' +
+        '<div class="radio-opt" onclick="setAthToggle(\'backfill\',\'No\',this)"><span class="dot"></span> No</div>' +
+        '<div class="radio-opt" onclick="setAthToggle(\'backfill\',\'Yes\',this)"><span class="dot"></span> Yes</div>' +
+        '</div></div><div id="athSub2"></div>';
+    }
+  }
+  else if(group === 'backfill'){
+    if(value === 'Yes'){
+      html = '<div class="conditional-box"><b>EMS rule:</b> Backfill = Yes \u2192 resource-count fields are hidden; proceed directly to ATH intake.</div>' + ctaBox('Continue to Approval to Hire intake');
+    } else {
+      html = '<div class="grid2">' +
+        '<div class="field"><label>Number of resources <span class="tag new">EMS validation</span></label><input class="fld" type="number" value="5" oninput="validateResourceSplit()" id="resTotal"></div>' +
+        '<div class="field"><label>Offshore resources</label><input class="fld" type="number" value="2" oninput="validateResourceSplit()" id="resOff"></div>' +
+        '</div><div class="field"><label>Onshore resources</label><input class="fld" type="number" value="3" oninput="validateResourceSplit()" id="resOn"></div>' +
+        '<div class="help" id="resSplitMsg" style="color:var(--td-green-mid);font-weight:600;">Total matches onshore + offshore. \u2713 Numbers must align with GTS strategy (Business Notes, GD Staff Aug workflow step 6b).</div>' +
+        ctaBox('Continue to Approval to Hire intake');
+    }
+  }
+  else if(group === 'preIntake'){
+    if(value === 'No'){
+      html = '<div class="conditional-box danger"><b>EMS rule:</b> Pre-Intake not completed \u2192 the "Please Complete Pre-Intake Approval" button is disabled. User cannot proceed.</div>' +
+        '<div class="conditional-box danger"><b>FUTURE SCOPE (Jul 6 call):</b> the Pre-Intake approval flow is a bot-driven process owned by another team (expanded scope) and is not fully built. EMS management (Sean) wants it \u2014 flagged on the roadmap; our app models it as this Yes/No gate only.</div>' +
+        '<button class="btn btn-disabled" disabled>Complete Pre-Intake Approval</button>';
+    } else {
+      html = '<div class="conditional-box"><b>EMS rule:</b> Several fields now auto-populate and lock: SOW exists \u2192 Yes (locked), Vendor \u2192 COGNIZANT (locked), SOW SR# \u2192 SR5207391442 (locked), Number of resources \u2192 2 (editable).</div>' +
+        '<div class="grid2"><div class="field"><label>Vendor</label><input class="fld locked" value="COGNIZANT" disabled></div>' +
+        '<div class="field"><label>SOW SR#</label><input class="fld locked" value="SR5207391442" disabled></div></div>' +
+        '<div class="field" style="max-width:200px;"><label>Number of resources</label><input class="fld" type="number" value="2"></div>' +
+        ctaBox('Continue to Approval to Hire intake');
+    }
+  }
+
+  if(group === 'extTenure'){
+    sub.innerHTML = html;
+  } else {
+    var target = document.getElementById('athSub2') || sub;
+    target.innerHTML = html;
+  }
+}
+
+function validatePipelineId(input){
+  var valid = /^\d{4,6}$/.test(input.value.trim());
+  var ctaWrap = document.getElementById('pipelineCta');
+  if(!ctaWrap) return;
+  if(valid){
+    STATE.pipelineApproved = true; STATE.pipelineId = input.value.trim();
+    ctaWrap.innerHTML = '<button class="btn btn-primary" onclick="startWizardAsATH()">Continue to Approval to Hire intake \u2192</button><div class="help" style="color:var(--td-green-mid);">Pipeline ID valid \u2713</div>';
+  } else {
+    ctaWrap.innerHTML = '<button class="btn btn-disabled" disabled>Continue to Approval to Hire intake</button><div class="help">Enter a valid pipeline ID to enable this button.</div>';
+  }
+}
+
+function validateResourceSplit(){
+  var total = parseInt(document.getElementById('resTotal').value || '0', 10);
+  var off = parseInt(document.getElementById('resOff').value || '0', 10);
+  var on = parseInt(document.getElementById('resOn').value || '0', 10);
+  var msg = document.getElementById('resSplitMsg');
+  if(total === (off + on)){
+    msg.style.color = 'var(--td-green-mid)';
+    msg.textContent = 'Total matches onshore + offshore. \u2713 Aligns with GTS strategy.';
+  } else {
+    msg.style.color = 'var(--red-text)';
+    msg.textContent = 'Total must equal onshore (' + on + ') + offshore (' + off + ') = ' + (on+off) + '.';
+  }
+}
+
+function startWizardAsATH(){
+  startEmsForm('ath');
+}
+
+/* ============================================================
+   FIELD HELPERS — consolidated-label & delta-label tagging
+============================================================ */
+function cTag(usffFieldName){
+  return '<span class="consolidated-tag"><span class="ic">&#8776;</span>USFF: "' + usffFieldName + '"</span>';
+}
+function dTag(){
+  return '<span class="delta-tag">+ NEW (EMS)</span>';
+}
+
+function submissionStatusField(idPrefix){
+  return '<div class="field"><label>Submission Status <span class="req">*</span></label>' +
+    '<select class="fld" id="' + idPrefix + '_subStatus" onchange="onSubmissionStatusChange(\'' + idPrefix + '\')">' +
+    '<option value="Draft">Draft</option><option value="Submit">Submit</option><option value="Cancel">Cancel</option></select>' +
+    '<div class="help">Draft requests are not added to the SP agenda.</div></div>' +
+    '<div id="' + idPrefix + '_subDateWrap"></div>';
+}
+function onSubmissionStatusChange(idPrefix){
+  var val = document.getElementById(idPrefix + '_subStatus').value;
+  var wrap = document.getElementById(idPrefix + '_subDateWrap');
+  if(val === 'Submit' || val === 'Cancel'){
+    wrap.innerHTML = '<div class="field inline-conditional"><label>Submission Date <span class="req">*</span> ' + dTag() + '</label>' +
+      '<input class="fld" type="date"><div class="help">Appears because Submission Status = ' + val + '.</div></div>';
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+/* ============================================================
+   EMS FORM DEFINITIONS — built directly from each EMS_Field_Reference sheet
+============================================================ */
+var SEGMENTS = ['Canadian Banking Technology Solutions - Salim Jivraj','Business Banking, Wealth and Insurance - John That','Global Security & Defense - Steve Sparkes','Protect Platform - Sophia Leung','Procurement, Data and Corporate Platforms - Jeff Martin','TD Securities and Payments - Dan Bosman','Infrastructure & Engineering - Meghan Faugnan','Delivery & Operations - David Parry','USTS - Kiran Vuppu'];
+var BUSINESS_UNITS = ['AI Technology','Corporate Project Delivery Confidence','Corporate Technology','Corporate Transformation','Data & AI Architecture','Enterprise Architecture','Finance & Risk Platform','Marketing Technology','Risk Technology','Treasury'];
+var FUNDING_TYPES = ['Base (formerly RTB/BAU)','Base (Business Sponsored)','Project Funding Envelope (P&T Sponsored)','Project Funding Envelope/CDT (non-P&T)','Project (non-P&T)','TDSA Platform Envelope','TDSA Journey Envelope'];
+
+function selectOpts(arr){ return arr.map(function(v){ return '<option>' + v + '</option>'; }).join(''); }
+
+function generalInfoSection(idPrefix, requestTypeValue, opts){
+  opts = opts || {};
+  return '<div class="form-card"><h2>1. General Info</h2>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Request Type</label><input class="fld locked" value="' + requestTypeValue + '" disabled><div class="help">Disabled \u2014 always set to this value when the intake is launched.</div></div>' +
+    submissionStatusField(idPrefix) +
+    '</div>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+    '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld">' + selectOpts(BUSINESS_UNITS) + '</select></div>' +
+    '<div class="field"><label>Business Unit - SLT Alignment <span class="req">*</span></label><select class="fld"><option>Select a leader...</option></select></div>' +
+    '</div>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Requestor <span class="req">*</span> ' + cTag('User Full Name') + '</label><input class="fld locked" value="Zaman, Ricky (auto via SSO)" disabled><div class="help">USFF already auto-populates this via SSO; EMS today requires manual entry \u2014 adopting USFF\'s pattern.</div></div>' +
+    '<div class="field"><label>Presenter</label><select class="fld"><option>(optional)</option></select></div>' +
+    '<div class="field"><label>Funding Type <span class="req">*</span> ' + cTag('Source of Funding') + '</label><select class="fld">' + selectOpts(FUNDING_TYPES) + '</select></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Cost Centre <span class="req">*</span> ' + cTag('Cost Centre Code') + '</label><input class="fld" placeholder="Enter cost centre"></div>' +
+    (opts.col2 || '') +
+    '</div>' +
+    (opts.afterGrid || '') +
+    '<div class="field"><label>Title of Engagement ' + cTag('Engagement Title') + '</label><input class="fld" placeholder="e.g. Figma - Change Request - Design Collaboration Tool - FY24"></div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Detailed Justification <span class="req">*</span> ' + cTag('Describe the problem we are solving') + '</label><textarea class="fld" placeholder="Explain the request..."></textarea></div>' +
+    '<div class="field"><label>Submitter Delegate ' + dTag() + '</label><input class="fld" placeholder="Optional \u2014 assign someone edit access to the SPID"></div>' +
+    '</div>' +
+    '</div>';
+}
+
+/* ---------- ATH form (5 sections, exact from "Approval to Hire" sheet) ---------- */
+function athSections(){
+  var s1extra_col2 = '<div class="field"><label>Resource Type (carried forward)</label><input class="fld locked" value="' + (STATE.athResource||'') + '" disabled><div class="help">Locked \u2014 carried over from the EMS front door selection (Business Notes rule 8).</div></div>';
+  var s1after = '<div class="field-row3">' +
+    '<div class="field"><label>Type of Hire <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>Incremental</option><option>Replacement</option><option>Conversion</option><option>Promotion</option><option>Band Uplift</option></select></div>' +
+    '</div>';
+
+  return [
+    { name: 'General Info', html: generalInfoSection('ath1', 'Approval to Hire', {col2: s1extra_col2, afterGrid: s1after}) },
+    { name: 'ATH Intake', html:
+      '<div class="form-card"><h2 class="alt-accent">2. ATH Intake</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Is this a People Manager role? <span class="req">*</span> ' + dTag() + '</label><div class="radio-row"><div class="radio-opt sel"><span class="dot"></span> No</div><div class="radio-opt"><span class="dot"></span> Yes</div></div></div>' +
+      '<div class="field"><label>Is this request funded by an approved Business Case? ' + dTag() + '</label><select class="fld"><option>Funded by Approved BC</option><option>Not Funded by Approved BC</option></select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Finance Approval within Budget or Plan <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>Yes</option><option>No</option></select><div class="help">If Yes, please attach.</div></div>' +
+      '<div class="field"><label>Number of Resources this SPID is for <span class="req">*</span> ' + dTag() + '</label><input class="fld" type="number" value="1"></div>' +
+      '</div>' +
+      '<div class="field"><label>Will resource be Forward Deployed to another Segment? ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'athFwdDeploy\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'athFwdDeploy\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="athFwdDeploy_area"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Pod Name <span class="req">*</span> ' + dTag() + '</label><input class="fld" placeholder="Pod name"></div>' +
+      '<div class="field"><label>Funded by Risk/Control? <span class="req">*</span> ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'athRiskControl\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'athRiskControl\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '</div>' +
+      '<div id="athRiskControl_area"></div>' +
+      '<div class="field"><label>Will this role deliver services to &amp; charged to AMCB? <span class="req">*</span> ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'athAmcb\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'athAmcb\',true,this)"><span class="dot"></span> Yes</div></div>' +
+      '<div class="help">If Yes \u2192 a follow-up question appears; if that is answered No, an extra "AMCB Details" section is inserted before Attachments.</div></div>' +
+      '<div id="athAmcb_area"></div>' +
+      '</div>' },
+    { name: 'ATH Details', html:
+      '<div class="form-card"><h2 class="alt-accent">3. ATH Details</h2>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Job Title <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>Select job title...</option><option>Senior Manager, Technology</option><option>Software Engineer III</option></select></div>' +
+      '<div class="field"><label>Job Family (auto-populated)</label><input class="fld locked" value="Technology" disabled></div>' +
+      '<div class="field"><label>Job Level (auto-populated)</label><input class="fld locked" value="L3" disabled></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Hiring Manager <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>Search by name...</option></select></div>' +
+      '<div class="field"><label>Location <span class="req">*</span> ' + cTag('What is the anticipated location?') + '</label><select class="fld"><option>Canada - onshore</option><option>USA - onshore</option><option>Canada or USA - onshore</option><option>Singapore - offshore</option><option>Ireland - offshore</option><option>United Kingdom - offshore</option></select></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Project Clarity ID</label><input class="fld" placeholder="Clarity ID"></div>' +
+      '<div class="field"><label>Project Clarity Name <span class="req">*</span></label><input class="fld" placeholder="Clarity project name"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Expected Start Date <span class="req">*</span> ' + cTag('Target Contract Start Date') + '</label><input class="fld" type="date"></div>' +
+      '<div class="field"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld"><option>CAD</option><option>USD</option></select></div>' +
+      '</div></div>' },
+    { name: 'AMCB Details', conditional: 'athAmcb', html: amcbDetailsHtml() },
+    { name: 'Attachments', html:
+      '<div class="form-card"><h2 class="alt-accent">5. Attachments/Notes</h2>' +
+      '<div class="field"><label>Attachments ' + cTag('Please provide any artifacts that confirm this funding') + '</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div>' +
+      '<div class="help">Required: Approved Business Case, Funding Confirmation Email, Prior executed contracts (existing commitments), Approved Funding Artifacts. No special characters in file names ( _ allowed ).</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="field"><label>Notes</label><textarea class="fld"></textarea></div></div>' }
+  ];
+}
+
+function amcbDetailsHtml(){
+  return '<div class="form-card"><h2 class="alt-accent">4. AMCB Details <span class="tag new" style="margin-left:6px;">only if AMCB question = No (charged back) on section 2</span></h2>' +
+    '<div class="field"><label>Type of Work <span class="req">*</span> ' + dTag() + '</label>' +
+    '<select class="fld" id="amcbTypeOfWork" onchange="onAmcbTypeChange()"><option value="">Select...</option><option value="BAU">BAU</option><option value="Eagle">Eagle</option><option value="Non-Eagle Project">Non-Eagle Project</option></select></div>' +
+    '<div id="amcbTypeArea"></div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Is the FTE in the FY Plan/Forecast or Pending Eagle Funding Approval? <span class="req">*</span></label>' +
+    '<select class="fld" onchange="onAmcbPlanChange(this,\'amcbFtePlan\')"><option>In Plan</option><option>Not in Plan</option></select></div>' +
+    '<div class="field"><label>Are the Funds in the FY Plan/Forecast or Pending Eagle Funding Approval? <span class="req">*</span></label>' +
+    '<select class="fld" onchange="onAmcbPlanChange(this,\'amcbFundsPlan\')"><option>In Plan</option><option>Not in Plan</option></select></div>' +
+    '</div>' +
+    '<div class="grid2"><div id="amcbFtePlan_area"></div><div id="amcbFundsPlan_area"></div></div>' +
+    '<div class="field"><label>Role Needed Due to SOW Contract Ending? <span class="req">*</span></label>' +
+    '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'amcbSowEnding\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'amcbSowEnding\',true,this)"><span class="dot"></span> Yes</div></div>' +
+    '<div class="help">Indicate \'No\' OR if yes, provide Sourcing Request (SR) Number of Ending Contract.</div></div>' +
+    '<div id="amcbSowEnding_area"></div>' +
+    '</div>';
+}
+
+function onAmcbTypeChange(){
+  var val = document.getElementById('amcbTypeOfWork').value;
+  var area = document.getElementById('amcbTypeArea');
+  if(val === 'BAU'){
+    area.innerHTML = '<div class="field inline-conditional"><label>Is this in-scope for Eagle Funding Consideration? <span class="req">*</span></label><select class="fld"><option>Yes</option><option>No</option></select></div>';
+  } else if(val === 'Eagle'){
+    area.innerHTML = '<div class="conditional-box inline-conditional"><b>If Eagle, is it Project or BAU?</b> Locked to "Eagle Project". <a href="#" onclick="return false;">View Eagle Spend &rarr;</a></div>' +
+      '<div class="field-row3 inline-conditional">' +
+      '<div class="field"><label>If Eagle, which envelope?</label><select class="fld"><option>AML</option><option>IRMC</option><option>Consumer</option><option>Commercial</option><option>Data</option><option>Technology</option><option>Treasury</option><option>Shared Services</option></select></div>' +
+      '<div class="field"><label>If Eagle Project, project name</label><input class="fld"></div>' +
+      '<div class="field"><label>If Eagle Funded, project ID</label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="grid2 inline-conditional">' +
+      '<div class="field"><label>If Eagle, MRA Name and Number (where applicable)</label><input class="fld"></div>' +
+      '<div class="field"><label>If Eagle, Remediation Due Date</label><input class="fld" type="date"></div>' +
+      '</div>';
+  } else if(val === 'Non-Eagle Project'){
+    area.innerHTML = '<div class="grid2 inline-conditional">' +
+      '<div class="field"><label>Is this in-scope for Eagle Funding Consideration? <span class="req">*</span></label><select class="fld"><option>Yes</option><option>No</option></select></div>' +
+      '<div class="field"><label>If Non-Eagle Project Hire, Project Name</label><input class="fld"></div>' +
+      '</div><div class="field inline-conditional"><label>If Non-Eagle Project Hire, Project Sponsor</label><input class="fld"></div>';
+  } else { area.innerHTML = ''; }
+}
+function onAmcbPlanChange(sel, key){
+  var area = document.getElementById(key + '_area');
+  if(sel.value === 'Not in Plan'){
+    area.innerHTML = '<div class="field inline-conditional"><label>If not in plan, indicate how this role will be funded</label><input class="fld"></div>';
+  } else { area.innerHTML = ''; }
+}
+
+function toggleInline(key, val, el){
+  var parent = el.parentElement;
+  Array.prototype.forEach.call(parent.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+  var area = document.getElementById(key + '_area');
+  if(!area) return;
+
+  if(key === 'iaAriba'){
+    area.innerHTML = val
+      ? '<div class="conditional-box inline-conditional"><b>Ariba path:</b> after in-app approvals, invoice processing & approvals complete inside Ariba (EMS rule 70). No further fields are captured here.</div>'
+      : '<div class="conditional-box danger inline-conditional"><b>Non-Ariba path (Jul 6 call):</b> this is a MANUAL process today — the request is emailed to the invoicing team (Shilpa’s team) for review. Our fix: on approval, the app generates a structured, templated hand-off (queue item + email) so their team receives consistent data with zero process change.</div>';
+    return;
+  }
+
+  if(key === 'athFwdDeploy' && val){
+    area.innerHTML = '<div class="grid2 inline-conditional"><div class="field"><label>Forward Deployed Segment</label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '<div class="field"><label>Forward Deployed BU</label><select class="fld">' + selectOpts(BUSINESS_UNITS) + '</select></div></div>';
+  } else if(key === 'athRiskControl' && val){
+    area.innerHTML = '<div class="field inline-conditional"><label>Risk/Control</label><select class="fld"><option>Eagle</option><option>Road to Strong (RTS)</option><option>COR (Greywolf & OSFI)</option><option>AML</option></select></div>';
+  } else if(key === 'athAmcb'){
+    if(val){
+      area.innerHTML = '<div class="field inline-conditional"><label>Role is charged back to Canada? <span class="req">*</span></label>' +
+        '<select class="fld" onchange="onAmcbChargebackChange(this)"><option>Yes</option><option>No</option></select></div>';
+    } else { area.innerHTML = ''; STATE.amcbNeeded = false; rebuildAthSectionsIfNeeded(); }
+  } else if(key === 'amcbSowEnding' && val){
+    area.innerHTML = '<div class="field inline-conditional"><label>Sourcing Request (SR) Number of Ending Contract <span class="req">*</span></label><input class="fld"></div>';
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+function onAmcbChargebackChange(sel){
+  STATE.amcbNeeded = (sel.value === 'No');
+  rebuildAthSectionsIfNeeded();
+}
+function rebuildAthSectionsIfNeeded(){
+  if(STATE.emsFormType === 'ath'){
+    STATE.emsFormSections = athSections().filter(function(s){
+      return !s.conditional || (s.conditional === 'athAmcb' && STATE.amcbNeeded);
+    });
+    renderEmsFormNav();
+  }
+}
+
+/* ---------- Vendor Expense form (3 sections) ---------- */
+function vendorExpenseSections(){
+  var s1col2 = '<div class="field"><label>Type of Expense <span class="req">*</span> ' + dTag() + '</label>' +
+    '<select class="fld" id="veTypeOfExpense" onchange="onVeTypeChange()">' +
+    '<option value="">Select...</option>' +
+    '<option>Professional Services - New Commitment</option><option>Professional Services - Existing Commitment</option>' +
+    '<option>Global Delivery - New Commitment</option><option>Global Delivery - Existing Commitment</option>' +
+    '<option>Software - New Commitment</option><option>Software - Existing Commitment</option>' +
+    '<option>Hardware - New Commitment</option><option>Hardware - Existing Commitment</option>' +
+    '</select></div>';
+
+  return [
+    { name: 'General Info', html: generalInfoSection('ve1', 'Vendor Expense', {col2: s1col2}) +
+      '<div id="veSowTypeArea" style="margin:0 22px;"></div>' },
+    { name: 'Vendor Expense', html:
+      '<div class="form-card"><h2 class="alt-accent">2. Vendor Expense</h2>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Vendor Name <span class="req">*</span> ' + cTag('Vendor Legal Entity Name') + '</label><input class="fld" placeholder="Vendor name"></div>' +
+      '<div class="field"><label>Vendor Manager <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>Search by name...</option></select></div>' +
+      '<div class="field"><label>Ariba ID</label><input class="fld" placeholder="Optional"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Clarity ID <span class="req">*</span> ' + cTag('Indicate the Project or Clarity ID number') + '</label><input class="fld"></div>' +
+      '<div class="field"><label>Clarity Name <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field"><label>Is this a Resource Vendor Expense? <span class="req">*</span> ' + cTag('Is this Purchase Resource Based?') + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'veResource\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'veResource\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="veResource_area"></div>' +
+      '<div class="field"><label>Has RFP been completed? <span class="req">*</span> ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'veRfp\',false,this)"><span class="dot"></span> Yes</div><div class="radio-opt" onclick="toggleInline(\'veRfp\',true,this)"><span class="dot"></span> No</div></div></div>' +
+      '<div id="veRfp_area"></div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Type of Artifacts <span class="req">*</span> ' + dTag() + '</label><select class="fld"><option>SOW (Statement of Work)</option><option>Work Order</option><option>Change Request / Change Order</option><option>Vendor Invoice</option><option>License Subscription</option><option>License Renewal</option><option>Amendment to an Existing Agreement</option><option>Master Agreement</option><option>Hardware/Software - Quote/Order Form</option><option>Procurement Request</option></select></div>' +
+      '<div class="field"><label>Contract# / SR# / PR# <span class="req">*</span></label><input class="fld" placeholder="SR = Sourcing Request / PR = Procurement Request"></div>' +
+      '<div class="field"><label>CW # <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Is this funded by an approved Business Case? <span class="req">*</span></label><select class="fld"><option>Funded by Approved BC</option><option>Not Funded by Approved BC</option></select></div>' +
+      '<div class="field"><label>SOW Engagement Types <span class="req">*</span></label><select class="fld"><option>Delivery</option><option>Non-Delivery</option><option>Other</option></select></div>' +
+      '<div class="field"><label>SSG Approval Date</label><input class="fld" type="date"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Contract Start Date <span class="req">*</span> ' + cTag('Target Contract Start Date') + '</label><input class="fld" type="date"></div>' +
+      '<div class="field"><label>Contract End Date <span class="req">*</span> ' + cTag('Estimated Contract End Date') + '</label><input class="fld" type="date"></div>' +
+      '</div>' +
+      '<div class="field"><label>Post Approval Rationale (if applicable)</label><textarea class="fld"></textarea></div>' +
+      '<div class="rule-note" style="margin:6px 0 14px;"><span class="icn">i</span><span>When entering amounts, use whole numbers only and do NOT use abbreviations like M, MM.</span></div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Contract Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld" onchange="onVeCurrencyChange(this)"><option>CAD</option><option>USD</option></select></div>' +
+      '<div class="field"><label>Contract Value (in source currency) <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '<div class="field"><label>Current Ask <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld locked" value="' + (STATE.spend||0) + '" disabled></div>' +
+      '</div>' +
+      '<div id="veFxArea"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>P&amp;L Risk <span class="req">*</span></label><input class="fld" type="number" placeholder="Amount above what was approved in plan"></div>' +
+      '<div class="field"><label>P&amp;L Savings <span class="req">*</span></label><input class="fld" type="number" placeholder="Amount saved due to contract negotiations"></div>' +
+      '</div>' +
+      '<div class="field-row4">' +
+      '<div class="field"><label>Value of previous engagement</label><input class="fld" type="number"></div>' +
+      '<div class="field"><label>Savings Opportunity</label><input class="fld" type="number"></div>' +
+      '<div class="field"><label>Cost Avoidance <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '<div class="field"><label>% Change from previous Fiscal year <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '</div>' +
+      '<div class="field"><label>Funding Confirmed By <span class="req">*</span> ' + cTag('Please provide any artifacts that confirm this funding') + '</label><input class="fld" placeholder="Funding needs to be confirmed by GTS Finance"><div class="help">Attach confirmation email to SPID.</div></div>' +
+      '</div>' },
+    { name: 'Attachments', html:
+      '<div class="form-card"><h2 class="alt-accent">3. Attachments/Notes</h2>' +
+      '<div class="field"><label>Attachments</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="field"><label>Notes</label><textarea class="fld"></textarea></div></div>' }
+  ];
+}
+function onVeTypeChange(){
+  var val = document.getElementById('veTypeOfExpense').value;
+  var area = document.getElementById('veSowTypeArea');
+  if(val.indexOf('Professional Services') === 0 || val === 'Global Delivery - Existing Commitment'){
+    area.innerHTML = '<div class="field inline-conditional" style="max-width:300px;"><label>SOW Type ' + dTag() + '</label><select class="fld"><option>Fixed</option><option>T&M</option></select></div>';
+  } else if(val === 'Global Delivery - New Commitment'){
+    area.innerHTML = '<div class="field inline-conditional" style="max-width:300px;"><label>SOW Type</label><input class="fld locked" value="T&M" disabled></div>';
+  } else {
+    area.innerHTML = '';
+  }
+}
+function onVeCurrencyChange(sel){
+  var area = document.getElementById('veFxArea');
+  area.innerHTML = sel.value === 'USD' ? '<div class="field inline-conditional" style="max-width:240px;"><label>F/X Rate</label><input class="fld" type="number" step="0.01"></div>' : '';
+}
+
+/* ---------- Project Request form (3 sections) ---------- */
+function projectRequestSections(){
+  var s1after = '<div class="field" id="corWorkArea"><label>COR Work? <span class="req">*</span> ' + dTag() + '</label>' +
+    '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'corWork\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'corWork\',true,this)"><span class="dot"></span> Yes</div></div></div><div id="corWork_area"></div>';
+
+  return [
+    { name: 'General Info', html: generalInfoSection('pr1', 'Project Request', {afterGrid: s1after}) },
+    { name: 'Project Request', html:
+      '<div class="form-card"><h2 class="alt-accent">2. Project Request</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Project Name <span class="req">*</span> ' + cTag('Associated Project & Engagement Purpose') + '</label><input class="fld"></div>' +
+      '<div class="field"><label>Project Clarity ID <span class="req">*</span></label><input class="fld" placeholder="If not yet created, explain below"></div>' +
+      '</div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Project Category <span class="req">*</span></label><select class="fld"><option>1 - Operational Imperative</option><option>2 - Regulatory - DCJ - Currency</option><option>3 - Strategic</option></select></div>' +
+      '<div class="field"><label>Project Risk Classification (PRC)</label><select class="fld"><option>N/A</option><option>A</option><option>B</option><option>C</option><option>D</option></select></div>' +
+      '<div class="field"><label>Project Status</label><select class="fld"><option>Red</option><option>Yellow</option><option>Green</option><option>Not Started</option></select></div>' +
+      '</div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Tranche <span class="req">*</span></label><input class="fld"></div>' +
+      '<div class="field"><label>Tranche Start Date <span class="req">*</span></label><input class="fld" type="date"></div>' +
+      '<div class="field"><label>Tranche End Date <span class="req">*</span></label><input class="fld" type="date"></div>' +
+      '</div>' +
+      '<div class="field-row4">' +
+      '<div class="field"><label>PIC Approved <span class="req">*</span></label><select class="fld"><option>Yes</option><option>No</option><option>N/A</option></select></div>' +
+      '<div class="field"><label>Type of Artifact</label><select class="fld"><option>ATS</option><option>ATP</option><option>ATS Extension</option><option>ATP Extension</option><option>PCR</option><option>Closure</option></select></div>' +
+      '<div class="field"><label>Funding Confirmed by Segment</label><select class="fld"><option>Yes</option><option>No</option></select></div>' +
+      '<div class="field"><label>Tier <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:240px;"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld" onchange="onPrCurrencyChange(this)"><option>CAD</option><option>USD</option></select></div>' +
+      '<div id="prFxArea"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>CPAR - Cumulative Project Approval Request <span class="req">*</span></label><input class="fld" type="number"><div class="help">Include tax. Whole numbers only.</div></div>' +
+      '<div class="field"><label>TPI - Total Project Investment <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Current Ask <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld locked" value="' + (STATE.spend||0) + '" disabled></div>' +
+      '<div class="field"><label>Total One-time cost <span class="req">*</span></label><input class="fld" type="number"></div>' +
+      '</div></div>' },
+    { name: 'Attachments', html:
+      '<div class="form-card"><h2 class="alt-accent">3. Attachments/Notes</h2>' +
+      '<div class="field"><label>Attachments</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="field"><label>Notes</label><textarea class="fld"></textarea></div></div>' }
+  ];
+}
+function onPrCurrencyChange(sel){
+  document.getElementById('prFxArea').innerHTML = sel.value === 'USD' ? '<div class="field inline-conditional" style="max-width:240px;"><label>F/X Rate</label><input class="fld" type="number" step="0.01"></div>' : '';
+}
+
+/* ---------- Other Approval Requests form (3 sections) ---------- */
+function otherApprovalSections(){
+  return [
+    { name: 'General Info', html: generalInfoSection('oa1', 'Other Approval Requests') },
+    { name: 'Other Approval Request', html:
+      '<div class="form-card"><h2 class="alt-accent">2. Other Approval Request</h2>' +
+      '<div class="field"><label>Type of Requests <span class="req">*</span> ' + dTag() + '</label>' +
+      '<select class="fld" onchange="onOtherTypeChange(this)"><option>Travel</option><option>Education</option><option>Conferences</option><option>Control Exception</option><option>Other - Describe</option></select></div>' +
+      '<div id="otherRiskRatingArea"></div>' +
+      '<div class="field"><label>Archer Findings</label><input class="fld"></div>' +
+      '<div class="field"><label>Remediation Plan</label><textarea class="fld"></textarea></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld" onchange="onOtherCurrencyChange(this)"><option>CAD</option><option>USD</option></select></div>' +
+      '<div id="otherFxArea"></div>' +
+      '</div>' +
+      '<div class="field"><label>Current Ask <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld locked" value="' + (STATE.spend||0) + '" disabled></div>' +
+      '<div class="field"><label>Does this require an elevated level of approval? <span class="req">*</span> ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'otherElevated\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'otherElevated\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '<div id="otherElevated_area"></div>' +
+      '</div>' },
+    { name: 'Attachments', html:
+      '<div class="form-card"><h2 class="alt-accent">3. Attachments/Notes</h2>' +
+      '<div class="field"><label>Attachments</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="field"><label>Notes</label><textarea class="fld"></textarea></div></div>' }
+  ];
+}
+function onOtherTypeChange(sel){
+  var area = document.getElementById('otherRiskRatingArea');
+  area.innerHTML = sel.value === 'Control Exception' ? '<div class="field inline-conditional" style="max-width:260px;"><label>Risk Rating</label><select class="fld"><option>Low</option><option>Medium</option><option>High</option></select></div>' : '';
+}
+function onOtherCurrencyChange(sel){
+  document.getElementById('otherFxArea').innerHTML = sel.value === 'USD' ? '<div class="field inline-conditional"><label>F/X Rate</label><input class="fld" type="number" step="0.01"></div>' : '<div></div>';
+}
+
+/* ---------- Invoice Approval form (3 sections) ---------- */
+function invoiceApprovalSections(){
+  var s1col2 = '<div class="field"><label>Type of Invoice <span class="req">*</span> ' + dTag() + '</label>' +
+    '<select class="fld"><option>Telecom</option><option>HW</option><option>SW</option><option>Cloud Consumption</option><option>Maintenance</option><option>Profees</option><option>SmallHW</option><option>Other</option></select></div>';
+  return [
+    { name: 'General Info', html:
+      '<div class="form-card"><h2>1. General Info</h2>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Request Type</label><input class="fld locked" value="Invoice Approval" disabled></div>' +
+      submissionStatusField('ia1') +
+      '<div class="field"><label>Is this approval for an invoice submitted in Ariba? <span class="req">*</span> ' + dTag() + '</label>' +
+      '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'iaAriba\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'iaAriba\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+      '</div>' +
+      '<div id="iaAriba_area"></div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+      '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld">' + selectOpts(BUSINESS_UNITS) + '</select></div>' +
+      '<div class="field"><label>Business Unit - SLT Alignment <span class="req">*</span></label><select class="fld"><option>Select a leader...</option></select></div>' +
+      '</div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Requestor <span class="req">*</span> ' + cTag('User Full Name') + '</label><input class="fld locked" value="Zaman, Ricky (auto via SSO)" disabled></div>' +
+      '<div class="field"><label>Presenter</label><select class="fld"><option>(optional)</option></select></div>' +
+      '<div class="field"><label>RTB Invoice <span class="req">*</span> ' + dTag() + '</label><div class="radio-row"><div class="radio-opt sel"><span class="dot"></span> No</div><div class="radio-opt"><span class="dot"></span> Yes</div></div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Cost Centre <span class="req">*</span> ' + cTag('Cost Centre Code') + '</label><input class="fld"></div>' +
+      s1col2 +
+      '</div>' +
+      '<div class="field"><label>Is the invoice part of a signed SOW or Change Order with sufficient funds and currently active? <span class="req">*</span></label><div class="radio-row"><div class="radio-opt sel"><span class="dot"></span> No</div><div class="radio-opt"><span class="dot"></span> Yes</div></div></div>' +
+      '<div class="field"><label>Title of Engagement ' + cTag('Engagement Title') + '</label><input class="fld"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Detailed Justification <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>Submitter Delegate</label><input class="fld" placeholder="Optional"></div>' +
+      '</div></div>' },
+    { name: 'Invoice Details', html:
+      '<div class="form-card"><h2 class="alt-accent">2. Invoice Details</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Invoice Number <span class="req">*</span></label><input class="fld"></div>' +
+      '<div class="field"><label>Invoice Amount <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld" type="number"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld"><option>CAD</option><option>USD</option></select></div>' +
+      '<div class="field"><label>Intake Title <span class="req">*</span></label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field"><label>Invoice Description <span class="req">*</span></label><input class="fld"></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Invoice Date <span class="req">*</span></label><input class="fld" type="date" id="invDate" onchange="recalcInvoiceDueDate()"></div>' +
+      '<div class="field"><label>Payment Terms <span class="req">*</span></label><select class="fld" id="payTerms" onchange="recalcInvoiceDueDate()"><option>5</option><option>15</option><option>30</option><option>45</option><option>60</option><option>Custom</option></select></div>' +
+      '</div>' +
+      '<div class="field" id="invDueDateWrap"><label>Invoice Due Date (auto-calculated)</label><input class="fld locked" id="invDueDate" disabled></div>' +
+      '<div class="field-row3">' +
+      '<div class="field"><label>Vendor Name <span class="req">*</span> ' + cTag('Vendor Legal Entity Name') + '</label><select class="fld"><option>Search vendor...</option></select></div>' +
+      '<div class="field"><label>VendorSiteID</label><input class="fld"></div>' +
+      '<div class="field"><label>RemittanceAddress</label><input class="fld"></div>' +
+      '</div>' +
+      '<div class="field" style="max-width:300px;"><label>VendorSource</label><input class="fld"></div>' +
+      '</div>' },
+    { name: 'Attachments', html:
+      '<div class="form-card"><h2 class="alt-accent">3. Attachments/Notes</h2>' +
+      '<div class="field"><label>Attachments</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="field"><label>Notes</label><textarea class="fld"></textarea></div></div>' }
+  ];
+}
+function recalcInvoiceDueDate(){
+  var dateVal = document.getElementById('invDate').value;
+  var terms = document.getElementById('payTerms').value;
+  var wrap = document.getElementById('invDueDateWrap');
+  if(terms === 'Custom'){
+    wrap.innerHTML = '<label>Invoice Due Date</label><input class="fld" type="date" id="invDueDate">';
+    return;
+  }
+  if(!dateVal){ return; }
+  var d = new Date(dateVal);
+  d.setDate(d.getDate() + parseInt(terms,10));
+  var iso = d.toISOString().slice(0,10);
+  wrap.innerHTML = '<label>Invoice Due Date (auto-calculated)</label><input class="fld locked" id="invDueDate" value="' + iso + '" disabled><div class="help">Invoice Date + ' + terms + ' days.</div>';
+}
+
+/* ============================================================
+   GENERIC EMS FORM RENDERER — section pagination, identical shell for all 5 forms
+============================================================ */
+var EMS_FORM_TITLES = {
+  ath: 'Approval to Hire — SPID (Signing Party) Intake',
+  vendor: 'Vendor Expense — SPID (Signing Party) Intake',
+  project: 'Project Request — SPID (Signing Party) Intake',
+  other: 'Other Approval Requests — SPID Intake',
+  invoice: 'Invoice Approval — SPID Intake'
+};
+var EMS_FORM_CRUMBS = {
+  ath: 'Approval to Hire', vendor: 'Vendor Expense', project: 'Project Request',
+  other: 'Other Approval Requests', invoice: 'Invoice Submission Request'
+};
+
+function startEmsForm(type){
+  STATE.emsFormType = type;
+  STATE.emsFormStep = 0;
+  STATE.amcbNeeded = false;
+  if(type === 'ath') STATE.emsFormSections = athSections().filter(function(s){ return !s.conditional; });
+  else if(type === 'vendor') STATE.emsFormSections = vendorExpenseSections();
+  else if(type === 'project') STATE.emsFormSections = projectRequestSections();
+  else if(type === 'other') STATE.emsFormSections = otherApprovalSections();
+  else if(type === 'invoice') STATE.emsFormSections = invoiceApprovalSections();
+
+  document.getElementById('emsFormCrumb').textContent = EMS_FORM_CRUMBS[type];
+  goTo('emsForm');
+  renderEmsFormNav();
+}
+
+function renderEmsFormNav(){
+  var sections = STATE.emsFormSections;
+  var step = STATE.emsFormStep;
+  var navHtml = '';
+  sections.forEach(function(s, i){
+    var cls = i < step ? 'done' : (i === step ? 'current' : 'todo');
+    navHtml += '<div class="ems-section-tab ' + cls + '">' + (i+1) + '. ' + s.name + '</div>';
+  });
+  document.getElementById('emsFormSectionNav').innerHTML = navHtml;
+  document.getElementById('emsFormStepLabel').textContent = 'Section ' + (step+1) + ' of ' + sections.length;
+  document.getElementById('emsFormStepPill').textContent = EMS_FORM_TITLES[STATE.emsFormType];
+  document.getElementById('emsFormProgressBar').style.width = ((step+1)/sections.length*100) + '%';
+  document.getElementById('emsFormContent').innerHTML = sections[step].html;
+
+  var isFirst = step === 0, isLast = step === sections.length - 1;
+  ['emsFormPrevTop','emsFormPrevBottom'].forEach(function(id){
+    document.getElementById(id).disabled = isFirst;
+    document.getElementById(id).style.opacity = isFirst ? 0.4 : 1;
+  });
+  ['emsFormNextTop','emsFormNextBottom'].forEach(function(id){
+    document.getElementById(id).textContent = isLast ? 'Review \u2192' : 'Next \u2192';
+  });
+}
+
+function emsFormNext(){
+  var sections = STATE.emsFormSections;
+  if(STATE.emsFormStep < sections.length - 1){
+    STATE.emsFormStep++;
+    renderEmsFormNav();
+    window.scrollTo(0,0);
+  } else {
+    prepareApprovalChainAndSubmit();
+  }
+}
+function emsFormPrev(){
+  if(STATE.emsFormStep > 0){
+    STATE.emsFormStep--;
+    renderEmsFormNav();
+    window.scrollTo(0,0);
+  } else {
+    goTo('triage');
+  }
+}
+
+/* ============================================================
+   MAIN WIZARD (Vendor Expense / Product Intake)
+============================================================ */
+var WIZARD_STEPS = ['Business details','Objective of request','Product or service details','Proof of funding'];
+
+function startWizard(){
+  STATE.wizardStep = 1;
+  if(STATE.isGTS){
+    document.getElementById('wizardCrumb').textContent = REQ_TYPE_LABELS[STATE.expenseType] || 'Vendor Expense';
+    document.getElementById('wizardLegendRow').style.display = 'flex';
+  } else {
+    document.getElementById('wizardCrumb').textContent = 'Intake Form';
+    document.getElementById('wizardLegendRow').style.display = 'none';
+  }
+  goTo('wizard');
+  renderWizardStep();
+}
+
+function renderStepper(){
+  var html = '';
+  WIZARD_STEPS.forEach(function(label, idx){
+    var n = idx + 1;
+    var cls = n < STATE.wizardStep ? 'done' : (n === STATE.wizardStep ? 'current' : 'todo');
+    var sub = n < STATE.wizardStep ? 'Complete' : (n === STATE.wizardStep ? 'In progress' : 'Waiting');
+    var node = n < STATE.wizardStep ? '&#10003;' : n;
+    html += '<div class="step ' + cls + '"><div class="connector"></div><div class="node">' + node + '</div>' +
+      '<div class="lbl">' + label + '</div><div class="sub">' + sub + '</div></div>';
+  });
+  document.getElementById('wzStepper').innerHTML = html;
+}
+
+function renderWizardStep(){
+  renderStepper();
+  document.getElementById('wzStepNum').textContent = STATE.wizardStep;
+  document.getElementById('wzStepPill').textContent = WIZARD_STEPS[STATE.wizardStep - 1];
+  document.getElementById('wzProgressBar').style.width = (STATE.wizardStep / 4 * 100) + '%';
+
+  var prevDisabled = STATE.wizardStep === 1;
+  ['wzPrevTop','wzPrevBottom'].forEach(function(id){
+    document.getElementById(id).disabled = prevDisabled;
+    document.getElementById(id).style.opacity = prevDisabled ? 0.4 : 1;
+  });
+  var isLast = STATE.wizardStep === 4;
+  ['wzNextTop','wzNextBottom'].forEach(function(id){
+    document.getElementById(id).textContent = isLast ? 'Review \u2192' : 'Next \u2192';
+  });
+
+  var content = '';
+
+  if(STATE.wizardStep === 1){
+    document.getElementById('wzProgressMeta').textContent = '8 required fields left in this step \u2022 5/27 complete';
+    content = '<div class="form-card"><h2>Business details</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>User full name <span class="tag">Read-only</span></label><input class="fld locked" value="Zaman, Ricky" disabled><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>User email <span class="tag">Read-only</span></label><input class="fld locked" value="ricky.zaman@dev-td.com" disabled><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Financial partner email <span class="req">*</span></label><input class="fld" placeholder="Search by name or email..."><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Engagement title <span class="req">*</span></label><input class="fld" placeholder="e.g. Figma - Change Request - Design Collaboration Tool - FY24"><div class="source-pill-row"><span class="src-pill ' + (STATE.isGTS?'src-both':'src-usff') + '">' + (STATE.isGTS?'Merged':'USFF') + '</span></div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Business sponsor <span class="req">*</span></label><input class="fld" placeholder="Search by name or email..."><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Risk owner <span class="req">*</span></label><input class="fld" placeholder="Search by name or email..."><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>' +
+      (STATE.isGTS ?
+        '<div class="grid2">' +
+        '<div class="field"><label>Submitter delegate <span class="tag new">from EMS</span></label><input class="fld" placeholder="Optional — assign someone to edit this request"></div>' +
+        '<div class="field"><label>Approval delegate <span class="tag new">Business Notes rule 28</span></label><input class="fld" placeholder="Optional — assign your approval authority to a delegate"><div class="help">Net-new requirement; applies to approvers downstream, captured here for record.</div></div>' +
+        '</div>'
+      : '') +
+      '<div class="field"><label>Description — what is being bought and what is the scope? <span class="req">*</span></label><textarea class="fld" placeholder="What is being bought and what is the scope?"></textarea><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>LOB owning the product or service <span class="req">*</span></label><select class="fld"><option>Select an option...</option><option>GTS - ITS Technology</option><option>Finance - Corporate Development</option></select><div class="source-pill-row"><span class="src-pill ' + (STATE.isGTS?'src-both':'src-usff') + '">' + (STATE.isGTS?'Merged':'USFF') + '</span></div></div>' +
+      '<div class="field"><label>LOB receiving the product or service <span class="req">*</span></label><select class="fld"><option>Select items...</option><option>All</option></select><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>' +
+      (STATE.isGTS ? '<div class="conditional-box purple"><b>GTS request detected</b> from your triage answers. This request will follow the GTS approval chain' + (STATE.mcTriggered ? ' INCLUDING Management Consulting routing (per procurement policy \u2014 placeholder until the policy list is provided).' : (STATE.mcExempt ? '. Management Consulting NOT required \u2014 exempt (Eagle-funded / exempt vendor).' : '.')) + '</div>' : '') +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 2){
+    document.getElementById('wzProgressMeta').textContent = '4 required fields left in this step \u2022 6/10 complete';
+    content = '<div class="form-card"><h2>Objective of request</h2>' +
+      '<div class="field"><label>What is the objective of this request? <span class="req">*</span></label>' +
+      '<select class="fld"><option>Select an option...</option><option>New Arrangement</option><option>Contract Renewal</option>' +
+      '<option>Work Order</option><option>Contract Amendment</option><option>SOW</option></select>' +
+      '<div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Describe the problem we are solving and why it is required <span class="req">*</span></label>' +
+      '<textarea class="fld" placeholder="What specific business need or problem is this procurement required to address?"></textarea>' +
+      '<div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>What did you do to complete this internally? Why is external solution required? <span class="req">*</span></label>' +
+      '<textarea class="fld"></textarea><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Associated project / engagement purpose <span class="req">*</span></label>' +
+      '<textarea class="fld" placeholder="Name of the project, high-level description, and how this engagement supports it. If not applicable, N/A."></textarea>' +
+      '<div class="source-pill-row"><span class="src-pill src-both">Merged</span></div></div>' +
+      '<div class="field"><label>Contribution to departmental goals <span class="req">*</span></label><textarea class="fld"></textarea>' +
+      '<div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>What are the impacts of not purchasing this product/service? <span class="req">*</span></label><textarea class="fld"></textarea>' +
+      '<div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 3){
+    document.getElementById('wzProgressMeta').textContent = '3 required fields left in this step \u2022 19/29 complete';
+    content = '<div class="form-card"><h2>Product or service details</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>What subcategory best matches your request (L3) <span class="req">*</span></label>' +
+      '<select class="fld"><option>Search for commodity code...</option></select><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Type of expense <span class="req">*</span> <span class="tag new">from EMS</span></label>' +
+      '<select class="fld"><option>Professional Services - New Commitment</option><option>Professional Services - Existing Commitment</option>' +
+      '<option>Software - New Commitment</option><option>Hardware - New Commitment</option></select>' +
+      '<div class="source-pill-row"><span class="src-pill src-ems">EMS</span></div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Target contract start date <span class="req">*</span></label><input class="fld" type="date" value="2026-06-29"><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Estimated contract end date <span class="req">*</span></label><input class="fld" type="date" value="2026-07-15"><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Anticipated total cost <span class="req">*</span></label><input class="fld locked" id="wzCostField" type="number" value="' + STATE.spend + '" disabled>' +
+      '<div class="help">Locked \u2014 carried forward from your triage answers (Business Notes rule 8). This is the value the Pipeline $100K gate checked.</div>' +
+      '<div class="source-pill-row"><span class="src-pill src-both">Merged</span></div></div>' +
+      '<div class="field"><label>Contract currency <span class="req">*</span></label><select class="fld"><option>CAD</option><option>USD</option></select>' +
+      '<div class="source-pill-row"><span class="src-pill src-both">Merged</span></div></div>' +
+      '</div>' +
+      (STATE.pipelineId ? '<div class="conditional-box purple"><b>Linked Pipeline:</b> PL-' + STATE.pipelineId + ' (approved)</div>' : '') +
+      '<div class="section-label-pill">Risk questions</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Does the third party anticipate having access to TD data? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt"><span class="dot"></span> Yes</div><div class="radio-opt sel"><span class="dot"></span> No</div></div></div>' +
+      '<div class="field"><label>Will vendor resources have access to TD PII data? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt"><span class="dot"></span> Yes</div><div class="radio-opt sel"><span class="dot"></span> No</div></div></div>' +
+      '</div>' +
+      '<div class="section-label-pill">Resource questions</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>How many resources are required? <span class="tag new">EMS validation</span></label>' +
+      '<input class="fld" id="wzResTotal" type="number" value="' + STATE.resourceCount + '" oninput="validateWizardResources()"></div>' +
+      '<div class="field"><label>Onshore / offshore split <span class="tag new">split per EMS</span></label>' +
+      '<div class="grid2" style="gap:10px;">' +
+      '<input class="fld" id="wzResOn" type="number" value="' + STATE.onshore + '" oninput="validateWizardResources()" placeholder="Onshore">' +
+      '<input class="fld" id="wzResOff" type="number" value="' + STATE.offshore + '" oninput="validateWizardResources()" placeholder="Offshore">' +
+      '</div><div class="help" id="wzResMsg" style="color:var(--td-green-mid);font-weight:600;">Total matches onshore + offshore. \u2713</div></div>' +
+      '</div>' +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 4){
+    document.getElementById('wzProgressMeta').textContent = STATE.mcTriggered ? '9 required fields left in this step (Management Consulting) \u2022 27/38 complete' : '2 required fields left in this step \u2022 27/29 complete';
+    var mcBlock = '';
+    if(STATE.mcTriggered){
+      mcBlock = '<div class="section-label-pill purple">Management Consulting fields <span style="font-weight:500;text-transform:none;letter-spacing:0;">(per procurement policy)</span></div>' +
+        '<div class="conditional-box purple"><b>Updated rule (Jul 6 call):</b> Management Consulting applies only where the <b>procurement policy</b> requires it \u2014 GTS + \u2265$100K alone is not sufficient. Exemptions: exempt vendors (Wipro, Cognizant), Eagle-funded work; Approval to Hire never routes here. The policy list is still owed to us \u2014 this block is shown because you answered "not exempt".</div>' +
+        '<div class="grid2">' +
+        '<div class="field"><label>Segment <span class="req">*</span> <span class="tag new">MC</span></label><select class="fld"><option>Canadian Banking Technology Solutions</option><option>Wealth Management Technology</option></select></div>' +
+        '<div class="field"><label>Vendor <span class="req">*</span> <span class="tag new">MC</span></label><input class="fld" placeholder="Vendor name"></div>' +
+        '</div>' +
+        '<div class="grid2">' +
+        '<div class="field"><label>Regulatory classification <span class="req">*</span> <span class="tag new">MC</span></label><select class="fld"><option>Not regulatory</option><option>MRA</option><option>SelfID</option></select></div>' +
+        '<div class="field"><label>Financial classification <span class="req">*</span> <span class="tag new">MC</span></label><input class="fld" placeholder="Cost centre / financial code"></div>' +
+        '</div>' +
+        '<div class="field"><label>Workforce justification <span class="req">*</span> <span class="tag new">MC</span></label><textarea class="fld" placeholder="Why is this workforce/resourcing approach required?"></textarea></div>' +
+        '<div class="field"><label>SOW justification (10 standard questions) <span class="req">*</span> <span class="tag new">MC</span></label>' +
+        '<div class="help" style="margin-top:0;">Business Notes rule 32: 10 standard SOW justification questions must be answered. Represented here as a single expandable block for prototype purposes.</div>' +
+        '<button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="alert(\'Would expand to show all 10 standard SOW justification questions.\')">View 10 questions</button></div>' +
+        '<div class="field"><label>Management Consulting template (offline Excel) <span class="req">*</span> <span class="tag new">MC, rule 33</span></label>' +
+        '<div class="fake-upload" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Upload completed offline template + SEVP approval email</div>' +
+        '<div class="help" style="color:var(--red-text);font-weight:600;">2-day SLA from Pipeline approval to upload this (Business Notes rule 34).</div></div>';
+    }
+    content = '<div class="form-card"><h2' + (STATE.mcTriggered ? ' class="red-accent"' : '') + '>Proof of funding</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>What is the source of funding? <span class="req">*</span></label>' +
+      '<select class="fld"><option>Select an option...</option><option>Project</option><option>Envelope</option><option>Baseline Expenses</option><option>Other</option></select>' +
+      '<div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '<div class="field"><label>Cost centre code <span class="req">*</span></label><input class="fld" placeholder="Enter cost centre code"><div class="source-pill-row"><span class="src-pill src-usff">USFF</span></div></div>' +
+      '</div>' +
+      '<div class="field"><label>Funding confirmed by <span class="tag new">EMS</span></label><input class="fld" placeholder="Name of Finance contact who confirmed funding"></div>' +
+      '<div class="field"><label>Please provide any artifacts that confirm this funding</label>' +
+      '<div class="fake-input" style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field" style="margin-top:18px;"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents <span class="tag new">EMS</span></label></div>' +
+      mcBlock +
+      '</div>';
+  }
+
+  document.getElementById('wzStepContent').innerHTML = content;
+  if(STATE.wizardStep === 3){ /* cost field locked, nothing to recalc */ }
+}
+
+function validateWizardResources(){
+  var total = parseInt(document.getElementById('wzResTotal').value || '0', 10);
+  var on = parseInt(document.getElementById('wzResOn').value || '0', 10);
+  var off = parseInt(document.getElementById('wzResOff').value || '0', 10);
+  var msg = document.getElementById('wzResMsg');
+  if(total === (on + off)){
+    msg.style.color = 'var(--td-green-mid)'; msg.textContent = 'Total matches onshore + offshore. \u2713';
+  } else {
+    msg.style.color = 'var(--red-text)'; msg.textContent = 'Total must equal onshore (' + on + ') + offshore (' + off + ') = ' + (on+off) + '.';
+  }
+}
+
+function wizardNext(){
+  if(STATE.wizardStep < 4){
+    STATE.wizardStep++;
+    renderWizardStep();
+    window.scrollTo(0,0);
+  } else {
+    prepareApprovalChainAndSubmit();
+  }
+}
+function wizardPrev(){
+  if(STATE.wizardStep > 1){
+    STATE.wizardStep--;
+    renderWizardStep();
+    window.scrollTo(0,0);
+  }
+}
+
+/* ============================================================
+   APPROVAL CHAIN ENGINE — picks chain A/B/C and renders timeline
+============================================================ */
+function getApprovalChain(){
+  if(!STATE.isGTS){
+    return { id:'A', label:'Chain A \u2014 standard USFF', phases:[
+      {name:'', steps:[['Funding Approval','done'],['Final Approval','current']]}
+    ]};
+  }
+  if(STATE.isGTS && !STATE.mcTriggered){
+    return withDownstream({ id:'B', label:'Chain B \u2014 GTS, no Mgmt Consulting', phases:[
+      {name:'', steps:[['AVP Approval','done'],['VP Approval','current'],['SVP Approval','todo'],['EVP Approval','todo'],['SEVP (Vlad) Final Approval','todo'],['Record Closed','todo']]}
+    ]});
+  }
+  // Chain C — full Management Consulting chain (Pipeline + SPID)
+  return withDownstream({ id:'C', label:'Chain C \u2014 GTS Management Consulting', phases:[
+    {name:'Pipeline (strategic go-ahead)', steps:[
+      ['VP Approval','done'],['SVP Approval','done'],['EVP Approval','current'],
+      ['FinAVP/FinEVP Approval','todo'],['Expense Review Committee','todo'],['SEVP (Vlad) Approval','todo'],['Pipeline Closed','todo']
+    ]},
+    {name:'SPID (contract execution)', steps:[
+      ['VP Approval','todo'],['SVP Approval','todo'],['EVP Approval','todo'],
+      ['FinAVP Approval','todo'],['Expense Review Committee','todo'],['SEVP (Vlad) Approval','todo'],['SPID Closed','todo']
+    ]}
+  ]});
+}
+
+/* Downstream hand-offs after the record closes (call notes Jul 6): external portals we
+   don't own, appended so requestors see the whole journey. Specs owed by the EMS team. */
+function withDownstream(chain){
+  if(STATE.expenseType === 'ath'){
+    var down = [];
+    if((STATE.athResource||'').indexOf('GD') === 0){ down.push(['GD Hub feed (external)','todo']); }
+    down.push(['Onboarding record to portal (external)','todo']);
+    down.push(['Onboarding swivel-chair (6 activities)','todo']);
+    down.push(['Invoicing team / portal (external)','todo']);
+    chain.phases.push({name:'Downstream \u2014 external systems (specs owed by EMS team)', steps:down});
+  }
+  if(STATE.expenseType === 'invoice'){
+    chain.phases.push({name:'Post-approval routing', steps:[
+      ['Ariba: complete in Ariba / Non-Ariba: manual hand-off to invoicing team (Shilpa)','todo'],
+      ['Invoicing team processing (ePAY, allocations, AP)','todo']
+    ]});
+  }
+  return chain;
+}
+
+function renderApprovalTimeline(containerEl){
+  var chain = getApprovalChain();
+  var html = '';
+  chain.phases.forEach(function(phase){
+    if(phase.name){ html += '<div class="tl-phase-label">' + phase.name + '</div>'; }
+    html += '<div class="timeline">';
+    phase.steps.forEach(function(s){
+      var label = s[0], cls = s[1];
+      var node = cls === 'done' ? '&#10003;' : (cls === 'current' ? '\u25CF' : '');
+      html += '<div class="tl-step ' + cls + '"><div class="tl-line"></div><div class="tl-node">' + node + '</div>' +
+        '<div class="tl-lbl">' + label + '</div><div class="tl-sub">' + (cls==='done'?'Complete':(cls==='current'?'In progress':'Waiting')) + '</div></div>';
+    });
+    html += '</div>';
+  });
+  if(chain.id !== 'A'){
+    html += '<div class="conditional-box purple" style="margin-top:14px;text-align:left;"><b>How these approvals actually happen (Jul 6 call):</b> each interim step is worked through a BOM agenda — the intake STATUS places the item on that level’s agenda, and the BOM member records Approved / Declined / Skipped (skipped auto-requeues) and advances the status. Only the FINAL SEVP (Vlad) approval is stamped on this intake record. <a onclick="goTo(\'agenda\')" style="cursor:pointer;text-decoration:underline;">See the Agenda dashboard →</a></div>';
+  }
+  containerEl.innerHTML = html;
+  return chain;
+}
+
+function prepareApprovalChainAndSubmit(){
+  openModal('submitConfirmModal');
+  var chain = getApprovalChain();
+  var preview = document.getElementById('submitConfirmChainPreview');
+  preview.style.display = 'block';
+  preview.innerHTML = '<b>Approval chain that will apply:</b> ' + chain.label +
+    (chain.id === 'C' ? ' \u2014 includes both Pipeline and SPID approval cycles, agenda/meeting-based, not email-only (Business Notes rule 25).' : '');
+}
+
+/* ============================================================
+   FINAL SUBMIT
+============================================================ */
+function onFinalSubmit(){
+  closeModal('submitConfirmModal');
+  var typeLabel = REQ_TYPE_LABELS[STATE.expenseType] || 'Request';
+
+  document.getElementById('submittedSub').textContent =
+    'Your ' + typeLabel.toLowerCase() + ' request has been submitted and is now moving through the approval workflow.';
+
+  var chain = renderApprovalTimeline(document.getElementById('submittedTimelineWrap'));
+  document.getElementById('submittedChainBadge').innerHTML = '<span class="chain-badge chain-' + chain.id.toLowerCase() + '">' + chain.label + '</span>';
+
+  var firstPendingStep = null;
+  chain.phases.some(function(p){ return p.steps.some(function(s){ if(s[1]==='current'){ firstPendingStep = (p.name?p.name+': ':'') + s[0]; return true;} return false; }); });
+  INTAKES.unshift({
+    id: 'SPID-' + (1043 + INTAKES.length),
+    name: typeLabel + ' \u2014 just submitted',
+    type: typeLabel,
+    segment: 'Canadian Banking Technology Solutions',
+    bu: 'AI Technology',
+    spend: STATE.spend || null,
+    step: firstPendingStep || 'Submitted',
+    chain: chain.id,
+    status: 'In progress',
+    submitted: new Date().toISOString().slice(0,10),
+    pipelineId: STATE.pipelineId ? ('PL-' + STATE.pipelineId) : ''
+  });
+
+  goTo('submitted');
+}
+
+/* ============================================================
+   V5 — DATA STORES (would live in the app database)
+============================================================ */
+var CURRENT_USER = 'J. Smith'; // the signed-in BOM Lead for the agenda builder demo
+
+var LEVELS = ['VP','SVP','Group Head','EVP','SEVP'];
+var SHORT_SEGMENTS = ['Canadian Banking Technology Solutions','Protect Platform','TD Securities and Payments','Infrastructure & Engineering'];
+
+var INTAKES = [
+  {id:'SPID-1041', name:'Figma — design collaboration tool', type:'Vendor Expense', segment:'Canadian Banking Technology Solutions', bu:'Marketing Technology', spend:42000, step:'Funding approval', chain:'A', status:'In progress', submitted:'2026-06-24', pipelineId:''},
+  {id:'SPID-1036', name:'Cognizant staff augmentation — Q3', type:'Approval to Hire', segment:'Infrastructure & Engineering', bu:'Enterprise Architecture', spend:null, step:'Complete', chain:'B', status:'Approved', submitted:'2026-06-12', pipelineId:''},
+  {id:'SPID-1029', name:'Datadog observability platform renewal', type:'Vendor Expense', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:210000, step:'Pipeline: SVP Approval', chain:'C', status:'In progress', submitted:'2026-06-18', pipelineId:'PL-84120'},
+  {id:'SPID-1022', name:'Q3 travel — conference attendance', type:'Other Approval Requests', segment:'Protect Platform', bu:'Risk Technology', spend:3400, step:'SVP approval', chain:'A', status:'In progress', submitted:'2026-06-30', pipelineId:''},
+  {id:'SPID-1018', name:'3rd party staff aug SOW — segment X', type:'Vendor Expense', segment:'TD Securities and Payments', bu:'Corporate Technology', spend:340000, step:'Pipeline: EVP Approval (skipped → requeued)', chain:'C', status:'Skipped — requeued', submitted:'2026-06-10', pipelineId:'PL-77310'}
+];
+
+var PIPELINES = [
+  {id:'PL-84120', title:'Datadog observability platform renewal', kind:'Vendor Expense', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:210000, level:'SVP', status:'Awaiting agenda', requestor:'R. Zaman', scheduled:'2026-07-09', linkedIntake:'SPID-1029'},
+  {id:'PL-77310', title:'3rd party staff aug SOW — segment X', kind:'Vendor Expense', segment:'TD Securities and Payments', bu:'Corporate Technology', spend:340000, level:'EVP', status:'Skipped — requeued', requestor:'K. Alvarez', scheduled:'2026-07-02', linkedIntake:'SPID-1018'},
+  {id:'PL-81455', title:'GD contract amendment — segment Y', kind:'Vendor Expense', segment:'Protect Platform', bu:'Risk Technology', spend:1250000, level:'SEVP', status:'Awaiting agenda', requestor:'S. Iyer', scheduled:'2026-07-14', linkedIntake:'SPID-0991'},
+  {id:'PL-80217', title:'Contractor overtenure extension — payments core', kind:'ATH (overtenure)', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:null, level:'VP', status:'Awaiting agenda', requestor:'M. Osei', scheduled:'2026-07-09', linkedIntake:'—'},
+  {id:'PL-79984', title:'Accenture delivery pods — wave 2', kind:'Vendor Expense', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:560000, level:'VP', status:'Awaiting agenda', requestor:'T. Nguyen', scheduled:'2026-07-09', linkedIntake:'—'},
+  {id:'PL-79310', title:'Wipro managed testing services renewal', kind:'Vendor Expense', segment:'Infrastructure & Engineering', bu:'Corporate Technology', spend:480000, level:'SVP', status:'Approved', requestor:'L. Martin', scheduled:'2026-06-25', linkedIntake:'SPID-0978'}
+];
+
+/* Mirrors the SharePoint approvers list + Power App roles — now stored in the app DB.
+   delegate = the user who helps set up approvals for that approver.
+   bomLead = grants agenda-creation access in the Agenda Builder. */
+var MATRIX = [
+  {approver:'M. Chen', level:'VP', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', delegate:'J. Smith', bomLead:true},
+  {approver:'P. Rodriguez', level:'SVP', segment:'Canadian Banking Technology Solutions', bu:'AI Technology', delegate:'J. Smith', bomLead:true},
+  {approver:'S. Leung', level:'SVP', segment:'Protect Platform', bu:'Risk Technology', delegate:'A. Patel', bomLead:true},
+  {approver:'D. Bosman', level:'EVP', segment:'TD Securities and Payments', bu:'Corporate Technology', delegate:'A. Patel', bomLead:false},
+  {approver:'K. Wong', level:'Group Head', segment:'Infrastructure & Engineering', bu:'Enterprise Architecture', delegate:'R. Gomez', bomLead:false},
+  {approver:'Vlad (SEVP)', level:'SEVP', segment:'All segments', bu:'All', delegate:'R. Gomez', bomLead:false}
+];
+
+var AGENDAS = [];
+var abNextId = 1;
+
+/* ============================================================
+   V5 — SHARED HELPERS (badges, formatting, file downloads)
+============================================================ */
+function fmtSpend(v){ return (v === null || v === undefined || v === '') ? '—' : ('$' + Number(v).toLocaleString()); }
+
+function chainBadgeHtml(chain){
+  var labels = {A:'Chain A — standard', B:'Chain B — GTS &lt;$100K', C:'Chain C — GTS Mgmt Consulting'};
+  return '<span class="chain-badge chain-' + chain.toLowerCase() + '">' + (labels[chain] || chain) + '</span>';
+}
+
+function statusBadgeHtml(status){
+  var cls = 'sb-progress', style = '';
+  if(status === 'Approved'){ cls = 'sb-approved'; }
+  else if(status.indexOf('Skipped') === 0){ cls = 'sb-skipped'; }
+  else if(status === 'Declined'){ cls = ''; style = ' style="background:#fdeaea;color:#9b1c1c;"'; }
+  return '<span class="status-badge ' + cls + '"' + style + '>' + status + '</span>';
+}
+
+function csvEscape(v){ v = (v === null || v === undefined) ? '' : String(v); return '"' + v.replace(/"/g,'""') + '"'; }
+
+function downloadFile(filename, mime, content){
+  var blob = new Blob([content], {type: mime});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+/* fmt 'csv' → real CSV (Excel-friendly, BOM included). fmt 'xls' → Excel-openable HTML
+   workbook (prototype stand-in; production emits true .xlsx server-side). */
+function downloadTable(baseName, headers, rows, fmt, sheetTitle){
+  if(fmt === 'csv'){
+    var lines = [headers.map(csvEscape).join(',')];
+    rows.forEach(function(r){ lines.push(r.map(csvEscape).join(',')); });
+    downloadFile(baseName + '.csv', 'text/csv;charset=utf-8', '\uFEFF' + lines.join('\r\n'));
+  } else {
+    var esc = function(c){ return (c === null || c === undefined) ? '' : String(c).replace(/&/g,'&amp;').replace(/</g,'&lt;'); };
+    var html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>' +
+      (sheetTitle ? '<h3>' + esc(sheetTitle) + '</h3>' : '') +
+      '<table border="1"><tr>' + headers.map(function(h){ return '<th>' + esc(h) + '</th>'; }).join('') + '</tr>' +
+      rows.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+      '</table></body></html>';
+    downloadFile(baseName + '.xls', 'application/vnd.ms-excel', html);
+  }
+}
+
+/* ============================================================
+   V5 — INTAKE DASHBOARD (filter + export)
+============================================================ */
+function getFilteredIntakes(){
+  var q = (document.getElementById('inSearch').value || '').toLowerCase();
+  var t = document.getElementById('inTypeFilter').value;
+  var s = document.getElementById('inStatusFilter').value;
+  return INTAKES.filter(function(r){
+    if(t && r.type !== t){ return false; }
+    if(s && r.status !== s){ return false; }
+    if(q && (r.id + ' ' + r.name + ' ' + r.type + ' ' + r.segment + ' ' + r.bu).toLowerCase().indexOf(q) === -1){ return false; }
+    return true;
+  });
+}
+
+function renderIntakeDash(){
+  var rows = getFilteredIntakes();
+  document.getElementById('inCount').textContent = 'Showing ' + rows.length + ' of ' + INTAKES.length + ' intake request(s) — exports include exactly what is shown.';
+  var html = '<table class="status-table"><tr><th>ID</th><th>Request</th><th>Type</th><th>Segment / BU</th><th>Spend</th><th>Current step</th><th>Status</th><th>Submitted</th></tr>';
+  rows.forEach(function(r){
+    html += '<tr><td><b>' + r.id + '</b>' + (r.pipelineId ? '<br><span class="help" style="font-size:10.5px;">↳ ' + r.pipelineId + '</span>' : '') + '</td>' +
+      '<td>' + r.name + '</td><td>' + r.type + '</td>' +
+      '<td>' + r.segment + '<br><span class="help" style="font-size:10.5px;">' + r.bu + '</span></td>' +
+      '<td>' + fmtSpend(r.spend) + '</td>' +
+      '<td>' + r.step + '<br>' + chainBadgeHtml(r.chain) + '</td>' +
+      '<td>' + statusBadgeHtml(r.status) + '</td><td>' + r.submitted + '</td></tr>';
+  });
+  if(!rows.length){ html += '<tr><td colspan="8" style="text-align:center;color:var(--ink-faint);">No requests match the current filters.</td></tr>'; }
+  html += '</table>';
+  document.getElementById('intakeTableWrap').innerHTML = html;
+}
+
+function exportIntakes(fmt){
+  var rows = getFilteredIntakes().map(function(r){
+    return [r.id, r.name, r.type, r.segment, r.bu, r.spend === null ? '' : r.spend, r.step, 'Chain ' + r.chain, r.status, r.submitted, r.pipelineId || ''];
+  });
+  downloadTable('intake_requests_export',
+    ['Request ID','Request','Type','Segment','Business Unit','Spend (CAD)','Current Step','Approval Chain','Status','Submitted','Linked Pipeline'],
+    rows, fmt, 'Intake Requests — filtered export');
+}
+
+/* ============================================================
+   V5 — PIPELINE REQUESTS DASHBOARD (filter + export)
+============================================================ */
+function getFilteredPipelines(){
+  var q = (document.getElementById('plSearch').value || '').toLowerCase();
+  var seg = document.getElementById('plSegFilter').value;
+  var lvl = document.getElementById('plLevelFilter').value;
+  var s = document.getElementById('plStatusFilter').value;
+  return PIPELINES.filter(function(p){
+    if(seg && p.segment !== seg){ return false; }
+    if(lvl && p.level !== lvl){ return false; }
+    if(s && p.status !== s){ return false; }
+    if(q && (p.id + ' ' + p.title + ' ' + p.kind + ' ' + p.segment + ' ' + p.bu + ' ' + p.requestor).toLowerCase().indexOf(q) === -1){ return false; }
+    return true;
+  });
+}
+
+function renderPipelineDash(){
+  // populate the segment/level filters once
+  var segSel = document.getElementById('plSegFilter');
+  if(segSel.options.length === 1){
+    SHORT_SEGMENTS.forEach(function(sg){ var o = document.createElement('option'); o.textContent = sg; segSel.appendChild(o); });
+    var lvlSel = document.getElementById('plLevelFilter');
+    LEVELS.forEach(function(l){ var o = document.createElement('option'); o.textContent = l; lvlSel.appendChild(o); });
+  }
+  var rows = getFilteredPipelines();
+  document.getElementById('plCount').textContent = 'Showing ' + rows.length + ' of ' + PIPELINES.length + ' pipeline request(s) — exports include exactly what is shown.';
+  var html = '<table class="status-table"><tr><th>Pipeline ID</th><th>Title</th><th>Kind</th><th>Segment / BU</th><th>Spend</th><th>Current approval level</th><th>Status</th><th>Linked intake</th></tr>';
+  rows.forEach(function(p){
+    html += '<tr><td><b>' + p.id + '</b></td><td>' + p.title + '<br><span class="help" style="font-size:10.5px;">Requestor: ' + p.requestor + ' · scheduled ' + p.scheduled + '</span></td>' +
+      '<td>' + p.kind + '</td>' +
+      '<td>' + p.segment + '<br><span class="help" style="font-size:10.5px;">' + p.bu + '</span></td>' +
+      '<td>' + fmtSpend(p.spend) + '</td><td>' + p.level + '</td>' +
+      '<td>' + statusBadgeHtml(p.status) + '</td><td>' + p.linkedIntake + '</td></tr>';
+  });
+  if(!rows.length){ html += '<tr><td colspan="8" style="text-align:center;color:var(--ink-faint);">No pipeline requests match the current filters.</td></tr>'; }
+  html += '</table>';
+  document.getElementById('pipelineTableWrap').innerHTML = html;
+}
+
+function exportPipelines(fmt){
+  var rows = getFilteredPipelines().map(function(p){
+    return [p.id, p.title, p.kind, p.segment, p.bu, p.spend === null ? '' : p.spend, p.level, p.status, p.requestor, p.scheduled, p.linkedIntake];
+  });
+  downloadTable('pipeline_requests_export',
+    ['Pipeline ID','Title','Kind','Segment','Business Unit','Spend (CAD)','Current Approval Level','Status','Requestor','Originally Scheduled','Linked Intake'],
+    rows, fmt, 'Pipeline Requests — filtered export');
+}
+
+/* ============================================================
+   V5 — FINANCIAL APPROVAL MATRIX
+============================================================ */
+STATE.mxBom = false;
+
+function setMxBom(val, el){
+  STATE.mxBom = val;
+  Array.prototype.forEach.call(el.parentElement.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+function renderMatrix(){
+  // populate the add-form dropdowns once
+  var lvlSel = document.getElementById('mxLevel');
+  if(!lvlSel.options.length){
+    lvlSel.innerHTML = LEVELS.map(function(l){ return '<option>' + l + '</option>'; }).join('');
+    document.getElementById('mxSegment').innerHTML = SHORT_SEGMENTS.concat(['All segments']).map(function(sg){ return '<option>' + sg + '</option>'; }).join('');
+    document.getElementById('mxBu').innerHTML = BUSINESS_UNITS.concat(['All']).map(function(b){ return '<option>' + b + '</option>'; }).join('');
+  }
+  var html = '<table class="status-table"><tr><th>Approver</th><th>Level</th><th>Segment</th><th>Business Unit</th><th>Delegate</th><th>BOM Lead</th><th style="width:90px;"></th></tr>';
+  MATRIX.forEach(function(m, i){
+    html += '<tr><td><b>' + m.approver + '</b></td><td>' + m.level + '</td><td>' + m.segment + '</td><td>' + m.bu + '</td>' +
+      '<td>' + m.delegate + (m.delegate === CURRENT_USER ? ' <span class="tag" style="font-size:10px;font-weight:700;color:var(--ink-faint);background:#f0f1ec;padding:2px 7px;border-radius:5px;">you</span>' : '') + '</td>' +
+      '<td>' + (m.bomLead ? '<span class="bom-badge">BOM Lead — agenda access</span>' : '—') + '</td>' +
+      '<td><button class="matrix-remove" onclick="removeMatrixRow(' + i + ')">Remove</button></td></tr>';
+  });
+  html += '</table>';
+  document.getElementById('matrixTableWrap').innerHTML = html;
+}
+
+function addMatrixRow(){
+  var approver = document.getElementById('mxApprover').value.trim();
+  var delegate = document.getElementById('mxDelegate').value.trim();
+  var msg = document.getElementById('mxMsg');
+  if(!approver || !delegate){
+    msg.style.color = 'var(--red-text)';
+    msg.textContent = 'Approver name and delegate are required.';
+    return;
+  }
+  MATRIX.push({
+    approver: approver,
+    level: document.getElementById('mxLevel').value,
+    segment: document.getElementById('mxSegment').value,
+    bu: document.getElementById('mxBu').value,
+    delegate: delegate,
+    bomLead: STATE.mxBom
+  });
+  document.getElementById('mxApprover').value = '';
+  document.getElementById('mxDelegate').value = '';
+  msg.style.color = 'var(--td-green-mid)';
+  msg.textContent = 'Added ✓ — saved to the app database (in this prototype: in-memory). ' +
+    (STATE.mxBom ? 'BOM Lead access granted: ' + delegate + ' can now build agendas for this segment/level in the Agenda Builder.' : '');
+  renderMatrix();
+}
+
+function removeMatrixRow(i){
+  MATRIX.splice(i, 1);
+  renderMatrix();
+}
+
+/* ============================================================
+   V5 — AGENDA BUILDER (BOM Leads; access driven by the matrix)
+============================================================ */
+var AB = { segment:'', level:'', bu:'', date:'' };
+
+function initAgendaBuilder(){
+  var sel = document.getElementById('abSegment');
+  if(sel.options.length <= 1){
+    SHORT_SEGMENTS.forEach(function(sg){ var o = document.createElement('option'); o.textContent = sg; sel.appendChild(o); });
+  }
+  renderGeneratedAgendas();
+}
+
+function abAllowedLevels(segment){
+  var allowed = {};
+  MATRIX.forEach(function(m){
+    if(m.delegate === CURRENT_USER && m.bomLead && (m.segment === segment || m.segment === 'All segments')){ allowed[m.level] = true; }
+  });
+  return allowed;
+}
+
+function abClearFrom(step){
+  if(step <= 2){ document.getElementById('abLevelWrap').innerHTML = ''; AB.level = ''; }
+  if(step <= 3){ document.getElementById('abBuWrap').innerHTML = ''; AB.bu = ''; }
+  if(step <= 4){ document.getElementById('abDateWrap').innerHTML = ''; AB.date = ''; }
+  document.getElementById('abActions').innerHTML = '';
+  document.getElementById('abGallery').innerHTML = '';
+}
+
+function abOnSegment(){
+  AB.segment = document.getElementById('abSegment').value;
+  abClearFrom(2);
+  if(!AB.segment){ return; }
+  var allowed = abAllowedLevels(AB.segment);
+  var anyAllowed = Object.keys(allowed).length > 0;
+  document.getElementById('abLevelWrap').innerHTML =
+    '<div class="field ab-step"><label>2. For which level is the agenda required? <span class="req">*</span></label>' +
+    '<select class="fld" id="abLevel" onchange="abOnLevel()"><option value="">Select level...</option>' +
+    LEVELS.map(function(l){
+      return '<option value="' + l + '"' + (allowed[l] ? '' : ' disabled') + '>' + l + (allowed[l] ? '' : ' — no access') + '</option>';
+    }).join('') + '</select>' +
+    (anyAllowed
+      ? '<div class="help">Your BOM Lead access for this segment (per the Approval Matrix): <b>' + Object.keys(allowed).join(', ') + '</b>. Most BOM Leads only see 1–2 levels.</div>'
+      : '<div class="help" style="color:var(--red-text);font-weight:600;">No BOM Lead access for this segment — ask an admin to add you in the Approval Matrix.</div>') +
+    '</div>';
+}
+
+function abOnLevel(){
+  AB.level = document.getElementById('abLevel').value;
+  abClearFrom(3);
+  if(!AB.level){ return; }
+  var bus = [];
+  PIPELINES.forEach(function(p){
+    if(p.segment === AB.segment && bus.indexOf(p.bu) === -1){ bus.push(p.bu); }
+  });
+  document.getElementById('abBuWrap').innerHTML =
+    '<div class="field ab-step"><label>3. Select business unit <span class="req">*</span></label>' +
+    '<select class="fld" id="abBu" onchange="abOnBu()"><option value="">Select business unit...</option>' +
+    bus.map(function(b){ return '<option>' + b + '</option>'; }).join('') + '</select>' +
+    '<div class="help">Only BUs with pipeline intakes in ' + AB.segment + ' are listed.</div></div>';
+}
+
+function abOnBu(){
+  AB.bu = document.getElementById('abBu').value;
+  abClearFrom(4);
+  if(!AB.bu){ return; }
+  document.getElementById('abDateWrap').innerHTML =
+    '<div class="field ab-step"><label>4. Agenda date <span class="req">*</span></label>' +
+    '<input class="fld" type="date" id="abDate" onchange="abOnDate()"></div>';
+}
+
+function abOnDate(){
+  AB.date = document.getElementById('abDate').value;
+  document.getElementById('abActions').innerHTML = '';
+  document.getElementById('abGallery').innerHTML = '';
+  if(!AB.date){ return; }
+  renderAbActions();
+}
+
+function abMatches(){
+  return PIPELINES.filter(function(p){
+    return p.segment === AB.segment && p.level === AB.level && p.bu === AB.bu &&
+      p.status !== 'Approved' && p.status !== 'Declined';
+  });
+}
+
+function renderAbActions(){
+  var m = abMatches();
+  document.getElementById('abActions').innerHTML =
+    '<div class="conditional-box purple ab-step" style="margin-top:4px;"><b>' + m.length + ' pipeline intake(s)</b> drill down to ' +
+    AB.segment + ' &middot; ' + AB.level + ' &middot; ' + AB.bu + ' for agenda date <b>' + AB.date + '</b>. Skipped items from earlier agendas requeue at the TOP (rules 22–24).</div>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+    '<button class="btn btn-outline" onclick="abToggleGallery()">&#9638; Gallery view of pipelines</button>' +
+    '<button class="btn btn-primary"' + (m.length ? '' : ' disabled style="opacity:.5;cursor:not-allowed;"') + ' onclick="abGenerate()">Generate agenda (Excel) &rarr;</button>' +
+    '</div>';
+}
+
+function galleryCard(p){
+  return '<div class="gallery-card"><h4>' + p.title + '</h4><div class="meta"><b>' + p.id + '</b> &middot; ' + p.kind +
+    '<br>' + p.bu + ' &middot; ' + fmtSpend(p.spend) +
+    '<br>Requestor: ' + p.requestor + ' &middot; scheduled ' + p.scheduled +
+    '<br>' + statusBadgeHtml(p.status) + '</div></div>';
+}
+
+function abToggleGallery(){
+  var g = document.getElementById('abGallery');
+  if(g.innerHTML){ g.innerHTML = ''; return; }
+  var m = abMatches();
+  // skipped items float to the top of the gallery, mirroring the requeue rule
+  m.sort(function(a,b){ return (b.status.indexOf('Skipped') === 0 ? 1 : 0) - (a.status.indexOf('Skipped') === 0 ? 1 : 0); });
+  g.innerHTML = '<div class="gallery-grid ab-step">' +
+    (m.length ? m.map(galleryCard).join('') : '<div class="meta" style="color:var(--ink-faint);font-size:12.5px;">No matching pipeline intakes.</div>') +
+    '</div>';
+}
+
+function abFind(id){ return AGENDAS.filter(function(a){ return a.id === id; })[0]; }
+function plFind(id){ return PIPELINES.filter(function(p){ return p.id === id; })[0]; }
+
+function abDownload(ag){
+  var rows = ag.items.map(function(pid){
+    var p = plFind(pid);
+    return [p.id, p.title, p.kind, p.spend === null ? '' : p.spend, p.requestor, p.scheduled, p.status, p.linkedIntake];
+  });
+  downloadTable(ag.id + '_' + ag.level.replace(/\s+/g,'') + '_agenda_' + ag.date,
+    ['Pipeline ID','Title','Kind','Spend (CAD)','Requestor','Originally Scheduled','Status','Linked Intake'],
+    rows, 'xls',
+    ag.level + ' Agenda — ' + ag.segment + ' / ' + ag.bu + ' — ' + ag.date + ' (built by ' + CURRENT_USER + ')');
+}
+
+function abGenerate(){
+  var items = abMatches();
+  var ag = {
+    id: 'AG-' + (100 + abNextId++),
+    segment: AB.segment, level: AB.level, bu: AB.bu, date: AB.date,
+    items: items.map(function(p){ return p.id; }),
+    status: 'Open'
+  };
+  AGENDAS.unshift(ag);
+  items.forEach(function(p){ p.status = 'On agenda'; });
+  abDownload(ag);
+  renderGeneratedAgendas();
+  renderAbActions();
+}
+
+function renderGeneratedAgendas(){
+  var wrap = document.getElementById('abGeneratedList');
+  var divider = document.getElementById('abGeneratedDivider');
+  if(!AGENDAS.length){ wrap.innerHTML = ''; divider.style.display = 'none'; return; }
+  divider.style.display = 'flex';
+  wrap.innerHTML = AGENDAS.map(function(ag){
+    var closed = ag.status === 'Closed';
+    var dis = closed ? ' disabled style="opacity:.5;cursor:not-allowed;"' : '';
+    return '<div class="agenda-rec' + (closed ? ' closed' : '') + '">' +
+      '<h4>' + ag.id + ' — ' + ag.level + ' agenda &middot; ' + ag.date + ' ' +
+      (closed ? '<span class="status-badge sb-approved">Closed</span>' : '<span class="status-badge sb-progress">Open</span>') + '</h4>' +
+      '<div class="meta">' + ag.segment + ' &middot; ' + ag.bu + ' &middot; ' + ag.items.length + ' item(s)</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+      '<button class="btn btn-outline btn-sm"' + dis + ' onclick="abReDownload(\'' + ag.id + '\')">&#8681; Download Excel</button>' +
+      '<button class="btn btn-outline btn-sm"' + dis + ' onclick="abModify(\'' + ag.id + '\')">Modify agenda</button>' +
+      '<button class="btn btn-outline btn-sm"' + dis + ' onclick="abCloseAgenda(\'' + ag.id + '\')">Close agenda</button>' +
+      '</div><div id="abEdit_' + ag.id + '"></div></div>';
+  }).join('');
+}
+
+function abReDownload(id){ abDownload(abFind(id)); }
+
+function abModify(id){
+  var ag = abFind(id);
+  var el = document.getElementById('abEdit_' + id);
+  if(el.innerHTML){ el.innerHTML = ''; return; }
+  var candidates = PIPELINES.filter(function(p){
+    return p.segment === ag.segment && p.level === ag.level && p.bu === ag.bu &&
+      p.status !== 'Approved' && p.status !== 'Declined';
+  });
+  el.innerHTML = '<div class="modal-rule ab-step" style="margin-top:10px;"><b>Modify ' + ag.id + ':</b> untick to pull an item off the agenda, tick to add one.<br><br>' +
+    candidates.map(function(p){
+      var on = ag.items.indexOf(p.id) !== -1;
+      return '<label style="display:flex;gap:8px;align-items:center;margin:4px 0;font-size:12.5px;font-weight:400;">' +
+        '<input type="checkbox" data-pl="' + p.id + '"' + (on ? ' checked' : '') + '> ' + p.id + ' — ' + p.title + ' (' + fmtSpend(p.spend) + ')</label>';
+    }).join('') +
+    '<button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="abSaveModify(\'' + id + '\')">Save changes</button></div>';
+}
+
+function abSaveModify(id){
+  var ag = abFind(id);
+  var el = document.getElementById('abEdit_' + id);
+  var newItems = [];
+  Array.prototype.forEach.call(el.querySelectorAll('input[type=checkbox]'), function(cb){
+    var pid = cb.getAttribute('data-pl');
+    var p = plFind(pid);
+    if(cb.checked){
+      newItems.push(pid);
+      if(p){ p.status = 'On agenda'; }
+    } else if(ag.items.indexOf(pid) !== -1 && p){
+      p.status = 'Awaiting agenda';
+    }
+  });
+  ag.items = newItems;
+  renderGeneratedAgendas();
+}
+
+function abCloseAgenda(id){
+  var ag = abFind(id);
+  ag.status = 'Closed';
+  // meeting is done — items not actioned auto-requeue to the next agenda (rules 22–24)
+  ag.items.forEach(function(pid){
+    var p = plFind(pid);
+    if(p && p.status === 'On agenda'){ p.status = 'Skipped — requeued'; }
+  });
+  renderGeneratedAgendas();
+}
+</script>
+</body>
+</html>
