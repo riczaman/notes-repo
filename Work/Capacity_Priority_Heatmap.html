@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Capacity &amp; Priority Review</title>
+<style>
+  :root{
+    --navy:#1F3864;
+    --slate:#3C4A5E;
+    --paper:#F7F8FA;
+    --card:#FFFFFF;
+    --line:#DDE3EC;
+    --critical:#C00000;
+    --critical-bg:#F9D6D6;
+    --high:#E06666;
+    --high-bg:#FBE0E0;
+    --medium:#BF9000;
+    --medium-bg:#FFF2CC;
+    --low:#38761D;
+    --low-bg:#E2F0D9;
+    --done:#666666;
+    --done-bg:#EAEAEA;
+    --ink:#1E2430;
+    --sub:#5B6472;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    padding:36px 28px 60px;
+  }
+  .wrap{max-width:980px;margin:0 auto;}
+  header{margin-bottom:28px;}
+  .eyebrow{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--slate);font-weight:bold;margin-bottom:6px;
+  }
+  h1{font-size:26px;margin:0 0 6px;color:var(--navy);}
+  .sub{color:var(--sub);font-size:14px;max-width:640px;line-height:1.5;}
+
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:24px 26px;margin-bottom:24px;
+  }
+  .card h2{font-size:15px;margin:0 0 4px;color:var(--navy);}
+  .card .desc{font-size:12.5px;color:var(--sub);margin-bottom:18px;}
+
+  /* Heat map grid */
+  .matrix{
+    display:grid;
+    grid-template-columns:120px repeat(4, 1fr);
+    grid-template-rows:auto repeat(4, 118px);
+    gap:6px;
+  }
+  .axis-label-y{
+    grid-column:1/2; grid-row:2/6;
+    display:flex;align-items:center;justify-content:center;
+    writing-mode:vertical-rl; transform:rotate(180deg);
+    font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--slate); font-weight:bold;
+  }
+  .col-head{
+    font-size:11px;color:var(--slate);font-weight:bold;text-align:center;
+    display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;
+    text-transform:uppercase;letter-spacing:.04em;
+  }
+  .row-head{
+    font-size:11px;color:var(--slate);font-weight:bold;
+    display:flex;align-items:center;justify-content:flex-end;padding-right:8px;
+    text-align:right;text-transform:uppercase;letter-spacing:.04em;
+  }
+  .cell{
+    border-radius:8px;padding:8px;
+    display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;
+    position:relative;
+  }
+  .cell .zone-tag{
+    position:absolute; top:6px; right:8px; font-size:9px; font-weight:bold;
+    text-transform:uppercase; letter-spacing:.05em; opacity:.55;
+  }
+  .chip{
+    font-size:11px; font-weight:bold; padding:6px 9px; border-radius:6px;
+    background:rgba(255,255,255,.75); border:1px solid rgba(0,0,0,.08);
+    line-height:1.25; max-width:100%;
+  }
+
+  .z-critical{background:var(--critical-bg);}
+  .z-high{background:var(--high-bg);}
+  .z-medium{background:var(--medium-bg);}
+  .z-low{background:var(--low-bg);}
+
+  /* Legend */
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:11.5px;color:var(--sub);}
+  .legend span.dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;}
+
+  /* Priority decision table */
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{
+    text-align:left;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--slate);border-bottom:2px solid var(--line);padding:8px 10px;
+  }
+  td{padding:11px 10px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.45;}
+  tr:last-child td{border-bottom:none;}
+  .badge{
+    display:inline-block;font-size:10.5px;font-weight:bold;padding:3px 9px;border-radius:20px;
+    white-space:nowrap;
+  }
+  .b-critical{background:var(--critical);color:#fff;}
+  .b-high{background:var(--high);color:#5A0000;}
+  .b-medium{background:var(--medium-bg);color:#7F6000;}
+  .b-low{background:var(--low-bg);color:#274E13;}
+  .wsname{font-weight:bold;color:var(--navy);}
+  .area{font-size:11px;color:var(--sub);}
+  .question{color:var(--ink);}
+
+  .callout{
+    display:flex;gap:14px;background:#FBE9E9;border:1px solid #F1B9B9;
+    border-radius:10px;padding:16px 18px;margin-bottom:24px;align-items:flex-start;
+  }
+  .callout .mark{font-size:20px;line-height:1;}
+  .callout p{margin:0;font-size:13px;color:#7A1F1F;line-height:1.55;}
+  .callout b{color:#5A0000;}
+
+  footer{font-size:11px;color:var(--sub);text-align:center;margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Capacity &amp; Priority Review</div>
+    <h1>Where my time is going, and what needs a decision</h1>
+    <div class="sub">A companion view to the capacity tracker — plotting every active workstream by impact if reduced and how much is currently delegated, so we can agree together on what stays, what shifts, and what pauses.</div>
+  </header>
+
+  <div class="callout">
+    <div class="mark">⏱️</div>
+    <p><b>~7 of 7.5 hours a day go to meetings</b>, leaving roughly 30 minutes of focus time before ad-hoc work fills the rest. Deep work is consistently landing in evenings and weekends. The items in the upper-left of the heat map below are driving that — high impact, low delegation.</p>
+  </div>
+
+  <div class="card">
+    <h2>Impact vs. Delegation Heat Map</h2>
+    <div class="desc">Rows: impact if I step back. Columns: how much of this is currently delegated. Top-left is the danger zone — high-stakes work only I can currently do.</div>
+
+    <div class="matrix">
+      <div></div>
+      <div class="col-head">Not Delegated</div>
+      <div class="col-head">Partial</div>
+      <div class="col-head">Unknown / TBD</div>
+      <div class="col-head">Delegated</div>
+
+      <div class="axis-label-y">Impact if Reduced</div>
+
+      <div class="row-head">Critical</div>
+      <div class="cell z-critical"><span class="zone-tag">Protect</span>
+        <div class="chip">People Management</div>
+      </div>
+      <div class="cell z-critical"></div>
+      <div class="cell z-critical"></div>
+      <div class="cell z-critical"></div>
+
+      <div class="row-head">High</div>
+      <div class="cell z-high"><span class="zone-tag">Discuss now</span>
+        <div class="chip">RFx SaaS</div>
+      </div>
+      <div class="cell z-high">
+        <div class="chip">USFF</div>
+        <div class="chip">PETL Azure Pipeline</div>
+      </div>
+      <div class="cell z-high"></div>
+      <div class="cell z-high"></div>
+
+      <div class="row-head">Medium</div>
+      <div class="cell z-medium">
+        <div class="chip">Ad-hoc (Ariba/Coupa)</div>
+        <div class="chip">Legal Doc Mgmt</div>
+      </div>
+      <div class="cell z-medium"><div class="chip">Vulnerabilities</div></div>
+      <div class="cell z-medium"></div>
+      <div class="cell z-medium"></div>
+
+      <div class="row-head">Low</div>
+      <div class="cell z-low">
+        <div class="chip">Monthly Remediation</div>
+      </div>
+      <div class="cell z-low"><div class="chip">Scrum/Sprint</div></div>
+      <div class="cell z-low"></div>
+      <div class="cell z-low"><div class="chip">Copilot HR Bot ✓</div></div>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot" style="background:var(--critical-bg);border:1px solid var(--critical);"></span>Critical — protect, do not reduce</span>
+      <span><span class="dot" style="background:var(--high-bg);border:1px solid var(--high);"></span>High — needs a decision this cycle</span>
+      <span><span class="dot" style="background:var(--medium-bg);border:1px solid var(--medium);"></span>Medium — candidate to delegate or scope down</span>
+      <span><span class="dot" style="background:var(--low-bg);border:1px solid var(--low);"></span>Low — safe to pause or hand off</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Priority Decisions Needed</h2>
+    <div class="desc">The specific questions I need your input on, ranked by impact.</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:16%">Workstream</th>
+          <th style="width:10%">Impact</th>
+          <th>Decision Needed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="wsname">People Management</div><div class="area">Management</div></td>
+          <td><span class="badge b-critical">Critical</span></td>
+          <td class="question">Protect this time explicitly — it's core to the role and can't absorb more.</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">USFF</div><div class="area">Procurement</div></td>
+          <td><span class="badge b-high">High</span></td>
+          <td class="question">New EMS integration scope was added on top of existing load — confirm priority vs. other initiatives.</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">PETL Azure Pipeline</div><div class="area">Procurement</div></td>
+          <td><span class="badge b-high">High</span></td>
+          <td class="question">SowSense integration adds new scope — confirm this stays a priority.</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">RFx SaaS</div><div class="area">Legal</div></td>
+          <td><span class="badge b-high">High</span></td>
+          <td class="question">My role is undefined as daily calls ramp up — clarify before more time gets committed.</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">Legal Document Management</div><div class="area">Legal</div></td>
+          <td><span class="badge b-medium">Medium</span></td>
+          <td class="question">Competing with procurement work for onboarding lead time — which takes priority?</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">Ad-hoc (Ariba/Coupa)</div><div class="area">Procurement</div></td>
+          <td><span class="badge b-medium">Medium</span></td>
+          <td class="question">Interrupt-driven and unowned by anyone else — how should this be prioritized against planned work?</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">Vulnerabilities</div><div class="area">Procurement</div></td>
+          <td><span class="badge b-medium">Medium</span></td>
+          <td class="question">Can any part of this ownership shift off my plate?</td>
+        </tr>
+        <tr>
+          <td><div class="wsname">Scrum/Sprint</div><div class="area">Legal</div></td>
+          <td><span class="badge b-low">Low</span></td>
+          <td class="question">Attendance is already reduced — confirm what level is actually expected of me.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>Prepared to support a 1:1 discussion on reprioritizing workload and reducing after-hours work.</footer>
+</div>
+</body>
+</html>
