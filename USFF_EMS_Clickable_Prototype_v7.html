@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified Storefront — USFF × EMS Prototype v7</title>
+<style>
+  :root{
+    --td-green-darkest:#0c2418;
+    --td-green-dark:#123822;
+    --td-green:#1c4d2e;
+    --td-green-mid:#1f6b3a;
+    --td-green-light:#e7f3ea;
+    --td-green-border:#c7e0cd;
+    --amber-bg:#fdf3df;
+    --amber-border:#e9c573;
+    --amber-text:#7a5511;
+    --red-bg:#fbeaea;
+    --red-border:#e3a3a3;
+    --red-text:#8c2c2c;
+    --blue-bg:#e6f1fb;
+    --blue-text:#0c447c;
+    --ink:#1c1f1d;
+    --ink-soft:#54584f;
+    --ink-faint:#8b8e85;
+    --line:#dfe2da;
+    --paper:#fafaf7;
+    --card:#ffffff;
+    --radius:10px;
+    --shadow:0 1px 2px rgba(20,30,20,0.06);
+    --shadow-lift:0 6px 24px rgba(15,30,18,0.14);
+    font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);}
+  .app-shell{max-width:1280px;margin:0 auto;background:var(--paper);min-height:600px;}
+
+  .nav{background:var(--td-green);color:#fff;display:flex;align-items:center;
+    justify-content:space-between;padding:12px 28px;}
+  .nav-left{display:flex;align-items:center;gap:30px;}
+  .nav-title{font-size:19px;font-weight:700;letter-spacing:.2px;cursor:pointer;}
+  .nav-links{display:flex;gap:26px;font-size:14px;font-weight:500;}
+  .nav-links a{color:#eaf3ec;text-decoration:none;display:flex;align-items:center;gap:6px;opacity:.92;cursor:pointer;}
+  .nav-links a.active{opacity:1;border-bottom:2px solid #fff;padding-bottom:3px;}
+  .nav-right{display:flex;align-items:center;gap:14px;}
+  .nav-badge{background:#2f7a48;color:#eafff0;font-size:10.5px;font-weight:700;
+    padding:2px 7px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;}
+
+  /* ===== v7: persona switcher ===== */
+  .persona-wrap{position:relative;}
+  .persona-btn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:24px;padding:4px 12px 4px 5px;
+    cursor:pointer;font-size:12.5px;font-weight:600;font-family:inherit;}
+  .persona-btn:hover{background:rgba(255,255,255,.2);}
+  .persona-avatar{width:26px;height:26px;border-radius:50%;background:#fff;color:var(--td-green);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+  .persona-btn .caret{font-size:9px;opacity:.8;}
+  .persona-menu{position:absolute;right:0;top:42px;background:#fff;border:1px solid var(--line);
+    border-radius:10px;box-shadow:var(--shadow-lift);min-width:300px;z-index:80;display:none;overflow:hidden;}
+  .persona-menu.show{display:block;}
+  .persona-menu .pm-head{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--ink-faint);padding:10px 14px 6px;}
+  .persona-item{display:flex;gap:10px;padding:10px 14px;cursor:pointer;align-items:center;border-top:1px solid var(--line);}
+  .persona-item:hover{background:var(--paper);}
+  .persona-item.on{background:var(--td-green-light);}
+  .persona-item .pa{width:30px;height:30px;border-radius:50%;background:var(--td-green-light);color:var(--td-green-dark);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+  .persona-item .nm{font-size:13px;font-weight:700;color:var(--ink);}
+  .persona-item .rl{font-size:11px;color:var(--ink-faint);margin-top:1px;}
+  .persona-item .chk{margin-left:auto;color:var(--td-green-mid);font-weight:800;}
+
+  .page{padding:28px 32px 60px;}
+  .crumbs{font-size:12.5px;color:var(--ink-faint);margin-bottom:14px;display:flex;gap:6px;align-items:center;}
+  .crumbs .seg{cursor:pointer;}
+  .crumbs .seg:hover{text-decoration:underline;color:var(--td-green-mid);}
+  .crumbs b{color:var(--ink-soft);}
+
+  .note-banner{background:var(--td-green-light);border:1px solid var(--td-green-border);
+    border-radius:var(--radius);padding:13px 18px;display:flex;gap:10px;align-items:flex-start;
+    font-size:13.5px;color:#2c4a36;margin-bottom:26px;}
+  .note-banner b{color:var(--td-green-dark);}
+  .note-banner a{color:var(--td-green-mid);font-weight:600;text-decoration:underline;cursor:pointer;}
+
+  h1.page-h{font-size:21px;font-weight:600;margin:0 0 22px;color:var(--ink);}
+  h2.page-h2{font-size:18px;font-weight:600;margin:0 0 6px;color:var(--ink);}
+  p.page-sub{font-size:13.5px;color:var(--ink-soft);margin:0 0 24px;}
+
+  .home-tiles{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1040px;}
+  .home-tile{background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:26px;display:flex;flex-direction:column;align-items:flex-start;}
+  .home-illustration{width:100%;height:180px;border-radius:10px;margin-bottom:18px;
+    background:var(--td-green-light);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .home-illustration svg{width:100%;height:100%;}
+  .home-tile h3{margin:0 0 8px;font-size:17px;font-weight:700;color:var(--ink);}
+  .home-tile p{margin:0 0 20px;font-size:13.5px;color:var(--ink-soft);line-height:1.55;}
+  .home-cta{background:var(--td-green);color:#fff;border:none;border-radius:7px;
+    padding:13px 24px;font-size:14px;font-weight:700;width:100%;cursor:pointer;transition:background .15s;}
+  .home-cta:hover{background:var(--td-green-dark);}
+
+  .tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:8px;}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 20px 18px;cursor:pointer;transition:border-color .15s, box-shadow .15s, transform .1s;
+    display:flex;flex-direction:column;gap:10px;position:relative;}
+  .tile:hover{border-color:var(--td-green-mid);box-shadow:var(--shadow-lift);transform:translateY(-1px);}
+  .tile-icon{width:42px;height:42px;border-radius:9px;background:var(--td-green-light);
+    color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:700;}
+  .tile h3{margin:0;font-size:15px;font-weight:600;color:var(--ink);}
+  .tile p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5;}
+  .tile .redirect-tag{position:absolute;top:14px;right:14px;font-size:9.5px;font-weight:700;
+    color:#5b2c8a;background:#f4e9fb;border:1px solid #d8bce8;padding:2px 8px;border-radius:12px;
+    text-transform:uppercase;letter-spacing:.3px;}
+
+  .section-divider{display:flex;align-items:center;gap:10px;margin:34px 0 16px;}
+  .section-divider span{font-size:12px;font-weight:700;color:var(--ink-faint);
+    text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+  .section-divider .line{flex:1;height:1px;background:var(--line);}
+
+  .btn{font-size:13.5px;font-weight:600;border-radius:7px;padding:10px 20px;
+    border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s, opacity .15s;font-family:inherit;}
+  .btn-primary{background:var(--td-green);color:#fff;}
+  .btn-primary:hover{background:var(--td-green-dark);}
+  .btn-outline{background:#fff;color:var(--ink-soft);border-color:var(--line);}
+  .btn-outline:hover{background:#f3f4f0;}
+  .btn-disabled{background:#e7e9e3;color:#a8aba1;cursor:not-allowed;}
+  .btn-sm{padding:7px 14px;font-size:12.5px;}
+  .btn-approve{background:#fff;color:var(--td-green-mid);border-color:var(--td-green-border);}
+  .btn-approve:hover{background:var(--td-green-light);}
+  .btn-decline{background:#fff;color:var(--red-text);border-color:var(--red-border);}
+  .btn-decline:hover{background:var(--red-bg);}
+  .btn-info{background:#fff;color:var(--amber-text);border-color:var(--amber-border);}
+  .btn-info:hover{background:var(--amber-bg);}
+
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,20,12,0.55);display:none;
+    align-items:center;justify-content:center;z-index:50;padding:24px;}
+  .modal-overlay.show{display:flex;}
+  .modal-card{background:#fff;border-radius:14px;max-width:560px;width:100%;
+    box-shadow:0 18px 50px rgba(0,0,0,0.28);overflow:hidden;max-height:90vh;overflow-y:auto;}
+  .modal-head{padding:24px 26px 0;text-align:center;}
+  .modal-icon{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:800;margin:0 auto 14px;}
+  .modal-icon.danger{background:var(--red-bg);color:var(--red-text);}
+  .modal-icon.success{background:var(--td-green-light);color:var(--td-green-dark);}
+  .modal-head h2{margin:0 0 8px;font-size:18px;font-weight:700;color:var(--ink);}
+  .modal-head p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.55;padding:0 6px;}
+  .modal-body{padding:20px 26px;}
+  .modal-rule{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  .modal-rule b{color:var(--ink);}
+  .modal-foot{padding:18px 26px 24px;display:flex;gap:10px;justify-content:flex-end;
+    border-top:1px solid var(--line);margin-top:6px;}
+
+  .wizard-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:26px 30px 32px;margin-top:10px;}
+  .wizard-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .step-pill{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber-text);
+    font-size:11.5px;font-weight:700;padding:4px 12px;border-radius:20px;margin-left:10px;}
+  .wizard-top-left{display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--ink);}
+  .progressbar{height:5px;background:var(--line);border-radius:6px;margin:14px 0 6px;overflow:hidden;}
+  .progressbar > div{height:100%;background:var(--td-green-mid);transition:width .3s;}
+  .progress-meta{font-size:12px;color:var(--ink-faint);margin-bottom:22px;}
+
+  .stepper{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:8px 0;}
+  .step{display:flex;flex-direction:column;align-items:center;flex:1;position:relative;min-width:90px;}
+  .step .node{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:13px;font-weight:700;z-index:2;}
+  .step.done .node{background:var(--td-green-mid);color:#fff;}
+  .step.current .node{background:var(--td-green-mid);color:#fff;box-shadow:0 0 0 4px var(--td-green-light);}
+  .step.todo .node{background:#fff;color:var(--ink-faint);border:2px solid var(--line);}
+  .step .lbl{font-size:11.5px;font-weight:600;color:var(--ink);margin-top:8px;text-align:center;}
+  .step .sub{font-size:9.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;margin-top:2px;}
+  .step.done .sub{color:var(--td-green-mid);}
+  .step.current .sub{color:var(--amber-text);}
+  .step.todo .sub{color:var(--ink-faint);}
+  .step .connector{position:absolute;top:14px;left:50%;width:100%;height:2px;background:var(--line);z-index:1;}
+  .step.done .connector, .step.current .connector{background:var(--td-green-mid);}
+  .step:last-child .connector{display:none;}
+
+  .form-card{border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px 26px;background:#fff;}
+  .form-card h2{font-size:15px;font-weight:700;margin:0 0 18px;padding-left:12px;
+    border-left:3px solid var(--td-green-mid);color:var(--ink);}
+  .form-card h2.alt-accent{border-left-color:var(--amber-border);}
+  .form-card h2.red-accent{border-left-color:var(--red-border);}
+  .form-card h2.purple-accent{border-left-color:#b08fd6;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
+  .field{margin-bottom:18px;}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+  .field label .req{color:#b23b3b;margin-left:2px;}
+  .field label .tag{font-size:10px;font-weight:700;color:var(--ink-faint);background:#f0f1ec;
+    padding:2px 7px;border-radius:5px;margin-left:7px;text-transform:none;letter-spacing:0;}
+  .field label .tag.new{color:var(--amber-text);background:var(--amber-bg);border:1px solid var(--amber-border);}
+  .field label .tag.gts{color:var(--blue-text);background:var(--blue-bg);border:1px solid #b9d8f0;}
+  .field label .tag.prefill{color:#5b2c8a;background:#f4e9fb;border:1px solid #d8bce8;}
+  .field .help{font-size:11.5px;color:var(--ink-faint);margin-top:4px;line-height:1.45;}
+  input.fld, select.fld, textarea.fld{width:100%;border:1px solid var(--line);border-radius:7px;
+    padding:10px 12px;font-size:13px;color:var(--ink);background:#fff;font-family:inherit;}
+  input.fld:focus, select.fld:focus, textarea.fld:focus{outline:none;border-color:var(--td-green-mid);
+    box-shadow:0 0 0 3px var(--td-green-light);}
+  input.fld.locked, select.fld.locked, textarea.fld.locked{background:#f5f6f3;color:var(--ink-soft);cursor:not-allowed;}
+  input.fld.red-flag, select.fld.red-flag{border-color:var(--red-border);background:var(--red-bg);color:var(--red-text);font-weight:700;}
+  textarea.fld{resize:vertical;min-height:64px;}
+  .disc-note{font-size:11.5px;color:var(--red-text);font-weight:700;margin-top:5px;line-height:1.45;}
+  .radio-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .radio-opt{border:1px solid var(--line);border-radius:7px;padding:9px 16px;font-size:13px;
+    display:flex;align-items:center;gap:7px;color:var(--ink-soft);cursor:pointer;user-select:none;background:#fff;}
+  .radio-opt.sel{border-color:var(--td-green-mid);color:var(--td-green-dark);font-weight:600;background:var(--td-green-light);}
+  .radio-opt .dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;}
+  .radio-opt.sel .dot{border-color:var(--td-green-mid);background:var(--td-green-mid);position:relative;}
+
+  .wizard-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:24px;}
+
+  .section-label-pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;
+    text-transform:uppercase;color:#fff;background:var(--td-green-mid);padding:4px 12px;
+    border-radius:20px;margin-bottom:14px;}
+  .section-label-pill.purple{background:#6b3fa0;}
+  .section-label-pill.amber{background:#a87412;}
+  .section-label-pill.red{background:#9b3535;}
+
+  .conditional-box{border-left:3px solid var(--amber-border);background:var(--amber-bg);
+    border-radius:0 8px 8px 0;padding:12px 16px;margin:6px 0 18px;font-size:12px;color:var(--amber-text);}
+  .conditional-box.danger{border-left-color:var(--red-border);background:var(--red-bg);color:var(--red-text);}
+  .conditional-box.purple{border-left-color:#b08fd6;background:#f4e9fb;color:#5b2c8a;}
+  .conditional-box.green{border-left-color:var(--td-green-border);background:var(--td-green-light);color:#2c4a36;}
+  .conditional-box b{color:inherit;}
+
+  .rule-note{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--ink-faint);
+    margin-top:4px;line-height:1.45;}
+  .rule-note .icn{flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);
+    color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;}
+
+  .status-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .status-table th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.3px;
+    color:var(--ink-faint);padding:10px 14px;border-bottom:2px solid var(--line);}
+  .status-table td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;}
+  .status-table tr.row-disabled td{opacity:.5;}
+  .status-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;}
+  .sb-progress{background:var(--amber-bg);color:var(--amber-text);}
+  .sb-approved{background:var(--td-green-light);color:var(--td-green-dark);}
+  .sb-blocked{background:var(--red-bg);color:var(--red-text);}
+  .sb-skipped{background:#f4e9fb;color:#5b2c8a;}
+  .sb-staged{background:var(--td-green-mid);color:#fff;}
+  .sb-draft{background:#f0f1ec;color:var(--ink-faint);}
+
+  /* v7 — request type badges (one My Requests, Type column) */
+  .type-badge{font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:6px;display:inline-block;letter-spacing:.2px;}
+  .ty-pipeline{background:#f4e9fb;color:#5b2c8a;border:1px solid #d8bce8;}
+  .ty-sourcing{background:var(--blue-bg);color:var(--blue-text);border:1px solid #b9d8f0;}
+  .ty-spid{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);}
+
+  .timeline{display:flex;gap:0;margin:22px 0 6px;flex-wrap:wrap;}
+  .tl-step{flex:1;min-width:90px;text-align:center;position:relative;margin-bottom:14px;}
+  .tl-step .tl-node{width:30px;height:30px;border-radius:50%;margin:0 auto 6px;display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:700;}
+  .tl-step.done .tl-node{background:var(--td-green-mid);color:#fff;}
+  .tl-step.current .tl-node{background:var(--amber-border);color:#5c4109;}
+  .tl-step.skipped .tl-node{background:#d8bce8;color:#5b2c8a;}
+  .tl-step.todo .tl-node{background:#fff;border:2px solid var(--line);color:var(--ink-faint);}
+  .tl-step .tl-lbl{font-size:10.5px;font-weight:600;color:var(--ink);line-height:1.3;}
+  .tl-step .tl-sub{font-size:9px;color:var(--ink-faint);margin-top:2px;}
+  .tl-step .tl-date{font-size:9.5px;color:var(--td-green-mid);font-weight:700;margin-top:2px;}
+  .tl-line{position:absolute;top:15px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0;}
+  .tl-step.done .tl-line, .tl-step.current .tl-line{background:var(--td-green-mid);}
+  .tl-step:first-child .tl-line{display:none;}
+  .tl-phase-label{width:100%;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+    letter-spacing:.4px;color:var(--ink-faint);margin:18px 0 6px;border-top:1px dashed var(--line);padding-top:14px;}
+  .tl-phase-label:first-child{border-top:none;padding-top:0;margin-top:0;}
+
+  footer.page-footer{text-align:center;font-size:11.5px;color:var(--ink-faint);padding:24px 0 10px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .reset-bar{position:sticky;top:0;background:#fff3cd;border-bottom:1px solid var(--amber-border);
+    padding:8px 28px;font-size:12px;color:var(--amber-text);display:flex;justify-content:space-between;
+    align-items:center;z-index:40;flex-wrap:wrap;gap:6px;}
+  .reset-bar button{background:none;border:1px solid var(--amber-border);color:var(--amber-text);
+    border-radius:6px;padding:4px 10px;font-size:11.5px;cursor:pointer;font-weight:600;font-family:inherit;}
+  .reset-bar button:hover{background:var(--amber-border);color:#fff;}
+
+  .triage-q{background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 24px;margin-bottom:16px;}
+  .triage-q .qnum{font-size:11px;font-weight:700;color:var(--td-green-mid);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;}
+  .triage-q h3{margin:0 0 14px;font-size:15px;font-weight:600;color:var(--ink);}
+  .triage-progress{display:flex;gap:6px;margin-bottom:24px;}
+  .triage-progress .dot{height:5px;flex:1;border-radius:4px;background:var(--line);}
+  .triage-progress .dot.done{background:var(--td-green-mid);}
+  .triage-progress .dot.current{background:var(--amber-border);}
+
+  .pipeline-banner{background:#f4e9fb;border:1px solid #d8bce8;border-radius:var(--radius);
+    padding:14px 18px;margin-bottom:18px;font-size:12.5px;color:#5b2c8a;display:flex;gap:10px;align-items:flex-start;}
+  .pipeline-banner b{display:block;margin-bottom:2px;}
+
+  .consolidated-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+    color:var(--blue-text);background:var(--blue-bg);border:1px solid #b9d8f0;padding:2px 8px;
+    border-radius:5px;margin-left:7px;letter-spacing:0;text-transform:none;}
+  .delta-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;
+    color:var(--amber-text);background:var(--amber-bg);border:1px solid var(--amber-border);padding:2px 8px;
+    border-radius:5px;margin-left:7px;letter-spacing:0;text-transform:none;}
+
+  .field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px 24px;}
+  .field-row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px 20px;}
+
+  .inline-conditional{animation:fadein .2s ease-in;}
+  @keyframes fadein{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  .dash-toolbar{display:flex;gap:10px;align-items:center;margin:0 0 14px;flex-wrap:wrap;}
+  .dash-toolbar input.fld, .dash-toolbar select.fld{width:auto;min-width:150px;padding:8px 10px;font-size:12.5px;}
+  .dash-toolbar input.fld{min-width:220px;}
+  .dash-spacer{flex:1;}
+  .dash-count{font-size:12px;color:var(--ink-faint);margin:2px 0 12px;}
+  .export-note{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;color:var(--ink-faint);
+    margin:10px 0 0;line-height:1.45;}
+  .bom-badge{background:#f4e9fb;color:#5b2c8a;font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+  .matrix-remove{background:none;border:1px solid var(--line);color:var(--red-text);border-radius:6px;
+    padding:4px 10px;font-size:11.5px;cursor:pointer;font-family:inherit;font-weight:600;}
+  .matrix-remove:hover{background:var(--red-bg);border-color:var(--red-border);}
+  .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;}
+  .gallery-card{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;
+    display:flex;flex-direction:column;gap:6px;}
+  .gallery-card.disabled{opacity:.55;background:var(--paper);}
+  .gallery-card h4{margin:0;font-size:13.5px;font-weight:700;color:var(--ink);}
+  .gallery-card .meta{font-size:11.5px;color:var(--ink-soft);line-height:1.55;}
+  .gallery-card .ga-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+  .agenda-rec{border:1px solid var(--line);border-radius:10px;background:#fff;padding:14px 16px;margin-top:12px;}
+  .agenda-rec.closed{opacity:.6;}
+  .agenda-rec h4{margin:0 0 4px;font-size:13.5px;font-weight:700;color:var(--ink);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .agenda-rec .meta{font-size:11.5px;color:var(--ink-soft);margin-bottom:10px;}
+  .ab-step{animation:fadein .2s ease-in;}
+
+  .admin-subnav{display:flex;gap:6px;margin:12px 0 20px;flex-wrap:wrap;}
+  .admin-subnav a{font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;border:1px solid var(--line);color:#555;cursor:pointer;background:#fff;}
+  .admin-subnav a.on{background:var(--td-green-light);border-color:var(--td-green-mid);color:var(--td-green-mid);}
+  .ad-group-pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;
+    background:var(--blue-bg);color:var(--blue-text);border:1px solid #b9d8f0;padding:3px 10px;border-radius:20px;}
+
+  .ap-chip-row{display:flex;align-items:flex-start;gap:0;flex-wrap:wrap;margin:10px 0 6px;}
+  .ap-chip{padding:9px 16px;border-radius:9px;font-size:12.5px;font-weight:700;border:1px solid;text-align:center;}
+  .ap-chip .ap-date{display:block;font-size:9.5px;font-weight:700;margin-top:3px;letter-spacing:0;}
+  .ap-chip.done{background:#e7f3ea;border-color:#9ec9ab;color:#1c4d2e;}
+  .ap-chip.done .ap-date{color:#1f6b3a;}
+  .ap-chip.current{background:#fff3d6;border-color:#e2b93b;color:#7a5b00;box-shadow:0 0 0 3px rgba(226,185,59,.18);}
+  .ap-chip.current .ap-date{color:#a87412;}
+  .ap-chip.todo{background:#f0f1ec;border-color:#d8dad2;color:#8a8d84;}
+  .ap-chip.todo .ap-date{color:#a8aba1;}
+  .ap-chip.rejected{background:#fdeaea;border-color:#e5b3b3;color:#9b1c1c;}
+  .ap-conn{width:26px;height:2px;background:#d8dad2;margin-top:18px;}
+  .ap-legend{display:flex;gap:14px;font-size:11px;color:#777;margin:4px 0 10px;flex-wrap:wrap;}
+  .ap-legend i{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:-1px;}
+  .rec-tabs{display:flex;gap:4px;border-bottom:2px solid var(--line);margin:14px 0 18px;flex-wrap:wrap;}
+  .rec-tabs button{border:none;background:none;font:inherit;font-size:13px;font-weight:700;padding:9px 14px;cursor:pointer;color:#777;border-bottom:3px solid transparent;margin-bottom:-2px;}
+  .rec-tabs button.on{color:var(--td-green-mid);border-bottom-color:var(--td-green-mid);}
+  .id-link{color:var(--td-green-mid);cursor:pointer;text-decoration:underline;font-weight:700;}
+  .policy-table{width:100%;border-collapse:collapse;font-size:12px;}
+  .policy-table th{background:#eef3ea;text-align:left;padding:7px 8px;font-size:11px;}
+  .policy-table td{border-top:1px solid var(--line);padding:6px 8px;}
+
+  /* v7 — "Pending Your Review" banner (matches live USFF approver screen) */
+  .review-banner{background:var(--blue-bg);border:1px solid #b9d8f0;border-radius:12px;
+    padding:18px 22px;margin:0 0 18px;}
+  .review-banner .rb-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+  .review-banner .rb-icon{width:38px;height:38px;border-radius:9px;background:#fff;color:var(--blue-text);
+    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .review-banner h3{margin:0 0 4px;font-size:15.5px;font-weight:700;color:var(--ink);}
+  .review-banner p{margin:0;font-size:13px;color:var(--blue-text);}
+  .review-banner .rb-actions{display:flex;gap:10px;flex-wrap:wrap;}
+
+  /* v7 — staged pipeline banner */
+  .staged-banner{background:var(--td-green-light);border:1px solid var(--td-green-border);border-radius:12px;
+    padding:18px 22px;margin:0 0 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+  .staged-banner .sbn-icon{width:38px;height:38px;border-radius:9px;background:#fff;color:var(--td-green-mid);
+    display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+  .staged-banner .sbn-txt{flex:1;min-width:260px;}
+  .staged-banner h3{margin:0 0 4px;font-size:15.5px;font-weight:700;color:var(--td-green-dark);}
+  .staged-banner p{margin:0;font-size:12.5px;color:#2c4a36;}
+
+  /* v7 — Signing Party (Power Apps) mock */
+  .pa-shell{max-width:860px;margin:30px auto;border:1px solid #d8bce8;border-radius:14px;overflow:hidden;box-shadow:var(--shadow-lift);}
+  .pa-topbar{background:#742774;color:#fff;font-size:12.5px;font-weight:600;padding:9px 18px;display:flex;align-items:center;gap:10px;}
+  .pa-topbar .pa-logo{width:18px;height:18px;background:#fff;color:#742774;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;}
+  .pa-body{background:#faf7fc;padding:40px 44px 46px;text-align:center;}
+  .pa-body h2{margin:0 0 10px;font-size:22px;font-weight:700;color:#4b1a5e;}
+  .pa-body p{font-size:13.5px;color:#6a5a75;line-height:1.6;margin:0 0 8px;}
+</style>
+</head>
+<body>
+<div class="reset-bar">
+  <span><b>Interactive prototype v7</b> — descoped to the <b>Vendor Expense</b> flow end-to-end: EMS triage &rarr; Pipeline &rarr; USFF sourcing intake (Ariba) &rarr; SPID. Other GTS expense types redirect to today's Signing Party PowerApp. Use the profile menu (top right) to switch personas: Submitter, Finance Reviewer, BOM Lead, Admin.</span>
+  <button onclick="resetDemo()">&#8634; Restart demo</button>
+</div>
+<div class="app-shell" id="appShell">
+
+  <div class="nav">
+    <div class="nav-left">
+      <div class="nav-title" onclick="goTo('home')">Unified Storefront</div>
+      <div class="nav-links" id="navLinks"></div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-badge">USFF + EMS &middot; concept v7</div>
+      <div class="persona-wrap">
+        <button class="persona-btn" id="personaBtn" onclick="togglePersonaMenu(event)">
+          <span class="persona-avatar" id="personaAvatar">RZ</span>
+          <span id="personaName">Ricky Zaman</span>
+          <span class="caret">&#9660;</span>
+        </button>
+        <div class="persona-menu" id="personaMenu">
+          <div class="pm-head">View the app as&hellip;</div>
+          <div id="personaItems"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screens">
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: HOME -->
+    <!-- ===================================================== -->
+    <div class="screen active" id="screen-home">
+      <div class="page">
+        <div class="note-banner">
+          <span>&#9432;</span>
+          <span><b>Note</b> — Please ensure all necessary requirements and approvals are completed before submitting requests to avoid requests being sent back. <a onclick="goTo('myrequests')">View request history</a></span>
+        </div>
+
+        <h1 class="page-h">Your single-entry point to start your expense and sourcing journey.</h1>
+
+        <div class="home-tiles">
+          <div class="home-tile">
+            <div class="home-illustration">
+              <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="220" fill="#e7f3ea"/>
+                <rect x="40" y="36" width="180" height="130" rx="8" fill="#ffffff" stroke="#c7e0cd" stroke-width="2"/>
+                <rect x="56" y="52" width="110" height="10" rx="3" fill="#1f6b3a" opacity="0.85"/>
+                <rect x="56" y="74" width="148" height="8" rx="3" fill="#cfe5d6"/>
+                <rect x="56" y="90" width="148" height="8" rx="3" fill="#cfe5d6"/>
+                <rect x="56" y="106" width="100" height="8" rx="3" fill="#cfe5d6"/>
+                <circle cx="64" cy="128" r="6" fill="#1f6b3a"/>
+                <path d="M61 128l2 2 4-5" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="78" y="124" width="90" height="8" rx="3" fill="#1f6b3a" opacity="0.5"/>
+                <rect x="56" y="142" width="60" height="14" rx="4" fill="#1f6b3a"/>
+                <circle cx="290" cy="120" r="58" fill="#cfe5d6"/>
+                <circle cx="290" cy="95" r="22" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <path d="M255 165c0-22 16-38 35-38s35 16 35 38" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <rect x="270" y="150" width="40" height="34" rx="4" fill="#1c4d2e"/>
+                <circle cx="284" cy="167" r="2.4" fill="#fff"/>
+              </svg>
+            </div>
+            <h3>Start an expense request</h3>
+            <p>Kick off a procurement or vendor expense request — a couple of quick questions route you to the right form automatically.</p>
+            <button class="home-cta" onclick="goTo('triage')">Start new request</button>
+          </div>
+          <div class="home-tile">
+            <div class="home-illustration">
+              <svg viewBox="0 0 400 220" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="220" fill="#e7f3ea"/>
+                <circle cx="120" cy="110" r="60" fill="#cfe5d6"/>
+                <circle cx="120" cy="84" r="22" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <path d="M85 156c0-22 16-38 35-38s35 16 35 38" fill="#fff" stroke="#1c4d2e" stroke-width="3"/>
+                <rect x="105" y="140" width="30" height="28" rx="4" fill="#1c4d2e"/>
+                <rect x="230" y="40" width="140" height="130" rx="8" fill="#ffffff" stroke="#c7e0cd" stroke-width="2"/>
+                <circle cx="260" cy="64" r="7" fill="#1f6b3a"/>
+                <rect x="276" y="58" width="76" height="9" rx="3" fill="#cfe5d6"/>
+                <line x1="260" y1="80" x2="354" y2="80" stroke="#e3e7df" stroke-width="2"/>
+                <circle cx="260" cy="96" r="7" fill="#1f6b3a" opacity="0.55"/>
+                <rect x="276" y="90" width="60" height="9" rx="3" fill="#e3e7df"/>
+                <line x1="260" y1="112" x2="354" y2="112" stroke="#e3e7df" stroke-width="2"/>
+                <circle cx="260" cy="128" r="7" fill="#e9c573"/>
+                <rect x="276" y="122" width="50" height="9" rx="3" fill="#e3e7df"/>
+                <rect x="245" y="148" width="95" height="12" rx="6" fill="#f0f1ec"/>
+                <rect x="245" y="148" width="58" height="12" rx="6" fill="#1f6b3a"/>
+              </svg>
+            </div>
+            <h3>Track existing requests</h3>
+            <p>One <b>My Requests</b> view for everything you own — Pipeline requests, USFF sourcing requests and SPID requests — with live approval status.</p>
+            <button class="home-cta" onclick="goTo('myrequests')">Go to My Requests</button>
+          </div>
+        </div>
+
+        <footer class="page-footer">Concept prototype v7 for stakeholder walkthrough &middot; Vendor Expense end-to-end (EMS triage &rarr; Pipeline &rarr; USFF/Ariba &rarr; SPID)</footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: TRIAGE FRONT DOOR -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-triage">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>New request</b></div>
+        <h2 class="page-h2">Let's find the right form for you</h2>
+        <p class="page-sub">Answer a few questions and we'll route you automatically — no need to guess which intake to use.</p>
+
+        <div class="triage-progress" id="triageProgress"></div>
+
+        <div id="triageContent"></div>
+
+        <div class="rule-note" style="margin-top:6px;">
+          <span class="icn">i</span>
+          <span><b>How routing works in v7:</b> the EMS front door is a triage layer only. Non-GTS users skip it entirely and land in today's USFF intake. GTS users pick an expense type — <b>Vendor Expense stays fully inside this app</b> (the descoped v7 build); every other type redirects to the existing Signing Party PowerApp unchanged.</span>
+        </div>
+
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: SIGNING PARTY REDIRECT MOCK (non-vendor-expense GTS tiles) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-signingparty">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b id="spCrumb">Signing Party</b></div>
+        <div class="pa-shell">
+          <div class="pa-topbar"><span class="pa-logo">P</span> Power Apps &nbsp;|&nbsp; P&amp;T Signing Party Portal</div>
+          <div class="pa-body">
+            <h2 id="spTitle">Signing Party — Approval to Hire</h2>
+            <p><b>You are being redirected to the existing Signing Party PowerApp.</b></p>
+            <p id="spDesc">This expense type is out of scope for the v7 USFF integration (descoped to Vendor Expense only). The user continues in the current GTS tool exactly as today — no process change.</p>
+            <p style="font-size:11.5px;color:#9b8aa5;margin-top:18px;">Prototype mock — in production this tile opens the Signing Party link in a new tab.</p>
+            <div style="margin-top:22px;display:flex;gap:10px;justify-content:center;">
+              <button class="btn btn-outline" onclick="goTo('triage')">&larr; Back to expense types</button>
+              <button class="btn btn-primary" style="background:#742774;" onclick="goTo('home')">Open Signing Party (external) &#8599;</button>
+            </div>
+          </div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: PIPELINE INTAKE -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-pipelineIntake">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('triage')">New request</span> <span>/</span> <b>Pipeline intake</b></div>
+        <h2 class="page-h2">Pipeline (Vendor Expense) intake</h2>
+        <p class="page-sub">The strategic go-ahead approval, required for all 3rd-party spend over $100K and submitted at least 90 days before the procurement engagement. Once approved, you'll continue straight into the USFF sourcing intake from <b>My Requests</b> — no re-entering the triage.</p>
+
+        <div class="pipeline-banner">
+          <span>&#9888;</span>
+          <span><b>This is a separate approval cycle, worked through BOM agendas.</b> When every level has approved, this request flips to <b>“Ready to submit in USFF”</b> in My Requests and a button takes you into the sourcing intake with your answers pre-populated.</span>
+        </div>
+
+        <div id="plFormContent"></div>
+
+        <div class="wizard-foot">
+          <button class="btn btn-outline" onclick="goTo('triage')">&larr; Back</button>
+          <button class="btn btn-primary" onclick="submitPipelineIntake()">Submit pipeline intake &rarr;</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: PIPELINE SUBMITTED CONFIRMATION -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-plSubmitted">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Pipeline submitted</b></div>
+        <div style="max-width:760px;margin:20px auto 0;text-align:center;">
+          <div class="modal-icon success" style="margin:0 auto 18px;">&#10003;</div>
+          <h2 class="page-h2" style="margin-bottom:6px;">Pipeline request submitted</h2>
+          <p class="page-sub" id="plSubmittedSub">Your pipeline request is now in the BOM agenda approval cycle.</p>
+        </div>
+        <div id="plSubmittedChainWrap" style="max-width:980px;margin:0 auto;"></div>
+        <div class="conditional-box purple" style="max-width:980px;margin:14px auto 0;">
+          <b>What happens next:</b> each level is worked through a BOM-run agenda — the date each approval is entered is stamped under its bubble. Track everything from <b>My Requests</b>. When the final SEVP approval lands, the request shows <b>“Ready to submit in USFF”</b> and a button takes you straight into the sourcing intake, pre-populated from this pipeline.
+        </div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;">
+          <button class="btn btn-primary" onclick="goTo('myrequests')">Go to My Requests</button>
+          <button class="btn btn-outline" onclick="goTo('home')">Back to home</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: USFF SOURCING INTAKE WIZARD (untouched flow, optional prefill) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-wizard">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b id="wizardCrumb">USFF sourcing intake</b></div>
+
+        <div id="wizardPrefillBanner"></div>
+
+        <div class="wizard-wrap">
+          <div class="wizard-top">
+            <div class="wizard-top-left">Step&nbsp;<span id="wzStepNum">1</span>&nbsp;of 4 <span class="step-pill" id="wzStepPill">Business details</span></div>
+            <div style="display:flex;gap:10px;">
+              <button class="btn btn-outline btn-sm" onclick="wizardPrev()" id="wzPrevTop">&larr; Previous</button>
+              <button class="btn btn-primary btn-sm" onclick="wizardNext()" id="wzNextTop">Next &rarr;</button>
+            </div>
+          </div>
+          <div class="progressbar"><div id="wzProgressBar" style="width:25%;"></div></div>
+          <div class="progress-meta" id="wzProgressMeta"></div>
+
+          <div class="stepper" id="wzStepper"></div>
+          <div id="wzStepContent"></div>
+
+          <div class="wizard-foot">
+            <button class="btn btn-outline" onclick="wizardPrev()" id="wzPrevBottom">&larr; Previous</button>
+            <button class="btn btn-primary" onclick="wizardNext()" id="wzNextBottom">Next &rarr;</button>
+          </div>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: SOURCING REQUEST SUBMITTED -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-submitted">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Request submitted</b></div>
+        <div style="max-width:760px;margin:20px auto 0;text-align:center;">
+          <div class="modal-icon success" style="margin:0 auto 18px;">&#10003;</div>
+          <h2 class="page-h2" style="margin-bottom:6px;">Sourcing request submitted</h2>
+          <p class="page-sub" id="submittedSub"></p>
+        </div>
+        <div id="submittedTimelineWrap" style="max-width:900px;margin:0 auto;"></div>
+        <div class="conditional-box green" style="max-width:900px;margin:14px auto 0;" id="submittedAribaNote"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;">
+          <button class="btn btn-primary" onclick="goTo('myrequests')">Go to My Requests</button>
+          <button class="btn btn-outline" onclick="if(window.LAST_SR_ID){openRecord(window.LAST_SR_ID);}">Open request — Status view</button>
+          <button class="btn btn-outline" onclick="goTo('home')">Back to home</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: MY REQUESTS (one dashboard, persona-aware) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-myrequests">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>My Requests</b></div>
+        <h2 class="page-h2" id="mrTitle">My Requests</h2>
+        <p class="page-sub" id="mrSub"></p>
+        <div id="mrContent"></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: SPID INTAKE (post-approval validation intake) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-spid">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>SPID</b></div>
+        <h2 class="page-h2">SPID — Vendor Expense (Signing Party)</h2>
+        <p class="page-sub">The <b>final step</b>, after everything else is complete: pipeline approved &rarr; USFF sourcing intake approved &rarr; Ariba SR number in hand. SPID validates the request against what was already approved and only asks the <b>net-new questions</b> the USFF intake didn't capture — no re-typing what the system already knows.</p>
+
+        <div class="note-banner">
+          <span>&#9432;</span>
+          <span><b>Prerequisites checked automatically:</b> a fully-approved Pipeline number AND your approved USFF intake number (or its Ariba SR number — both carry the same record). Anything that <b>changed since the pipeline was approved is flagged in red</b> so approvers see the discrepancy immediately.</span>
+        </div>
+
+        <div id="spidContent"></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: SPID SUBMITTED -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-spidSubmitted">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>SPID submitted</b></div>
+        <div style="max-width:760px;margin:20px auto 0;text-align:center;">
+          <div class="modal-icon success" style="margin:0 auto 18px;">&#10003;</div>
+          <h2 class="page-h2" style="margin-bottom:6px;">SPID request submitted</h2>
+          <p class="page-sub" id="spidSubmittedSub"></p>
+        </div>
+        <div id="spidSubmittedWrap" style="max-width:980px;margin:0 auto;"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:28px;">
+          <button class="btn btn-primary" onclick="goTo('myrequests')">Go to My Requests</button>
+          <button class="btn btn-outline" onclick="goTo('home')">Back to home</button>
+        </div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: RECORD DRILL-DOWN (Status tab first) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-record">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <span class="seg" onclick="goTo('myrequests')">My Requests</span> <span>/</span> <b id="recCrumb">Record</b></div>
+        <h2 class="page-h2" id="recTitle">Record</h2>
+        <p class="page-sub" id="recSub">Values are locked once submitted — read-only drill-down with the approval status always shown first.</p>
+        <div id="recBanner"></div>
+        <div class="rec-tabs" id="recTabs"></div>
+        <div id="recContent"></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- SCREEN: ADMIN (single tab, AD-group aware) -->
+    <!-- ===================================================== -->
+    <div class="screen" id="screen-admin">
+      <div class="page">
+        <div class="crumbs"><span class="seg" onclick="goTo('home')">Home</span> <span>/</span> <b>Admin</b></div>
+        <h2 class="page-h2">Admin</h2>
+        <p class="page-sub" id="adminSub"></p>
+        <div id="adminGroups" style="margin-bottom:6px;"></div>
+        <div class="admin-subnav" id="adminSubnav"></div>
+        <div id="adminContent"></div>
+        <footer class="page-footer"></footer>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============== SUBMIT CONFIRM MODAL ============== -->
+<div class="modal-overlay" id="submitConfirmModal">
+  <div class="modal-card">
+    <div class="modal-head">
+      <div class="modal-icon success">&#10148;</div>
+      <h2>Confirm submission</h2>
+      <p>Please review the details below before submitting.</p>
+    </div>
+    <div class="modal-body">
+      <div class="modal-rule" id="submitConfirmBody"></div>
+      <div class="modal-rule" style="background:var(--red-bg);border-color:var(--red-border);color:var(--red-text);">
+        <b>Important:</b> Field values are locked once submitted. Incorrect information before approval requires a full restart. A decline at the approval stage allows editing without a restart.
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('submitConfirmModal')">Cancel</button>
+      <button class="btn btn-primary" id="submitConfirmBtn" onclick="onFinalSubmit()">Submit request &rarr;</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ============================================================
+   V7 STATE + PERSONAS
+============================================================ */
+var STATE = {
+  screen: 'home',
+  isGTS: null,
+  spend: 0,
+  mcService: null,   // in-scope MC service category, or 'none'
+  mcExempt: null,    // true when an out-of-scope exemption applies
+  mcFlag: false,     // ADMIN-ONLY routing flag — never shown to the submitter
+  hasPipeline: null, // duplicate-pipeline guard answer on the vendor-expense path
+  triageStep: 0,
+  triageMaxSteps: 4,
+  wizardStep: 1,
+  prefillFrom: null, // pipeline record powering the staged USFF intake
+  adminTab: null,
+  spidValidated: null // {pl, sr} once the SPID prerequisite check passes
+};
+
+var PERSONAS = [
+  {key:'submitter', name:'Ricky Zaman',           initials:'RZ', role:'Submitter — GTS requestor'},
+  {key:'finance',   name:'Melissa Tran',  initials:'MT', role:'Finance Reviewer (approval matrix)'},
+  {key:'bom',       name:'J. Smith',              initials:'JS', role:'BOM Lead — pipeline approvals'},
+  {key:'admin',     name:'A. Morgan',             initials:'AM', role:'Administrator', groups:['USFF-Admins','EMS-Admins']}
+];
+var PERSONA = PERSONAS[0];
+
+/* ============================================================
+   V7 DATA — one unified request store (kind: pipeline | sourcing | spid)
+============================================================ */
+var PL_LEVELS = ['VP','SVP','Finance AVP','Finance VP','SEVP (Vlad)'];
+var SEGMENTS = ['Canadian Banking Technology Solutions - Salim Jivraj','Business Banking, Wealth and Insurance - John That','Global Security & Defense - Steve Sparkes','Protect Platform - Sophia Leung','Procurement, Data and Corporate Platforms - Jeff Martin','TD Securities and Payments - Dan Bosman','Infrastructure & Engineering - Meghan Faugnan','Delivery & Operations - David Parry','USTS - Kiran Vuppu'];
+var SHORT_SEGMENTS = ['Canadian Banking Technology Solutions','Protect Platform','TD Securities and Payments','Infrastructure & Engineering'];
+var BUSINESS_UNITS = ['AI Technology','Corporate Project Delivery Confidence','Corporate Technology','Corporate Transformation','Data & AI Architecture','Enterprise Architecture','Finance & Risk Platform','Marketing Technology','Risk Technology','Treasury'];
+var FUNDING_TYPES = ['Base (formerly RTB/BAU)','Base (Business Sponsored)','Project Funding Envelope (P&T Sponsored)','Project Funding Envelope/CDT (non-P&T)','Project (non-P&T)','TDSA Platform Envelope','TDSA Journey Envelope'];
+
+function plApprovals(states){
+  // states: array of [state, date] aligned to PL_LEVELS
+  return PL_LEVELS.map(function(l, i){
+    return { level: l, state: states[i][0], date: states[i][1] || null, comment: states[i][2] || '' };
+  });
+}
+
+var REQUESTS = [
+  /* ---- Ricky's pipeline: FULLY APPROVED → staged, ready to submit in USFF ---- */
+  {kind:'pipeline', id:'PL-84120', title:'Datadog observability platform renewal', owner:'Ricky Zaman',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:210000,
+   vendor:'Datadog Inc.', startDate:'2026-11-02', endDate:'2027-11-01', fundingType:'Base (formerly RTB/BAU)',
+   costCentre:'CC-40412', mcFlag:true, status:'Approved', submitted:'2026-05-02', convertedSr:null,
+   approvals: plApprovals([['done','2026-05-20'],['done','2026-06-03'],['done','2026-06-17'],['done','2026-06-24'],['done','2026-07-08']])},
+
+  /* ---- Ricky's pipeline: mid-chain (dates under completed bubbles) ---- */
+  {kind:'pipeline', id:'PL-77310', title:'3rd party staff aug SOW — payments modernization', owner:'Ricky Zaman',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:340000,
+   vendor:'Accenture', startDate:'2026-12-01', endDate:'2027-11-30', fundingType:'Project (non-P&T)',
+   costCentre:'CC-40412', mcFlag:false, status:'In approvals', submitted:'2026-06-10', convertedSr:null,
+   approvals: plApprovals([['done','2026-06-18'],['done','2026-07-02'],['current',null],['todo',null],['todo',null]])},
+
+  /* ---- older approved pipeline already converted to a sourcing request ---- */
+  {kind:'pipeline', id:'PL-79310', title:'Wipro managed testing services renewal', owner:'Ricky Zaman',
+   segment:'Infrastructure & Engineering', bu:'Corporate Technology', spend:480000,
+   vendor:'Wipro', startDate:'2026-10-15', endDate:'2027-10-14', fundingType:'Base (formerly RTB/BAU)',
+   costCentre:'CC-31007', mcFlag:false, status:'Approved', submitted:'2026-03-28', convertedSr:'SR-1029',
+   approvals: plApprovals([['done','2026-04-15'],['done','2026-04-29'],['done','2026-05-13'],['done','2026-05-27'],['done','2026-06-10']])},
+
+  /* ---- pipelines owned by others (BOM lead + agenda demo) ---- */
+  {kind:'pipeline', id:'PL-80217', title:'Contractor overtenure extension — payments core', owner:'M. Osei',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:180000,
+   vendor:'TCS', startDate:'2026-11-20', endDate:'2027-05-19', fundingType:'Base (formerly RTB/BAU)',
+   costCentre:'CC-40415', mcFlag:false, status:'In approvals', submitted:'2026-06-22', convertedSr:null,
+   approvals: plApprovals([['current',null],['todo',null],['todo',null],['todo',null],['todo',null]])},
+  {kind:'pipeline', id:'PL-79984', title:'Accenture delivery pods — wave 2', owner:'T. Nguyen',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:560000,
+   vendor:'Accenture', startDate:'2026-12-07', endDate:'2027-12-06', fundingType:'Project Funding Envelope (P&T Sponsored)',
+   costCentre:'CC-40418', mcFlag:true, status:'In approvals', submitted:'2026-06-28', convertedSr:null,
+   approvals: plApprovals([['current',null],['todo',null],['todo',null],['todo',null],['todo',null]])},
+  {kind:'pipeline', id:'PL-81455', title:'GD contract amendment — segment Y', owner:'S. Iyer',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:1250000,
+   vendor:'Cognizant', startDate:'2026-10-30', endDate:'2028-10-29', fundingType:'Base (Business Sponsored)',
+   costCentre:'CC-40901', mcFlag:false, status:'Approved', submitted:'2026-02-14', convertedSr:'SR-0991',
+   approvals: plApprovals([['done','2026-03-04'],['done','2026-03-18'],['done','2026-04-01'],['done','2026-04-15'],['done','2026-04-29']])},
+
+  /* ---- Ricky's sourcing requests (the untouched USFF flow) ---- */
+  {kind:'sourcing', id:'SR-1043', title:'Figma — design collaboration tool', owner:'Ricky Zaman',
+   segment:'Canadian Banking Technology Solutions', bu:'Marketing Technology', spend:42000,
+   vendor:'Figma Inc.', startDate:'2026-08-04', endDate:'2027-08-03',
+   pipelineId:null, aribaId:'SR5207311442', status:'Awaiting Finance review', submitted:'2026-07-14',
+   assignedFinance:'Melissa Tran',
+   progress:[{name:'Draft', state:'done', date:'2026-07-14'},{name:'Submitted', state:'done', date:'2026-07-14'},{name:'Finance Review', state:'current', date:null},{name:'Decision', state:'todo', date:null}]},
+
+  {kind:'sourcing', id:'SR-1029', title:'Wipro managed testing services renewal', owner:'Ricky Zaman',
+   segment:'Infrastructure & Engineering', bu:'Corporate Technology', spend:495000,
+   vendor:'Wipro', startDate:'2026-10-22', endDate:'2027-10-14',
+   pipelineId:'PL-79310', aribaId:'SR5208413977', status:'Approved', submitted:'2026-06-15',
+   assignedFinance:'Melissa Tran',
+   progress:[{name:'Draft', state:'done', date:'2026-06-15'},{name:'Submitted', state:'done', date:'2026-06-15'},{name:'Finance Review', state:'done', date:'2026-06-19'},{name:'Decision', state:'done', date:'2026-06-19'}]},
+
+  /* ---- sourcing owned by someone else, also awaiting finance (reviewer sees >1) ---- */
+  {kind:'sourcing', id:'SR-1051', title:'Snyk developer security platform — new SaaS', owner:'K. Alvarez',
+   segment:'Protect Platform', bu:'Risk Technology', spend:88000,
+   vendor:'Snyk Ltd.', startDate:'2026-09-01', endDate:'2027-08-31',
+   pipelineId:null, aribaId:'SR5207355810', status:'Awaiting Finance review', submitted:'2026-07-15',
+   assignedFinance:'Melissa Tran',
+   progress:[{name:'Draft', state:'done', date:'2026-07-15'},{name:'Submitted', state:'done', date:'2026-07-15'},{name:'Finance Review', state:'current', date:null},{name:'Decision', state:'todo', date:null}]},
+
+  /* ---- an existing SPID request so the Type column shows all three ---- */
+  {kind:'spid', id:'SPID-0991', title:'GD contract amendment — segment Y', owner:'S. Iyer',
+   segment:'Canadian Banking Technology Solutions', bu:'AI Technology', spend:1250000,
+   pipelineId:'PL-81455', srId:'SR-0991', aribaId:'SR5206988107', status:'In review', submitted:'2026-06-30',
+   discrepancies:[],
+   approvals: plApprovals([['done','2026-07-07'],['current',null],['todo',null],['todo',null],['todo',null]]),
+   progress:[{name:'Submitted', state:'done', date:'2026-06-30'},{name:'Validation', state:'done', date:'2026-06-30'},{name:'Signing Party review', state:'current', date:null},{name:'Executed (DocuSign)', state:'todo', date:null}]}
+];
+
+function findReq(id){ return REQUESTS.filter(function(r){ return r.id === id; })[0]; }
+
+/* Financial Approval Matrix — approvers, delegates, BOM Lead flags */
+var MATRIX = [
+  {approver:'M. Chen',      level:'VP',          segment:'Canadian Banking Technology Solutions', bu:'AI Technology',        delegate:'J. Smith', bomLead:true},
+  {approver:'P. Rodriguez', level:'SVP',         segment:'Canadian Banking Technology Solutions', bu:'AI Technology',        delegate:'J. Smith', bomLead:true},
+  {approver:'S. Leung',     level:'SVP',         segment:'Protect Platform',                      bu:'Risk Technology',      delegate:'A. Patel', bomLead:true},
+  {approver:'F. Tremblay',  level:'Finance AVP', segment:'Canadian Banking Technology Solutions', bu:'AI Technology',        delegate:'M. Tran', bomLead:false},
+  {approver:'D. Bosman',    level:'Finance VP',  segment:'TD Securities and Payments',            bu:'Corporate Technology', delegate:'A. Patel', bomLead:false},
+  {approver:'Vlad Shpilsky',level:'SEVP (Vlad)', segment:'All segments',                          bu:'All',                  delegate:'R. Gomez', bomLead:false}
+];
+
+var AGENDAS = [
+  {id:'AG-100', segment:'Canadian Banking Technology Solutions', level:'VP', bu:'AI Technology', date:'2026-07-21', items:['PL-80217','PL-79984'], status:'Open', outcomes:{}}
+];
+var abNextId = 1;
+
+var TODAY = new Date().toISOString().slice(0,10);
+
+/* ============================================================
+   NAVIGATION + PERSONA SWITCHER
+============================================================ */
+var NAV_BY_PERSONA = {
+  submitter: [['myrequests','My Requests'],['spid','SPID']],
+  finance:   [['myrequests','My Requests']],
+  bom:       [['myrequests','My Requests'],['admin','Admin']],
+  admin:     [['myrequests','My Requests'],['spid','SPID'],['admin','Admin']]
+};
+
+function renderNav(){
+  var links = NAV_BY_PERSONA[PERSONA.key] || [];
+  document.getElementById('navLinks').innerHTML = links.map(function(l){
+    return '<a data-nav="' + l[0] + '" onclick="goTo(\'' + l[0] + '\')">' + l[1] + '</a>';
+  }).join('');
+  document.getElementById('personaAvatar').textContent = PERSONA.initials;
+  document.getElementById('personaName').textContent = PERSONA.name;
+  document.getElementById('personaItems').innerHTML = PERSONAS.map(function(p){
+    return '<div class="persona-item' + (p.key === PERSONA.key ? ' on' : '') + '" onclick="setPersona(\'' + p.key + '\')">' +
+      '<span class="pa">' + p.initials + '</span><span><div class="nm">' + p.name + '</div><div class="rl">' + p.role + '</div></span>' +
+      (p.key === PERSONA.key ? '<span class="chk">&#10003;</span>' : '') + '</div>';
+  }).join('');
+}
+
+function togglePersonaMenu(ev){
+  ev.stopPropagation();
+  document.getElementById('personaMenu').classList.toggle('show');
+}
+document.addEventListener('click', function(){
+  document.getElementById('personaMenu').classList.remove('show');
+});
+
+function setPersona(key){
+  PERSONA = PERSONAS.filter(function(p){ return p.key === key; })[0];
+  renderNav();
+  goTo('myrequests');
+}
+
+function goTo(screenName){
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('active'); });
+  var target = document.getElementById('screen-' + screenName);
+  if(target){ target.classList.add('active'); }
+  STATE.screen = screenName;
+  window.scrollTo(0,0);
+  var navKey = {record:'myrequests'}[screenName] || screenName;
+  document.querySelectorAll('.nav-links a[data-nav]').forEach(function(a){
+    if(a.getAttribute('data-nav') === navKey){ a.classList.add('active'); } else { a.classList.remove('active'); }
+  });
+  if(screenName === 'myrequests'){ renderMyRequests(); }
+  if(screenName === 'admin'){ renderAdmin(); }
+  if(screenName === 'spid'){ renderSpidStart(); }
+  if(screenName === 'triage'){
+    STATE.triageStep = 0; STATE.mcService = null; STATE.mcExempt = null; STATE.mcFlag = false; STATE.spend = 0; STATE.hasPipeline = null;
+    renderTriageStep();
+  }
+}
+
+function resetDemo(){ location.reload(); }
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+function fmtSpend(v){ return (v === null || v === undefined || v === '') ? '—' : ('$' + Number(v).toLocaleString()); }
+function selectOpts(arr){ return arr.map(function(v){ return '<option>' + v + '</option>'; }).join(''); }
+function fmtDate(iso){
+  if(!iso){ return ''; }
+  var p = iso.split('-');
+  var m = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(p[1],10)-1];
+  return m + ' ' + parseInt(p[2],10) + ', ' + p[0];
+}
+function cTag(usffFieldName){
+  return '<span class="consolidated-tag">&#8776; USFF: "' + usffFieldName + '"</span>';
+}
+function dTag(){ return '<span class="delta-tag">+ NET NEW</span>'; }
+
+/* ============================================================
+   TRIAGE FRONT DOOR — EMS is a triage layer only
+============================================================ */
+function renderTriageProgress(){
+  var total = STATE.triageMaxSteps, html = '';
+  for(var i=0;i<total;i++){
+    var cls = i < STATE.triageStep ? 'done' : (i === STATE.triageStep ? 'current' : '');
+    html += '<div class="dot ' + cls + '"></div>';
+  }
+  document.getElementById('triageProgress').innerHTML = html;
+}
+
+function triageQuestionHTML(qnum, title, bodyHtml){
+  return '<div class="triage-q"><div class="qnum">Question ' + qnum + '</div><h3>' + title + '</h3>' + bodyHtml + '</div>';
+}
+
+function tileBtn(type, icon, title, desc, redirect){
+  return '<div class="tile" onclick="answerExpenseType(\'' + type + '\')">' +
+    (redirect ? '<span class="redirect-tag">&#8599; Signing Party</span>' : '') +
+    '<div class="tile-icon">' + icon + '</div><h3>' + title + '</h3><p>' + desc + '</p></div>';
+}
+
+function renderTriageStep(){
+  renderTriageProgress();
+  var content = document.getElementById('triageContent');
+  var html = '';
+
+  if(STATE.triageStep === 0){
+    html = triageQuestionHTML(1, 'Are you requesting on behalf of GTS (Global Technology & Strategy)?',
+      '<div class="radio-row">' +
+      '<div class="radio-opt" onclick="answerGTS(false,this)"><span class="dot"></span> No — I am not part of GTS</div>' +
+      '<div class="radio-opt" onclick="answerGTS(true,this)"><span class="dot"></span> Yes — I am part of GTS</div>' +
+      '</div>' +
+      '<div class="rule-note"><span class="icn">i</span><span>Non-GTS users go <b>straight into today\'s USFF sourcing intake</b> — nothing about the standard flow changes. GTS users see the EMS expense-type triage next.</span></div>');
+  }
+
+  else if(STATE.triageStep === 1){
+    html = triageQuestionHTML(2, 'What is the Type of Expense?',
+      '<div class="tile-grid" style="margin-top:4px;">' +
+      tileBtn('vendor','V','Vendor Expense','Professional Services SOWs, Global Delivery Contracts, License Agreements, Renewals. Fully integrated in this app.', false) +
+      tileBtn('ath','A','Approval to Hire','Employees, Fieldglass contractors, Contingent and Global Delivery resources.', true) +
+      tileBtn('project','R','Project Request','ATS, ATP & associated extensions.', true) +
+      tileBtn('other','O','Other Approval Requests','Travel, Education, Archer Findings, Risk Exceptions, Other.', true) +
+      tileBtn('invoice','I','Invoice Submission Request','Ariba and non-Ariba (BAU) invoice approvals.', true) +
+      '</div>' +
+      '<div class="rule-note"><span class="icn">i</span><span><b>v7 scope decision:</b> only <b>Vendor Expense</b> is integrated end-to-end (it\'s the only expense type touching procurement / Ariba / the USFF storefront). The other four tiles redirect to the existing Signing Party PowerApp unchanged.</span></div>');
+  }
+
+  else if(STATE.triageStep === 2){
+    html = triageQuestionHTML(3, 'What is the anticipated total spend (CAD)?',
+      '<input class="fld" type="number" id="triageSpendInput" value="' + (STATE.spend||'') + '" placeholder="e.g. 185000" style="max-width:300px;" oninput="onTriageSpendInput()">' +
+      '<div class="help" style="margin-top:8px;">Pipeline approval is required for ALL 3rd-party spend exceeding <b>$100,000</b>, regardless of category — including $0 amendments (which must reflect actual contract value) and any spend increase added to an existing SOW.</div>' +
+      '<div style="margin-top:18px;"><button class="btn btn-primary" onclick="onTriageSpendNext()">Continue →</button></div>');
+  }
+
+  else if(STATE.triageStep === 3){
+    var needsPipeline = STATE.spend > 100000;
+
+    if(!needsPipeline){
+      // Under the pipeline threshold — straight into the standard USFF intake.
+      startWizard();
+      return;
+    }
+
+    // Duplicate-pipeline guard (v7.1): users normally continue an approved
+    // pipeline from My Requests, but we re-check here in case they came back
+    // through the triage instead - prevents duplicate pipelines for one engagement.
+    if(STATE.hasPipeline === null){
+      html = triageQuestionHTML(4, 'Do you already have a Pipeline for this engagement?',
+        '<div class="radio-row">' +
+        '<div class="radio-opt" onclick="answerHasPipeline(false,this)"><span class="dot"></span> No — I need to start one</div>' +
+        '<div class="radio-opt" onclick="answerHasPipeline(true,this)"><span class="dot"></span> Yes — I have a Pipeline number</div>' +
+        '</div>' +
+        '<div class="rule-note"><span class="icn">i</span><span>Approved pipelines are normally continued straight from <b>My Requests</b> ("Ready to submit in USFF"), but we double-check here so a second pipeline does not get submitted for the same engagement.</span></div>');
+      content.innerHTML = html;
+      return;
+    }
+    if(STATE.hasPipeline === true){
+      html = triageQuestionHTML(4, 'Enter your Pipeline number',
+        '<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;">' +
+        '<input class="fld" id="triagePlInput" placeholder="e.g. PL-84120" style="max-width:260px;">' +
+        '<button class="btn btn-primary" onclick="triagePlValidate()">Validate →</button>' +
+        '</div>' +
+        '<div id="triagePlResult" style="margin-top:14px;"></div>' +
+        '<div class="help" style="margin-top:10px;">Checked against the pipeline table — the status decides what happens next.</div>');
+      content.innerHTML = html;
+      return;
+    }
+
+    // Pipeline path: capture the Management Consulting classification BEFORE the
+    // pipeline intake. The RESULT is a routing flag for admins / BOM leads only —
+    // the submitter never sees "MC triggered".
+    if(STATE.mcService === null){
+      html = triageQuestionHTML(5, 'What kind of services are these?',
+        '<div class="radio-row" style="flex-direction:column;align-items:stretch;">' +
+        '<div class="radio-opt" onclick="answerMcService(\'advisory\',this)"><span class="dot"></span> Advisory &amp; strategic support</div>' +
+        '<div class="radio-opt" onclick="answerMcService(\'implementation\',this)"><span class="dot"></span> Implementation &amp; transformation services</div>' +
+        '<div class="radio-opt" onclick="answerMcService(\'operational\',this)"><span class="dot"></span> Operational improvement / process optimization</div>' +
+        '<div class="radio-opt" onclick="answerMcService(\'expertise\',this)"><span class="dot"></span> Specialized expertise or analysis</div>' +
+        '<div class="radio-opt" onclick="answerMcService(\'staffaug\',this)"><span class="dot"></span> Staff augmentation</div>' +
+        '<div class="radio-opt" onclick="answerMcService(\'none\',this)"><span class="dot"></span> None of these</div>' +
+        '</div>' +
+        '<div class="rule-note"><span class="icn">i</span><span>Used for internal approval routing only — you won\'t need to do anything further with this answer.</span></div>');
+      content.innerHTML = html;
+      return;
+    }
+    if(STATE.mcService !== 'none' && STATE.mcExempt === null){
+      html = triageQuestionHTML(6, 'Do any of these apply to this engagement?',
+        '<div class="radio-row" style="flex-direction:column;align-items:stretch;">' +
+        '<div class="radio-opt" onclick="answerMcExempt(true,this)"><span class="dot"></span> Supplier is Cognizant, TCS or Wipro</div>' +
+        '<div class="radio-opt" onclick="answerMcExempt(true,this)"><span class="dot"></span> Eagle-funded remediation services</div>' +
+        '<div class="radio-opt" onclick="answerMcExempt(true,this)"><span class="dot"></span> OEM maintenance, support or implementation from a technology supplier</div>' +
+        '<div class="radio-opt" onclick="answerMcExempt(false,this)"><span class="dot"></span> None of the above</div>' +
+        '</div>' +
+        '<div class="rule-note"><span class="icn">i</span><span>Also routing-only. These answers set a classification flag visible to approval admins and BOM Leads — not shown on your request view.</span></div>');
+      content.innerHTML = html;
+      return;
+    }
+
+    STATE.mcFlag = STATE.mcService !== 'none' && STATE.mcExempt === false;
+    goToPipelineIntake();
+    return;
+  }
+
+  content.innerHTML = html;
+}
+
+function answerGTS(val, el){
+  STATE.isGTS = val;
+  selRadio(el);
+  setTimeout(function(){
+    if(!val){ startWizard(); return; }
+    STATE.triageStep = 1;
+    renderTriageStep();
+  }, 250);
+}
+
+function selRadio(el){
+  Array.prototype.forEach.call(el.parentElement.children, function(c){ c.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+var SP_LABELS = {ath:'Approval to Hire', project:'Project Request', other:'Other Approval Requests', invoice:'Invoice Submission Request'};
+
+function answerExpenseType(type){
+  if(type !== 'vendor'){
+    document.getElementById('spCrumb').textContent = 'Signing Party — ' + SP_LABELS[type];
+    document.getElementById('spTitle').textContent = 'Signing Party — ' + SP_LABELS[type];
+    goTo('signingparty');
+    return;
+  }
+  STATE.triageStep = 2;
+  renderTriageStep();
+}
+
+function onTriageSpendInput(){
+  STATE.spend = parseInt(document.getElementById('triageSpendInput').value || '0', 10);
+}
+function onTriageSpendNext(){
+  onTriageSpendInput();
+  STATE.triageStep = 3;
+  renderTriageStep();
+}
+function answerMcService(val, el){
+  STATE.mcService = val;
+  if(val === 'none'){ STATE.mcExempt = true; }
+  selRadio(el);
+  setTimeout(function(){ STATE.triageStep = 3; renderTriageStep(); }, 250);
+}
+
+function answerHasPipeline(val, el){
+  STATE.hasPipeline = val;
+  selRadio(el);
+  setTimeout(function(){ renderTriageStep(); }, 250);
+}
+
+function triagePlValidate(){
+  var val = document.getElementById('triagePlInput').value.trim().toUpperCase();
+  if(/^\d+$/.test(val)){ val = 'PL-' + val; }
+  var out = document.getElementById('triagePlResult');
+  var pl = findReq(val);
+  if(!pl || pl.kind !== 'pipeline'){
+    out.innerHTML = '<div class="conditional-box danger"><b>Not found.</b> ' + (val || 'That number') + ' is not in the pipeline table. Check My Requests, or start a new pipeline below.</div>' +
+      '<button class="btn btn-primary" onclick="triagePlStartNew()">Start a new pipeline intake →</button>';
+    return;
+  }
+  if(pl.status === 'In approvals'){
+    var cur = pl.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    out.innerHTML = '<div class="conditional-box"><b>Duplicate prevented:</b> ' + pl.id + ' already exists for this engagement and is still in approvals (' + (cur ? cur.level + ' pending' : 'in progress') + '). A second pipeline cannot be submitted — track this one from My Requests instead.</div>' +
+      '<button class="btn btn-primary" onclick="goTo(\'myrequests\')">Go to My Requests</button> ' +
+      '<button class="btn btn-outline" onclick="openRecord(\'' + pl.id + '\')">Open ' + pl.id + '</button>';
+    return;
+  }
+  if(pl.status === 'Declined'){
+    out.innerHTML = '<div class="conditional-box danger"><b>' + pl.id + ' was declined.</b> A new pipeline intake is required.</div>' +
+      '<button class="btn btn-primary" onclick="triagePlStartNew()">Start a new pipeline intake →</button>';
+    return;
+  }
+  if(pl.convertedSr){
+    out.innerHTML = '<div class="conditional-box purple"><b>' + pl.id + ' was already continued</b> as sourcing request ' + pl.convertedSr + ' — nothing further to submit here.</div>' +
+      '<button class="btn btn-primary" onclick="openRecord(\'' + pl.convertedSr + '\')">Open ' + pl.convertedSr + '</button>';
+    return;
+  }
+  out.innerHTML = '<div class="conditional-box green"><b>' + pl.id + ' is fully approved</b> (final sign-off ' + fmtDate(pl.approvals[4].date) + ') and has not been continued yet — go straight into the USFF sourcing intake, pre-populated from the pipeline.</div>' +
+    '<button class="btn btn-primary" onclick="startUsffFromPipeline(\'' + pl.id + '\')">Continue to USFF intake →</button>';
+}
+
+function triagePlStartNew(){
+  STATE.hasPipeline = false;
+  renderTriageStep();
+}
+
+function answerMcExempt(val, el){
+  STATE.mcExempt = val;
+  selRadio(el);
+  setTimeout(function(){ STATE.triageStep = 3; renderTriageStep(); }, 250);
+}
+
+/* ============================================================
+   PIPELINE INTAKE (Vendor Expense pipeline only in v7)
+============================================================ */
+function goToPipelineIntake(){
+  var content = document.getElementById('plFormContent');
+  content.innerHTML =
+    '<div class="form-card"><h2>1. General Info</h2>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Requestor ' + cTag('User Full Name') + '</label><input class="fld locked" value="' + PERSONA.name + ' (auto via SSO)" disabled></div>' +
+    '<div class="field"><label>Presenter</label><select class="fld"><option>(optional)</option></select></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld" id="plSegment">' + selectOpts(SEGMENTS) + '</select></div>' +
+    '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld" id="plBu">' + selectOpts(BUSINESS_UNITS) + '</select></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Business Sponsor <span class="req">*</span> ' + cTag('Business Sponsor') + '</label><select class="fld">' + selectOpts(SEGMENTS) + '</select></div>' +
+    '<div class="field"><label>Cost Centre <span class="req">*</span> ' + cTag('Cost Centre Code') + '</label><input class="fld" id="plCostCentre" placeholder="e.g. CC-40412"></div>' +
+    '</div>' +
+    '<div class="field"><label>Engagement Title <span class="req">*</span> ' + cTag('Engagement Title') + '</label><input class="fld" id="plTitleInput" placeholder="e.g. Datadog observability platform renewal — FY27"></div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Proposed Start Date <span class="req">*</span></label><input class="fld" type="date" id="plStartDate" oninput="validatePipelineLeadTime()"><div class="help" id="plLeadTimeMsg" style="color:var(--td-green-mid);font-weight:600;">Must be at least 90 days from today (pipeline lead-time rule).</div></div>' +
+    '<div class="field"><label>Proposed End Date <span class="req">*</span></label><input class="fld" type="date" id="plEndDate"></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Proposed Vendor <span class="req">*</span> ' + cTag('Vendor Legal Entity Name') + '</label><input class="fld" id="plVendor" placeholder="Search vendor..."></div>' +
+    '<div class="field"><label>Funding Type <span class="req">*</span> ' + cTag('Source of Funding') + '</label><select class="fld" id="plFundingType">' + selectOpts(FUNDING_TYPES) + '</select></div>' +
+    '</div>' +
+    '<div class="field"><label>Is this a Regulatory Commitment? <span class="req">*</span></label>' +
+    '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plvReg\',false,this)"><span class="dot"></span> No</div><div class="radio-opt" onclick="toggleInline(\'plvReg\',true,this)"><span class="dot"></span> Yes</div></div></div>' +
+    '<div id="plvReg_area"></div>' +
+    '<div class="field"><label>Will RFP be completed? <span class="req">*</span></label>' +
+    '<div class="radio-row"><div class="radio-opt sel" onclick="toggleInline(\'plvRfp\',false,this)"><span class="dot"></span> Yes</div><div class="radio-opt" onclick="toggleInline(\'plvRfp\',true,this)"><span class="dot"></span> No</div></div></div>' +
+    '<div id="plvRfp_area"></div>' +
+    '</div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">2. Financials &amp; Workforce</h2>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Currency <span class="req">*</span> ' + cTag('Contract Currency') + '</label><select class="fld"><option>CAD</option><option>USD</option><option>GBP</option><option>SGD</option></select></div>' +
+    '<div class="field"><label>Anticipated Spend CAD <span class="req">*</span> ' + cTag('Anticipated Total Cost') + '</label><input class="fld locked" value="' + (STATE.spend||0) + '" disabled><div class="help">Locked — carried over from the triage. This is the value the $100K pipeline gate checked.</div></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Total Contract Value <span class="req">*</span></label><input class="fld" type="number"><div class="help">TCV, including original SOW and all Change Orders.</div></div>' +
+    '<div class="field"><label>Billing Type <span class="req">*</span></label><select class="fld"><option>Fixed Cost</option><option>Time & Materials</option></select></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Number of Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResTotal" oninput="validatePlvResources()"><div class="help">Must equal Onshore + Offshore.</div></div>' +
+    '<div class="field"><label>Hourly Rate</label><input class="fld"></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Onshore Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResOn" oninput="validatePlvResources()"></div>' +
+    '<div class="field"><label>Offshore Resources <span class="req">*</span></label><input class="fld" type="number" id="plvResOff" oninput="validatePlvResources()"></div>' +
+    '</div>' +
+    '<div class="help" id="plvResMsg" style="margin:-8px 0 14px;"></div>' +
+    '<div class="field"><label>Knowledge Transfer Plan <span class="req">*</span></label><select class="fld"><option>Plan for internal ownership</option><option>Engagement Governance</option><option>Knowledge transfer to ensure continuity</option></select></div>' +
+    '</div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">3. Justification</h2>' +
+    '<div class="field"><label>Business Process being solved with specific outcomes <span class="req">*</span> ' + cTag('Describe the problem we are solving') + '</label><textarea class="fld"></textarea></div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Role of Consultant <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+    '<div class="field"><label>Why External vs Internal Capacity <span class="req">*</span> ' + cTag('What did you do to complete this internally?') + '</label><textarea class="fld"></textarea></div>' +
+    '</div>' +
+    '<div class="field"><label>Risk if not completed <span class="req">*</span> ' + cTag('Impacts of not purchasing') + '</label><textarea class="fld"></textarea></div>' +
+    '</div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">4. Attachments</h2>' +
+    '<div class="field"><label>Attachments</label><div style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+    '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> Attachment Attestation — I confirm required documents are attached</label></div></div>';
+
+  goTo('pipelineIntake');
+}
+
+function toggleInline(key, val, el){
+  selRadio(el);
+  var area = document.getElementById(key + '_area');
+  if(!area) return;
+  if(key === 'plvReg' && val){
+    area.innerHTML = '<div class="field inline-conditional" style="max-width:320px;"><label>Regulatory Type</label><select class="fld"><option>MRA#</option><option>SelfID#</option><option>Other</option></select></div>';
+  } else if(key === 'plvRfp' && val){
+    area.innerHTML = '<div class="field inline-conditional" style="max-width:420px;"><label>Reason for no RFP</label><select class="fld"><option>No other vendors</option><option>Historical relationship</option><option>Time constraints</option><option>Other</option></select></div>';
+  } else {
+    area.innerHTML = '';
+  }
+}
+
+function validatePlvResources(){
+  var total = parseInt(document.getElementById('plvResTotal').value || '0', 10);
+  var on = parseInt(document.getElementById('plvResOn').value || '0', 10);
+  var off = parseInt(document.getElementById('plvResOff').value || '0', 10);
+  var msg = document.getElementById('plvResMsg');
+  if(total === (on+off)){ msg.style.color = 'var(--td-green-mid)'; msg.textContent = 'Total matches onshore + offshore. ✓'; }
+  else { msg.style.color = 'var(--red-text)'; msg.textContent = 'Total must equal onshore (' + on + ') + offshore (' + off + ') = ' + (on+off) + '.'; }
+}
+
+function validatePipelineLeadTime(){
+  var val = document.getElementById('plStartDate').value;
+  var msg = document.getElementById('plLeadTimeMsg');
+  if(!val){ return; }
+  var diffDays = Math.round((new Date(val) - new Date()) / (1000*60*60*24));
+  if(diffDays >= 90){
+    msg.style.color = 'var(--td-green-mid)';
+    msg.textContent = 'Lead time OK — ' + diffDays + ' days out. ✓ (Minimum 90 days.)';
+  } else {
+    msg.style.color = 'var(--red-text)';
+    msg.textContent = 'Only ' + diffDays + ' days out — minimum 90 days required before the procurement engagement.';
+  }
+}
+
+function submitPipelineIntake(){
+  var id = 'PL-' + (10000 + Math.floor(Math.random()*89999));
+  var titleInput = document.getElementById('plTitleInput');
+  var rec = {
+    kind:'pipeline', id:id,
+    title: (titleInput && titleInput.value.trim()) || 'Vendor expense pipeline — just submitted',
+    owner: PERSONA.name,
+    segment: (document.getElementById('plSegment').value || SEGMENTS[0]).split(' - ')[0],
+    bu: document.getElementById('plBu').value || BUSINESS_UNITS[0],
+    spend: STATE.spend || 0,
+    vendor: (document.getElementById('plVendor').value || '').trim() || 'TBD',
+    startDate: document.getElementById('plStartDate').value || '',
+    endDate: document.getElementById('plEndDate').value || '',
+    fundingType: document.getElementById('plFundingType').value,
+    costCentre: (document.getElementById('plCostCentre').value || '').trim() || 'CC-00000',
+    mcFlag: STATE.mcFlag,
+    status:'In approvals', submitted: TODAY, convertedSr: null,
+    approvals: plApprovals([['current',null],['todo',null],['todo',null],['todo',null],['todo',null]])
+  };
+  REQUESTS.unshift(rec);
+  document.getElementById('plSubmittedSub').innerHTML =
+    '<b>' + rec.id + '</b> — ' + rec.title + ' is now awaiting its first BOM agenda (VP level).';
+  document.getElementById('plSubmittedChainWrap').innerHTML =
+    '<div class="form-card" style="text-align:left;"><h2 class="purple-accent">Pipeline approval chain</h2>' +
+    apChipRowHtml(rec) + apLegendHtml() +
+    '</div>';
+  goTo('plSubmitted');
+}
+
+/* Approval chips WITH the date each approval was entered (v7 requirement) */
+function apChipRowHtml(pl){
+  return '<div class="ap-chip-row">' +
+    pl.approvals.map(function(a, i){
+      var sub;
+      if(a.state === 'done'){ sub = 'Approved ' + fmtDate(a.date); }
+      else if(a.state === 'current'){ sub = 'Pending — next agenda'; }
+      else if(a.state === 'rejected'){ sub = 'Declined ' + fmtDate(a.date); }
+      else { sub = 'Not yet started'; }
+      return (i ? '<div class="ap-conn"></div>' : '') +
+        '<div class="ap-chip ' + a.state + '">' + a.level + '<span class="ap-date">' + sub + '</span></div>';
+    }).join('') + '</div>';
+}
+function apLegendHtml(){
+  return '<div class="ap-legend">' +
+    '<span><i style="background:#9ec9ab;"></i>Approved (date = when the approval was entered)</span>' +
+    '<span><i style="background:#e2b93b;"></i>Pending</span>' +
+    '<span><i style="background:#e5b3b3;"></i>Declined</span>' +
+    '<span><i style="background:#d8dad2;"></i>Not yet started</span></div>';
+}
+</script>
+<script>
+/* ============================================================
+   USFF SOURCING INTAKE WIZARD — the untouched USFF flow.
+   Reached three ways: non-GTS users, GTS vendor expense ≤$100K,
+   or from a STAGED (fully approved) pipeline with prefill.
+============================================================ */
+var WIZARD_STEPS = ['Business details','Objective of request','Product or service details','Proof of funding'];
+
+function startWizard(prefillPl){
+  STATE.wizardStep = 1;
+  STATE.prefillFrom = prefillPl || null;
+  var banner = document.getElementById('wizardPrefillBanner');
+  if(prefillPl){
+    document.getElementById('wizardCrumb').textContent = 'USFF sourcing intake — from ' + prefillPl.id;
+    banner.innerHTML = '<div class="staged-banner"><div class="sbn-txt">' +
+      '<h3>Pre-populated from approved pipeline ' + prefillPl.id + '</h3>' +
+      '<p>Everything the pipeline already captured is filled in below (purple tags). Review, complete the remaining USFF questions, and submit — this creates the sourcing request in Ariba and starts the Finance funding review.</p></div></div>';
+  } else {
+    document.getElementById('wizardCrumb').textContent = 'USFF sourcing intake';
+    banner.innerHTML = '';
+  }
+  goTo('wizard');
+  renderWizardStep();
+}
+
+function startUsffFromPipeline(plId){
+  var pl = findReq(plId);
+  if(!pl || pl.status !== 'Approved' || pl.convertedSr){ return; }
+  STATE.spend = pl.spend;
+  startWizard(pl);
+}
+
+function pf(field, fallback){
+  return STATE.prefillFrom ? (STATE.prefillFrom[field] || fallback || '') : (fallback || '');
+}
+function pfTag(){
+  return STATE.prefillFrom ? '<span class="tag prefill">from ' + STATE.prefillFrom.id + '</span>' : '';
+}
+
+function renderStepper(){
+  var html = '';
+  WIZARD_STEPS.forEach(function(label, idx){
+    var n = idx + 1;
+    var cls = n < STATE.wizardStep ? 'done' : (n === STATE.wizardStep ? 'current' : 'todo');
+    var sub = n < STATE.wizardStep ? 'Complete' : (n === STATE.wizardStep ? 'In progress' : 'Waiting');
+    var node = n < STATE.wizardStep ? '&#10003;' : n;
+    html += '<div class="step ' + cls + '"><div class="connector"></div><div class="node">' + node + '</div>' +
+      '<div class="lbl">' + label + '</div><div class="sub">' + sub + '</div></div>';
+  });
+  document.getElementById('wzStepper').innerHTML = html;
+}
+
+function renderWizardStep(){
+  renderStepper();
+  document.getElementById('wzStepNum').textContent = STATE.wizardStep;
+  document.getElementById('wzStepPill').textContent = WIZARD_STEPS[STATE.wizardStep - 1];
+  document.getElementById('wzProgressBar').style.width = (STATE.wizardStep / 4 * 100) + '%';
+  document.getElementById('wzProgressMeta').textContent = 'Step ' + STATE.wizardStep + ' of 4 — the existing USFF intake, unchanged';
+
+  var prevDisabled = STATE.wizardStep === 1;
+  ['wzPrevTop','wzPrevBottom'].forEach(function(id){
+    document.getElementById(id).disabled = prevDisabled;
+    document.getElementById(id).style.opacity = prevDisabled ? 0.4 : 1;
+  });
+  var isLast = STATE.wizardStep === 4;
+  ['wzNextTop','wzNextBottom'].forEach(function(id){
+    document.getElementById(id).textContent = isLast ? 'Review & submit →' : 'Next →';
+  });
+
+  var content = '';
+  var lockCls = STATE.prefillFrom ? ' locked" disabled' : '"';
+
+  if(STATE.wizardStep === 1){
+    content = '<div class="form-card"><h2>Business details</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>User full name <span class="tag">Read-only</span></label><input class="fld locked" value="' + PERSONA.name + '" disabled></div>' +
+      '<div class="field"><label>User email <span class="tag">Read-only</span></label><input class="fld locked" value="' + PERSONA.name.toLowerCase().replace(/[^a-z]+/g,'.') + '@dev-td.com" disabled></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Financial partner email <span class="req">*</span></label><input class="fld locked" value="Auto-resolved via Finance Partner Matrix" disabled><div class="help">Routing to the funding approver is driven by the Finance Partner Matrix (maintained in Admin).</div></div>' +
+      '<div class="field"><label>Engagement title <span class="req">*</span> ' + pfTag() + '</label><input class="fld' + lockCls + ' id="wzTitle" value="' + pf('title') + '" placeholder="e.g. Figma - Change Request - Design Collaboration Tool - FY24"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Business sponsor <span class="req">*</span></label><input class="fld" placeholder="Search by name or email..." value="' + (STATE.prefillFrom ? 'Carried from pipeline sponsor' : '') + '"></div>' +
+      '<div class="field"><label>Risk owner <span class="req">*</span></label><input class="fld" placeholder="Search by name or email..."></div>' +
+      '</div>' +
+      '<div class="field"><label>Description — what is being bought and what is the scope? <span class="req">*</span> ' + pfTag() + '</label><textarea class="fld' + (STATE.prefillFrom ? ' locked" disabled' : '"') + '>' + (STATE.prefillFrom ? 'Carried from pipeline justification: business process, outcomes and vendor scope as approved on ' + STATE.prefillFrom.id + '.' : '') + '</textarea></div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>LOB owning the product or service <span class="req">*</span> ' + pfTag() + '</label><select class="fld' + lockCls + '><option>' + (STATE.prefillFrom ? 'GTS - ' + pf('bu') : 'Select an option...') + '</option><option>GTS - ITS Technology</option><option>Finance - Corporate Development</option></select></div>' +
+      '<div class="field"><label>LOB receiving the product or service <span class="req">*</span></label><select class="fld"><option>Select items...</option><option>All</option></select></div>' +
+      '</div>' +
+      (STATE.prefillFrom ? '<div class="conditional-box purple"><b>Linked to pipeline ' + STATE.prefillFrom.id + '</b> — locked fields were approved on the pipeline and cannot be changed here. If something is wrong, the pipeline must be corrected first (values lock at submission).</div>' : '') +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 2){
+    content = '<div class="form-card"><h2>Objective of request</h2>' +
+      '<div class="field"><label>What is the objective of this request? <span class="req">*</span></label>' +
+      '<select class="fld"><option>' + (STATE.prefillFrom ? 'Contract Renewal' : 'Select an option...') + '</option><option>New Arrangement</option><option>Contract Renewal</option>' +
+      '<option>Work Order</option><option>Contract Amendment</option><option>SOW</option></select></div>' +
+      '<div class="field"><label>Describe the problem we are solving and why it is required <span class="req">*</span> ' + pfTag() + '</label>' +
+      '<textarea class="fld' + (STATE.prefillFrom ? ' locked" disabled' : '"') + '>' + (STATE.prefillFrom ? 'Carried from pipeline: business process being solved with specific outcomes.' : '') + '</textarea></div>' +
+      '<div class="field"><label>What did you do to complete this internally? Why is external solution required? <span class="req">*</span> ' + pfTag() + '</label>' +
+      '<textarea class="fld' + (STATE.prefillFrom ? ' locked" disabled' : '"') + '>' + (STATE.prefillFrom ? 'Carried from pipeline: why external vs internal capacity.' : '') + '</textarea></div>' +
+      '<div class="field"><label>Associated project / engagement purpose <span class="req">*</span></label>' +
+      '<textarea class="fld" placeholder="Name of the project, high-level description, and how this engagement supports it. If not applicable, N/A."></textarea></div>' +
+      '<div class="field"><label>Contribution to departmental goals <span class="req">*</span></label><textarea class="fld"></textarea></div>' +
+      '<div class="field"><label>What are the impacts of not purchasing this product/service? <span class="req">*</span> ' + pfTag() + '</label><textarea class="fld' + (STATE.prefillFrom ? ' locked" disabled' : '"') + '>' + (STATE.prefillFrom ? 'Carried from pipeline: risk if not completed.' : '') + '</textarea></div>' +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 3){
+    content = '<div class="form-card"><h2>Product or service details</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>What subcategory best matches your request (L3) <span class="req">*</span></label>' +
+      '<select class="fld"><option>Search for commodity code...</option></select></div>' +
+      '<div class="field"><label>Vendor legal entity name <span class="req">*</span> ' + pfTag() + '</label><input class="fld' + lockCls + ' id="wzVendor" value="' + pf('vendor') + '" placeholder="Vendor lookup..."></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Target contract start date <span class="req">*</span> ' + pfTag() + '</label><input class="fld' + lockCls + ' id="wzStart" type="date" value="' + pf('startDate') + '"></div>' +
+      '<div class="field"><label>Estimated contract end date <span class="req">*</span> ' + pfTag() + '</label><input class="fld' + lockCls + ' id="wzEnd" type="date" value="' + pf('endDate') + '"></div>' +
+      '</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Anticipated total cost <span class="req">*</span> ' + pfTag() + '</label><input class="fld locked" id="wzCost" type="number" value="' + (STATE.spend || 0) + '" disabled>' +
+      '<div class="help">' + (STATE.prefillFrom ? 'Locked — the approved pipeline amount. Any increase re-triggers the pipeline.' : 'Locked — carried from your triage answers.') + '</div></div>' +
+      '<div class="field"><label>Contract currency <span class="req">*</span></label><select class="fld"><option>CAD</option><option>USD</option></select></div>' +
+      '</div>' +
+      (STATE.prefillFrom ? '<div class="conditional-box purple"><b>Linked pipeline:</b> ' + STATE.prefillFrom.id + ' — approved ' + fmtDate(STATE.prefillFrom.approvals[4].date) + ' (final SEVP sign-off)</div>' : '') +
+      '<div class="section-label-pill">Risk questions</div>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>Does the third party anticipate having access to TD data? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt" onclick="selRadio(this)"><span class="dot"></span> Yes</div><div class="radio-opt sel" onclick="selRadio(this)"><span class="dot"></span> No</div></div></div>' +
+      '<div class="field"><label>Will vendor resources have access to TD PII data? <span class="req">*</span></label>' +
+      '<div class="radio-row"><div class="radio-opt" onclick="selRadio(this)"><span class="dot"></span> Yes</div><div class="radio-opt sel" onclick="selRadio(this)"><span class="dot"></span> No</div></div></div>' +
+      '</div>' +
+      '</div>';
+  }
+
+  else if(STATE.wizardStep === 4){
+    content = '<div class="form-card"><h2>Proof of funding</h2>' +
+      '<div class="grid2">' +
+      '<div class="field"><label>What is the source of funding? <span class="req">*</span> ' + pfTag() + '</label>' +
+      '<select class="fld' + lockCls + '><option>' + (STATE.prefillFrom ? pf('fundingType') : 'Select an option...') + '</option><option>Project</option><option>Envelope</option><option>Baseline Expenses</option><option>Other</option></select></div>' +
+      '<div class="field"><label>Cost centre code <span class="req">*</span> ' + pfTag() + '</label><input class="fld' + lockCls + ' id="wzCostCentre" value="' + pf('costCentre') + '" placeholder="Enter cost centre code"></div>' +
+      '</div>' +
+      '<div class="field"><label>Please provide any artifacts that confirm this funding</label>' +
+      '<div style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+      '<div class="field" style="margin-top:18px;"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+      '<div class="rule-note"><span class="icn">i</span><span><b>On submit:</b> the request goes to your Finance funding approver (via the Finance Partner Matrix) AND an intake is created in Ariba at the same time. You track both from My Requests.</span></div>' +
+      '</div>';
+  }
+
+  document.getElementById('wzStepContent').innerHTML = content;
+}
+
+function wizardNext(){
+  if(STATE.wizardStep < 4){
+    STATE.wizardStep++;
+    renderWizardStep();
+    window.scrollTo(0,0);
+  } else {
+    document.getElementById('submitConfirmBody').innerHTML =
+      '<b>Your request will be:</b><br>' +
+      '&#10003; Submitted for Finance funding review (routed via the Finance Partner Matrix)<br>' +
+      '&#10003; Created as an intake in Ariba (downstream sourcing request)<br>' +
+      (STATE.prefillFrom ? '&#10003; Linked to approved pipeline ' + STATE.prefillFrom.id : '&#10003; Tracked in My Requests as a Sourcing Request');
+    openModal('submitConfirmModal');
+  }
+}
+function wizardPrev(){
+  if(STATE.wizardStep > 1){
+    STATE.wizardStep--;
+    renderWizardStep();
+    window.scrollTo(0,0);
+  }
+}
+
+function onFinalSubmit(){
+  closeModal('submitConfirmModal');
+  var srId = 'SR-' + (1052 + REQUESTS.filter(function(r){ return r.kind === 'sourcing'; }).length);
+  var aribaId = 'SR52' + String(10000000 + Math.floor(Math.random()*89999999)).slice(0,8);
+  var titleEl = document.getElementById('wzTitle');
+  var pl = STATE.prefillFrom;
+  var rec = {
+    kind:'sourcing', id: srId,
+    title: pl ? pl.title : ((titleEl && titleEl.value.trim()) || 'Sourcing request — just submitted'),
+    owner: PERSONA.name,
+    segment: pl ? pl.segment : 'Canadian Banking Technology Solutions',
+    bu: pl ? pl.bu : 'AI Technology',
+    spend: STATE.spend || 0,
+    vendor: pl ? pl.vendor : 'TBD',
+    startDate: pl ? pl.startDate : '', endDate: pl ? pl.endDate : '',
+    pipelineId: pl ? pl.id : null,
+    aribaId: aribaId,
+    status:'Awaiting Finance review', submitted: TODAY,
+    assignedFinance:'Melissa Tran',
+    progress:[{name:'Draft', state:'done', date:TODAY},{name:'Submitted', state:'done', date:TODAY},{name:'Finance Review', state:'current', date:null},{name:'Decision', state:'todo', date:null}]
+  };
+  REQUESTS.unshift(rec);
+  if(pl){ pl.convertedSr = srId; }
+  window.LAST_SR_ID = srId;
+
+  document.getElementById('submittedSub').innerHTML =
+    '<b>' + srId + '</b> — ' + rec.title + ' is submitted and moving through the funding approval workflow.';
+  document.getElementById('submittedTimelineWrap').innerHTML = progressStripHtml(rec);
+  document.getElementById('submittedAribaNote').innerHTML =
+    '<b>Created in Ariba at the same time:</b> downstream intake <b>' + aribaId + '</b> was generated for this sourcing request. ' +
+    (pl ? 'Linked pipeline: <b>' + pl.id + '</b>. Once Finance approves AND you have the executed Ariba record, the final step is the <b>SPID</b> intake (SPID tab).' : 'Track the funding approval from My Requests.');
+  STATE.prefillFrom = null;
+  goTo('submitted');
+}
+
+/* Sourcing-request progress strip (Draft → Submitted → Finance Review → Decision) */
+function progressStripHtml(sr){
+  return '<div class="timeline">' + sr.progress.map(function(p){
+    var node = p.state === 'done' ? '&#10003;' : (p.state === 'current' ? '&#9679;' : '');
+    var sub = p.state === 'done' ? 'Complete' : (p.state === 'current' ? 'In progress' : 'Waiting');
+    return '<div class="tl-step ' + p.state + '"><div class="tl-line"></div><div class="tl-node">' + node + '</div>' +
+      '<div class="tl-lbl">' + p.name + '</div><div class="tl-sub">' + sub + '</div>' +
+      (p.date ? '<div class="tl-date">' + fmtDate(p.date) + '</div>' : '') + '</div>';
+  }).join('') + '</div>';
+}
+
+/* ============================================================
+   SPID — post-approval validation intake (final step)
+============================================================ */
+function renderSpidStart(){
+  STATE.spidValidated = null;
+  var el = document.getElementById('spidContent');
+  el.innerHTML =
+    '<div class="form-card" style="max-width:860px;"><h2 class="purple-accent">Step 1 — Validate your prerequisites</h2>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Approved Pipeline number <span class="req">*</span></label>' +
+    '<input class="fld" id="spidPlInput" placeholder="e.g. PL-79310" value="PL-79310">' +
+    '<div class="help">Checked against the pipeline table — must exist AND be fully approved (final SEVP sign-off).</div>' +
+    '<div id="spidPlMsg"></div></div>' +
+    '<div class="field"><label>USFF intake number or Ariba SR number <span class="req">*</span></label>' +
+    '<input class="fld" id="spidSrInput" placeholder="e.g. SR-1029 or SR5208413977" value="SR-1029">' +
+    '<div class="help">Both carry the same record — enter either. Must be approved (funding confirmed).</div>' +
+    '<div id="spidSrMsg"></div></div>' +
+    '</div>' +
+    '<button class="btn btn-primary" onclick="spidValidate()">Validate &amp; continue →</button>' +
+    '</div>';
+}
+
+function spidValidate(){
+  var plVal = document.getElementById('spidPlInput').value.trim().toUpperCase();
+  var srVal = document.getElementById('spidSrInput').value.trim().toUpperCase();
+  var plMsg = document.getElementById('spidPlMsg');
+  var srMsg = document.getElementById('spidSrMsg');
+  var ok = true;
+
+  var pl = findReq(plVal);
+  if(!pl || pl.kind !== 'pipeline'){
+    plMsg.innerHTML = '<div class="disc-note">✕ Pipeline not found in the pipeline table.</div>'; ok = false;
+  } else if(pl.status !== 'Approved'){
+    plMsg.innerHTML = '<div class="disc-note">✕ ' + pl.id + ' exists but is NOT fully approved yet (currently: ' + pl.status + '). SPID is only available after final SEVP sign-off.</div>'; ok = false;
+  } else {
+    plMsg.innerHTML = '<div class="help" style="color:var(--td-green-mid);font-weight:700;">✓ ' + pl.id + ' — fully approved ' + fmtDate(pl.approvals[4].date) + '</div>';
+  }
+
+  var sr = null;
+  REQUESTS.forEach(function(r){
+    if(r.kind === 'sourcing' && (r.id.toUpperCase() === srVal || (r.aribaId || '').toUpperCase() === srVal)){ sr = r; }
+  });
+  if(!sr){
+    srMsg.innerHTML = '<div class="disc-note">✕ No USFF intake / Ariba SR found with that number.</div>'; ok = false;
+  } else if(sr.status !== 'Approved'){
+    srMsg.innerHTML = '<div class="disc-note">✕ ' + sr.id + ' exists but funding approval is not complete (currently: ' + sr.status + ').</div>'; ok = false;
+  } else {
+    srMsg.innerHTML = '<div class="help" style="color:var(--td-green-mid);font-weight:700;">✓ ' + sr.id + ' / Ariba ' + sr.aribaId + ' — approved ' + fmtDate(sr.progress[3].date) + '</div>';
+  }
+
+  if(!ok){ return; }
+  STATE.spidValidated = { pl: pl, sr: sr };
+  renderSpidForm();
+}
+
+/* Compare pipeline vs USFF/Ariba data — anything that CHANGED is flagged red */
+function spidDiscrepancies(pl, sr){
+  var d = [];
+  if(Number(pl.spend) !== Number(sr.spend)){
+    d.push({field:'Contract value', pipeline:fmtSpend(pl.spend), current:fmtSpend(sr.spend),
+      note:'Ariba/USFF value differs from the amount approved on the pipeline.'});
+  }
+  if(pl.vendor !== sr.vendor){
+    d.push({field:'Vendor', pipeline:pl.vendor, current:sr.vendor, note:'Vendor changed since pipeline approval.'});
+  }
+  if(pl.startDate !== sr.startDate){
+    d.push({field:'Contract start date', pipeline:fmtDate(pl.startDate), current:fmtDate(sr.startDate),
+      note:'Start date moved since pipeline approval.'});
+  }
+  return d;
+}
+
+function renderSpidForm(){
+  var pl = STATE.spidValidated.pl, sr = STATE.spidValidated.sr;
+  var discs = spidDiscrepancies(pl, sr);
+  var el = document.getElementById('spidContent');
+
+  var carried =
+    '<div class="form-card" style="margin-top:18px;"><h2>Step 2 — Carried over (nothing to re-type)</h2>' +
+    '<p class="page-sub" style="margin-bottom:14px;">Every overlapping field is pulled from the approved pipeline + USFF/Ariba record. Read-only.</p>' +
+    '<div class="field-row3">' +
+    spidRecField('Requestor', sr.owner) + spidRecField('Segment / BU', sr.segment + ' · ' + sr.bu) + spidRecField('Cost Centre', pl.costCentre) +
+    '</div><div class="field-row3">' +
+    spidRecField('Engagement Title', sr.title) + spidRecField('Funding Type', pl.fundingType) + spidRecField('Ariba SR #', sr.aribaId) +
+    '</div><div class="field-row3">' +
+    spidDiscField('Vendor', sr.vendor, discs, 'Vendor') +
+    spidDiscField('Contract value (CAD)', fmtSpend(sr.spend), discs, 'Contract value') +
+    spidDiscField('Contract start date', fmtDate(sr.startDate), discs, 'Contract start date') +
+    '</div>' +
+    (discs.length ?
+      '<div class="conditional-box danger"><b>' + discs.length + ' discrepancy(ies) vs the approved pipeline — highlighted in red above.</b> ' +
+      discs.map(function(d){ return d.field + ': pipeline approved <b>' + d.pipeline + '</b> → now <b>' + d.current + '</b>.'; }).join(' ') +
+      ' These are surfaced to the Signing Party approvers automatically; if material, the pipeline may need to be re-approved.</div>'
+      : '<div class="conditional-box green"><b>✓ No discrepancies</b> — the Ariba/USFF record matches what the pipeline approved.</div>') +
+    '</div>';
+
+  var netNew =
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">Step 3 — Net-new questions only ' + dTag() + '</h2>' +
+    '<p class="page-sub" style="margin-bottom:14px;">Only what the USFF intake did NOT already capture. (In today\'s SPID PowerApp the user re-types the whole form — this removes that redundancy.)</p>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Vendor Manager <span class="req">*</span></label><select class="fld"><option>Search by name...</option></select></div>' +
+    '<div class="field"><label>Type of Artifacts <span class="req">*</span></label><select class="fld"><option>SOW (Statement of Work)</option><option>Work Order</option><option>Change Request / Change Order</option><option>License Renewal</option><option>Amendment to an Existing Agreement</option><option>Master Agreement</option></select></div>' +
+    '<div class="field"><label>SOW Type <span class="req">*</span></label><select class="fld"><option>Fixed</option><option>T&amp;M</option></select></div>' +
+    '</div>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>CW # <span class="req">*</span></label><input class="fld"></div>' +
+    '<div class="field"><label>SOW Engagement Types <span class="req">*</span></label><select class="fld"><option>Delivery</option><option>Non-Delivery</option><option>Other</option></select></div>' +
+    '<div class="field"><label>SSG Approval Date</label><input class="fld" type="date"></div>' +
+    '</div>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Contract Value (source currency) <span class="req">*</span></label><input class="fld" type="number" id="spidCv" value="' + sr.spend + '" oninput="spidCvCheck(' + pl.spend + ')"><div id="spidCvMsg"></div></div>' +
+    '<div class="field"><label>P&amp;L Risk <span class="req">*</span></label><input class="fld" type="number" placeholder="Amount above approved plan"></div>' +
+    '<div class="field"><label>P&amp;L Savings <span class="req">*</span></label><input class="fld" type="number" placeholder="Saved via negotiations"></div>' +
+    '</div>' +
+    '<div class="field-row4">' +
+    '<div class="field"><label>Value of previous engagement</label><input class="fld" type="number"></div>' +
+    '<div class="field"><label>Savings Opportunity</label><input class="fld" type="number"></div>' +
+    '<div class="field"><label>Cost Avoidance <span class="req">*</span></label><input class="fld" type="number"></div>' +
+    '<div class="field"><label>% Change vs previous FY <span class="req">*</span></label><input class="fld" type="number"></div>' +
+    '</div>' +
+    '<div class="grid2">' +
+    '<div class="field"><label>Funding Confirmed By <span class="req">*</span></label><input class="fld" placeholder="GTS Finance contact who confirmed funding"><div class="help">Attach the confirmation email below.</div></div>' +
+    '<div class="field"><label>Submitter Delegate</label><input class="fld" placeholder="Optional — give someone edit access to this SPID"></div>' +
+    '</div>' +
+    '<div class="field"><label>Post Approval Rationale (if applicable)</label><textarea class="fld"></textarea></div>' +
+    '<div class="field"><label>Attachments</label><div style="border:1px dashed var(--line);border-radius:7px;padding:14px;color:var(--ink-faint);font-size:13px;text-align:center;">Drop files here or click to upload</div></div>' +
+    '<div class="field"><label style="display:flex;align-items:center;gap:8px;font-weight:600;"><input type="checkbox" style="width:16px;height:16px;"> I attest that I have attached all the required documents</label></div>' +
+    '<div class="wizard-foot"><button class="btn btn-outline" onclick="renderSpidStart()">&larr; Back</button>' +
+    '<button class="btn btn-primary" onclick="submitSpid()">Submit SPID request →</button></div>' +
+    '</div>';
+
+  el.innerHTML =
+    '<div class="form-card" style="max-width:860px;"><h2 class="purple-accent">Step 1 — Prerequisites validated ✓</h2>' +
+    '<div class="field-row3">' +
+    spidRecField('Pipeline', pl.id + ' — approved ' + fmtDate(pl.approvals[4].date)) +
+    spidRecField('USFF intake', sr.id + ' — approved ' + fmtDate(sr.progress[3].date)) +
+    spidRecField('Ariba SR', sr.aribaId) +
+    '</div></div>' + carried + netNew;
+  window.scrollTo(0,0);
+}
+
+function spidRecField(label, value){
+  return '<div class="field"><label>' + label + '</label><input class="fld locked" value="' + String(value).replace(/"/g,'&quot;') + '" disabled></div>';
+}
+function spidDiscField(label, value, discs, key){
+  var hit = discs.filter(function(d){ return d.field === key; })[0];
+  if(!hit){ return spidRecField(label, value); }
+  return '<div class="field"><label>' + label + ' <span class="tag" style="color:var(--red-text);background:var(--red-bg);border:1px solid var(--red-border);">CHANGED</span></label>' +
+    '<input class="fld locked red-flag" value="' + String(value).replace(/"/g,'&quot;') + '" disabled>' +
+    '<div class="disc-note">Pipeline approved: ' + hit.pipeline + ' — ' + hit.note + '</div></div>';
+}
+function spidCvCheck(plSpend){
+  var v = parseInt(document.getElementById('spidCv').value || '0', 10);
+  var el = document.getElementById('spidCv'), msg = document.getElementById('spidCvMsg');
+  if(v !== plSpend){
+    el.classList.add('red-flag');
+    msg.innerHTML = '<div class="disc-note">Differs from the pipeline-approved amount (' + fmtSpend(plSpend) + ') — flagged to approvers.</div>';
+  } else {
+    el.classList.remove('red-flag');
+    msg.innerHTML = '<div class="help" style="color:var(--td-green-mid);font-weight:700;">✓ Matches the pipeline-approved amount.</div>';
+  }
+}
+
+function submitSpid(){
+  var pl = STATE.spidValidated.pl, sr = STATE.spidValidated.sr;
+  var discs = spidDiscrepancies(pl, sr);
+  var id = 'SPID-' + (2000 + REQUESTS.filter(function(r){ return r.kind === 'spid'; }).length);
+  var rec = {
+    kind:'spid', id:id, title: sr.title, owner: PERSONA.name,
+    segment: sr.segment, bu: sr.bu, spend: sr.spend,
+    pipelineId: pl.id, srId: sr.id, aribaId: sr.aribaId,
+    status:'In review', submitted: TODAY, discrepancies: discs,
+    approvals: plApprovals([['current',null],['todo',null],['todo',null],['todo',null],['todo',null]]),
+    progress:[{name:'Submitted', state:'done', date:TODAY},{name:'Validation', state:'done', date:TODAY},{name:'Signing Party review', state:'current', date:null},{name:'Executed (DocuSign)', state:'todo', date:null}]
+  };
+  REQUESTS.unshift(rec);
+  document.getElementById('spidSubmittedSub').innerHTML =
+    '<b>' + id + '</b> — validated against ' + pl.id + ' and ' + sr.id + ' / Ariba ' + sr.aribaId +
+    (discs.length ? ' with <b style="color:var(--red-text);">' + discs.length + ' flagged discrepancy(ies)</b> for the Signing Party approvers.' : ' with no discrepancies.');
+  document.getElementById('spidSubmittedWrap').innerHTML =
+    '<div class="form-card" style="text-align:left;"><h2 class="alt-accent">SPID progress</h2>' + progressStripHtml(rec) +
+    '<div class="tl-phase-label">Signing Party approval chain — same levels as the pipeline, worked again for contract execution</div>' +
+    apChipRowHtml(rec) + apLegendHtml() +
+    '<div class="rule-note"><span class="icn">i</span><span>After Signing Party approval, contract execution completes in <b>Ariba via DocuSign</b>.</span></div></div>';
+  goTo('spidSubmitted');
+}
+</script>
+<script>
+/* ============================================================
+   MY REQUESTS — ONE dashboard, persona-aware
+============================================================ */
+var TYPE_LABELS = {pipeline:'Pipeline', sourcing:'Sourcing Request', spid:'SPID Request'};
+function typeBadge(kind){
+  return '<span class="type-badge ty-' + kind + '">' + TYPE_LABELS[kind] + '</span>';
+}
+function statusBadgeHtml(status){
+  var cls = 'sb-progress';
+  if(status.indexOf('Approved') === 0 || status === 'Executed'){ cls = 'sb-approved'; }
+  else if(status === 'Declined'){ cls = 'sb-blocked'; }
+  else if(status.indexOf('Skipped') === 0){ cls = 'sb-skipped'; }
+  else if(status === 'Draft'){ cls = 'sb-draft'; }
+  else if(status === 'Info requested'){ cls = 'sb-skipped'; }
+  return '<span class="status-badge ' + cls + '">' + status + '</span>';
+}
+
+function reqCurrentStep(r){
+  if(r.kind === 'pipeline'){
+    if(r.status === 'Approved'){
+      return r.convertedSr
+        ? 'Complete — continued as <span class="id-link" onclick="event.stopPropagation();openRecord(\'' + r.convertedSr + '\')">' + r.convertedSr + '</span>'
+        : '<span class="status-badge sb-staged">Ready to submit in USFF</span>';
+    }
+    if(r.status === 'Declined'){ return 'Declined'; }
+    var cur = r.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    return cur ? ('Pipeline approval — ' + cur.level + ' pending') : 'In approvals';
+  }
+  if(r.kind === 'sourcing'){
+    var c = r.progress.filter(function(p){ return p.state === 'current'; })[0];
+    if(c){ return c.name + (c.name === 'Finance Review' ? ' — awaiting funding approver' : ''); }
+    return r.status === 'Approved' ? 'Funding confirmed — complete' : r.status;
+  }
+  if(r.approvals && r.status === 'In review'){
+    var ca = r.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    if(ca){ return 'Signing Party approvals — ' + ca.level + ' pending'; }
+  }
+  var cs = r.progress.filter(function(p){ return p.state === 'current'; })[0];
+  return cs ? cs.name : r.status;
+}
+
+function renderMyRequests(){
+  if(PERSONA.key === 'finance'){ renderFinanceQueue(); return; }
+  if(PERSONA.key === 'bom'){ renderBomQueue(); return; }
+  renderSubmitterRequests();
+}
+
+/* ---------- Submitter (and admin sees the same personal view) ---------- */
+function renderSubmitterRequests(){
+  document.getElementById('mrTitle').textContent = 'My Requests';
+  document.getElementById('mrSub').innerHTML = 'Everything you own in ONE place — the <b>Type</b> column tells the record types apart: <span class="type-badge ty-pipeline">Pipeline</span> strategic go-ahead approvals, <span class="type-badge ty-sourcing">Sourcing Request</span> the USFF intake (creates the Ariba record + funding approval), and <span class="type-badge ty-spid">SPID Request</span> the final Signing Party validation. When a pipeline is fully approved it flips to <b>“Ready to submit in USFF”</b> — one click continues into the pre-populated sourcing intake.';
+
+  var mine = REQUESTS.filter(function(r){ return r.owner === PERSONA.name || PERSONA.key === 'admin'; });
+  var q = (document.getElementById('mrSearch') && document.getElementById('mrSearch').value || '').toLowerCase();
+  var tf = (document.getElementById('mrTypeFilter') && document.getElementById('mrTypeFilter').value) || '';
+
+  var html =
+    '<div class="dash-toolbar">' +
+    '<input class="fld" id="mrSearch" placeholder="Search requests..." value="' + q + '" oninput="renderSubmitterRequests()">' +
+    '<select class="fld" id="mrTypeFilter" onchange="renderSubmitterRequests()">' +
+    '<option value=""' + (tf===''?' selected':'') + '>All types</option>' +
+    '<option value="pipeline"' + (tf==='pipeline'?' selected':'') + '>Pipeline</option>' +
+    '<option value="sourcing"' + (tf==='sourcing'?' selected':'') + '>Sourcing Request</option>' +
+    '<option value="spid"' + (tf==='spid'?' selected':'') + '>SPID Request</option>' +
+    '</select>' +
+    '<span class="dash-spacer"></span>' +
+    '<button class="btn btn-outline btn-sm" onclick="exportMyRequests(\'csv\')">&#8681; Download CSV</button>' +
+    '<button class="btn btn-primary btn-sm" onclick="exportMyRequests(\'xls\')">&#8681; Download Excel</button>' +
+    '</div>';
+
+  var rows = mine.filter(function(r){
+    if(tf && r.kind !== tf){ return false; }
+    if(q && (r.id + ' ' + r.title + ' ' + TYPE_LABELS[r.kind] + ' ' + r.segment + ' ' + r.bu).toLowerCase().indexOf(q) === -1){ return false; }
+    return true;
+  });
+
+  html += '<div class="dash-count">Showing ' + rows.length + ' of ' + mine.length + ' request(s)' + (PERSONA.key === 'admin' ? ' (admin sees all users)' : '') + ' — click an ID to drill into the record (Status tab first).</div>';
+  html += '<table class="status-table"><tr><th>ID</th><th>Type</th><th>Request</th><th>Segment / BU</th><th>Spend</th><th>Current step</th><th>Status</th><th>Submitted</th></tr>';
+  rows.forEach(function(r){
+    var links = '';
+    if(r.kind === 'sourcing' && r.pipelineId){ links = '<br><span class="help" style="font-size:10.5px;">↳ from <span class="id-link" style="font-weight:600;" onclick="openRecord(\'' + r.pipelineId + '\')">' + r.pipelineId + '</span></span>'; }
+    if(r.kind === 'spid'){ links = '<br><span class="help" style="font-size:10.5px;">↳ ' + r.pipelineId + ' · ' + r.srId + '</span>'; }
+    var staged = r.kind === 'pipeline' && r.status === 'Approved' && !r.convertedSr;
+    html += '<tr' + (staged ? ' style="background:var(--td-green-light);"' : '') + '>' +
+      '<td><span class="id-link" onclick="openRecord(\'' + r.id + '\')">' + r.id + '</span>' + links + '</td>' +
+      '<td>' + typeBadge(r.kind) + '</td>' +
+      '<td>' + r.title + (PERSONA.key === 'admin' ? '<br><span class="help" style="font-size:10.5px;">Owner: ' + r.owner + '</span>' : '') + '</td>' +
+      '<td>' + r.segment + '<br><span class="help" style="font-size:10.5px;">' + r.bu + '</span></td>' +
+      '<td>' + fmtSpend(r.spend) + '</td>' +
+      '<td style="font-size:12px;">' + reqCurrentStep(r) +
+      (staged ? '<br><button class="btn btn-primary btn-sm" style="margin-top:6px;" onclick="startUsffFromPipeline(\'' + r.id + '\')">Continue to USFF intake →</button>' : '') + '</td>' +
+      '<td>' + statusBadgeHtml(r.status) + '</td><td>' + r.submitted + '</td></tr>';
+  });
+  if(!rows.length){ html += '<tr><td colspan="8" style="text-align:center;color:var(--ink-faint);">No requests match the current filters.</td></tr>'; }
+  html += '</table>';
+  html += '<div class="export-note"><span style="flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;">i</span>' +
+    '<span><b>Design decision:</b> when a staged pipeline is continued, the sourcing request appears as a <b>new row</b> (its own record type/ID) linked back to the pipeline — approvals, Ariba and SPID all reference clean separate records, and the pipeline row shows where it went.</span></div>';
+  document.getElementById('mrContent').innerHTML = html;
+}
+
+function exportMyRequests(fmt){
+  var mine = REQUESTS.filter(function(r){ return r.owner === PERSONA.name || PERSONA.key === 'admin'; });
+  var rows = mine.map(function(r){
+    return [r.id, TYPE_LABELS[r.kind], r.title, r.segment, r.bu, r.spend || '', r.status, r.submitted, r.pipelineId || r.convertedSr || '', r.aribaId || ''];
+  });
+  downloadTable('my_requests_export', ['ID','Type','Request','Segment','Business Unit','Spend (CAD)','Status','Submitted','Linked Record','Ariba SR'], rows, fmt, 'My Requests — all types');
+}
+
+/* ---------- Finance Reviewer queue ---------- */
+function renderFinanceQueue(){
+  document.getElementById('mrTitle').textContent = 'My Requests — pending your review';
+  document.getElementById('mrSub').innerHTML = 'As a Finance funding approver you only see sourcing requests routed to you by the <b>Finance Partner Matrix</b>. Approve, request more info, or decline — each decision is stamped with today\'s date on the record.';
+
+  var queue = REQUESTS.filter(function(r){
+    return r.kind === 'sourcing' && r.assignedFinance === PERSONA.name && r.status === 'Awaiting Finance review';
+  });
+  var decided = REQUESTS.filter(function(r){
+    return r.kind === 'sourcing' && r.assignedFinance === PERSONA.name && r.status !== 'Awaiting Finance review';
+  });
+
+  var html = '';
+  if(queue.length){
+    html += '<div class="review-banner"><div class="rb-head"><div class="rb-icon">&#10003;</div><div>' +
+      '<h3>Pending Your Review</h3><p>' + queue.length + ' procurement request(s) require your approval, rejection, or revision request.</p></div></div></div>';
+  } else {
+    html += '<div class="note-banner"><span>&#10003;</span><span><b>Queue clear</b> — no requests awaiting your funding review right now.</span></div>';
+  }
+
+  html += '<table class="status-table"><tr><th>ID</th><th>Request</th><th>Requester</th><th>Segment / BU</th><th>Estimated cost</th><th>Submitted</th><th>Actions</th></tr>';
+  queue.forEach(function(r){
+    html += '<tr><td><span class="id-link" onclick="openRecord(\'' + r.id + '\')">' + r.id + '</span></td>' +
+      '<td>' + r.title + '<br><span class="help" style="font-size:10.5px;">Ariba: ' + r.aribaId + (r.pipelineId ? ' · from ' + r.pipelineId : '') + '</span></td>' +
+      '<td>' + r.owner + '</td>' +
+      '<td>' + r.segment + '<br><span class="help" style="font-size:10.5px;">' + r.bu + '</span></td>' +
+      '<td>' + fmtSpend(r.spend) + ' CAD</td><td>' + r.submitted + '</td>' +
+      '<td><div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+      '<button class="btn btn-approve btn-sm" onclick="financeAction(\'' + r.id + '\',\'approve\')">&#10004; Confirm Funding</button>' +
+      '<button class="btn btn-info btn-sm" onclick="financeAction(\'' + r.id + '\',\'info\')">&#8635; Request More Info</button>' +
+      '<button class="btn btn-decline btn-sm" onclick="financeAction(\'' + r.id + '\',\'decline\')">&#10006; Decline Funding</button>' +
+      '</div></td></tr>';
+  });
+  if(!queue.length){ html += '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);">Nothing pending.</td></tr>'; }
+  html += '</table>';
+
+  if(decided.length){
+    html += '<div class="section-divider"><span>Recently decided by you</span><div class="line"></div></div>';
+    html += '<table class="status-table"><tr><th>ID</th><th>Request</th><th>Decision</th><th>Decision date</th></tr>';
+    decided.forEach(function(r){
+      var dec = r.progress[3];
+      html += '<tr class="row-disabled"><td><span class="id-link" onclick="openRecord(\'' + r.id + '\')">' + r.id + '</span></td><td>' + r.title + '</td>' +
+        '<td>' + statusBadgeHtml(r.status) + '</td><td>' + (dec && dec.date ? fmtDate(dec.date) : '—') + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  document.getElementById('mrContent').innerHTML = html;
+}
+
+function financeAction(id, action){
+  var r = findReq(id);
+  if(!r){ return; }
+  if(action === 'approve'){
+    r.status = 'Approved';
+    r.progress[2] = {name:'Finance Review', state:'done', date:TODAY};
+    r.progress[3] = {name:'Decision', state:'done', date:TODAY};
+  } else if(action === 'decline'){
+    r.status = 'Declined';
+    r.progress[2] = {name:'Finance Review', state:'done', date:TODAY};
+    r.progress[3] = {name:'Decision', state:'current', date:TODAY};
+  } else {
+    r.status = 'Info requested';
+  }
+  renderFinanceQueue();
+}
+
+/* ---------- BOM Lead queue (pipeline approvals) ---------- */
+function bomAllowedLevels(){
+  var allowed = {};
+  MATRIX.forEach(function(m){
+    if(m.delegate === PERSONA.name && m.bomLead){ allowed[m.level + '|' + m.segment] = true; }
+  });
+  return allowed;
+}
+function bomCanAction(pl){
+  var cur = pl.approvals.filter(function(a){ return a.state === 'current'; })[0];
+  if(!cur){ return false; }
+  var allowed = bomAllowedLevels();
+  return allowed[cur.level + '|' + pl.segment] || allowed[cur.level + '|All segments'];
+}
+
+function renderBomQueue(){
+  document.getElementById('mrTitle').textContent = 'My Requests — pipeline approvals for your levels';
+  document.getElementById('mrSub').innerHTML = 'As a <b>BOM Lead</b> you only see pipeline requests sitting at a level you manage (per the Financial Approval Matrix). Record the outcome here or via the Agenda Builder — either way the <b>date the approval is entered is stamped on the record</b>. Pipelines already fully approved are disabled so you know exactly what belongs on the next agenda.';
+
+  var actionable = [], done = [];
+  REQUESTS.forEach(function(r){
+    if(r.kind !== 'pipeline'){ return; }
+    if(r.status === 'Approved'){ if(r.segment === 'Canadian Banking Technology Solutions'){ done.push(r); } return; }
+    if(r.status === 'Declined'){ return; }
+    if(bomCanAction(r)){ actionable.push(r); }
+  });
+
+  var html = '';
+  if(actionable.length){
+    html += '<div class="review-banner" style="background:#f4e9fb;border-color:#d8bce8;"><div class="rb-head"><div class="rb-icon" style="color:#5b2c8a;">&#10003;</div><div>' +
+      '<h3>Pending Your Approval</h3><p style="color:#5b2c8a;">' + actionable.length + ' pipeline request(s) are at a level you manage (' +
+      Object.keys(bomAllowedLevels()).map(function(k){ return k.split('|')[0]; }).filter(function(v,i,a){ return a.indexOf(v)===i; }).join(', ') + ').</p></div></div></div>';
+  }
+
+  html += '<table class="status-table"><tr><th>Pipeline ID</th><th>Title</th><th>Requestor</th><th>Spend</th><th>Pending level</th><th>Chain so far</th><th>Actions</th></tr>';
+  actionable.forEach(function(r){
+    var cur = r.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    var doneChips = r.approvals.filter(function(a){ return a.state === 'done'; })
+      .map(function(a){ return a.level + ' ✓ ' + fmtDate(a.date); }).join('<br>') || '—';
+    html += '<tr><td><span class="id-link" onclick="openRecord(\'' + r.id + '\')">' + r.id + '</span>' +
+      (r.mcFlag ? '<br><span class="bom-badge" title="Management Consulting review required — flag visible to admins/BOM leads only">MC flag</span>' : '') + '</td>' +
+      '<td>' + r.title + '</td><td>' + r.owner + '</td><td>' + fmtSpend(r.spend) + '</td>' +
+      '<td><b>' + (cur ? cur.level : '—') + '</b></td>' +
+      '<td style="font-size:11px;color:var(--ink-soft);">' + doneChips + '</td>' +
+      '<td><textarea class="fld" id="bomCm_' + r.id + '" placeholder="Approval comments..." style="min-height:38px;margin-bottom:6px;"></textarea>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+      '<button class="btn btn-approve btn-sm" onclick="bomAction(\'' + r.id + '\',\'approve\')">&#10004; Approve</button>' +
+      '<button class="btn btn-decline btn-sm" onclick="bomAction(\'' + r.id + '\',\'decline\')">&#10006; Decline</button>' +
+      '<button class="btn btn-outline btn-sm" onclick="openRecord(\'' + r.id + '\')">Open record</button>' +
+      '</div></td></tr>';
+  });
+  if(!actionable.length){ html += '<tr><td colspan="7" style="text-align:center;color:var(--ink-faint);">No pipelines pending at your levels.</td></tr>'; }
+  html += '</table>';
+
+  if(done.length){
+    html += '<div class="section-divider"><span>Already fully approved — nothing to action (excluded from the next agenda)</span><div class="line"></div></div>';
+    html += '<table class="status-table">';
+    done.forEach(function(r){
+      html += '<tr class="row-disabled"><td style="width:120px;"><span class="id-link" onclick="openRecord(\'' + r.id + '\')">' + r.id + '</span></td>' +
+        '<td>' + r.title + '</td><td style="width:180px;">' + statusBadgeHtml('Approved') + ' ' + fmtDate(r.approvals[4].date) + '</td></tr>';
+    });
+    html += '</table>';
+  }
+  document.getElementById('mrContent').innerHTML = html;
+}
+
+function advancePipeline(r, result, comment){
+  var idx = -1;
+  r.approvals.forEach(function(a, i){ if(a.state === 'current'){ idx = i; } });
+  if(idx === -1){ return; }
+  if(result === 'approve'){
+    r.approvals[idx] = {level: r.approvals[idx].level, state:'done', date:TODAY, comment: comment || ''};
+    if(idx + 1 < r.approvals.length){
+      r.approvals[idx+1].state = 'current';
+    } else {
+      r.status = 'Approved';
+    }
+  } else if(result === 'decline'){
+    r.approvals[idx].state = 'rejected';
+    r.approvals[idx].date = TODAY;
+    r.approvals[idx].comment = comment || '';
+    r.status = 'Declined';
+  }
+}
+
+function bomAction(id, action){
+  var r = findReq(id);
+  var cm = document.getElementById('bomCm_' + id);
+  advancePipeline(r, action === 'approve' ? 'approve' : 'decline', cm ? cm.value.trim() : '');
+  renderBomQueue();
+}
+
+/* ============================================================
+   RECORD DRILL-DOWN — Status tab first, persona-aware
+============================================================ */
+var REC = { rec: null, tab: 0 };
+var REC_TABS = ['Status','General Info','Intake Details','Justification','Attachments'];
+
+function openRecord(id){
+  var rec = findReq(id);
+  if(!rec){ return; }
+  REC = { rec: rec, tab: 0 };
+  document.getElementById('recCrumb').textContent = id;
+  document.getElementById('recTitle').textContent = TYPE_LABELS[rec.kind] + ' ' + id + ' — ' + rec.title;
+  goTo('record');
+  renderRecord();
+}
+
+function recSetTab(i){ REC.tab = i; renderRecord(); }
+function recField(label, value){
+  return '<div class="field"><label>' + label + '</label><input class="fld locked" value="' + String(value === null || value === undefined || value === '' ? '—' : value).replace(/"/g,'&quot;') + '" disabled></div>';
+}
+
+function renderRecord(){
+  var rec = REC.rec;
+  var banner = document.getElementById('recBanner');
+  banner.innerHTML = '';
+
+  // Staged pipeline: the "continue into USFF" call to action lives on the record too
+  if(rec.kind === 'pipeline' && rec.status === 'Approved' && !rec.convertedSr && (rec.owner === PERSONA.name || PERSONA.key === 'admin')){
+    banner.innerHTML = '<div class="staged-banner"><div class="sbn-txt">' +
+      '<h3>Pipeline fully approved — ready to submit in USFF</h3>' +
+      '<p>All ' + rec.approvals.length + ' approval levels are complete (final sign-off ' + fmtDate(rec.approvals[4].date) + '). Continue into the USFF sourcing intake — your pipeline answers carry over automatically.</p></div>' +
+      '<button class="btn btn-primary" onclick="startUsffFromPipeline(\'' + rec.id + '\')">Continue to USFF intake →</button></div>';
+  }
+  // Finance reviewer opening a sourcing record that's assigned to them
+  if(rec.kind === 'sourcing' && PERSONA.key === 'finance' && rec.status === 'Awaiting Finance review'){
+    banner.innerHTML = '<div class="review-banner"><div class="rb-head"><div class="rb-icon">&#10003;</div><div>' +
+      '<h3>Pending Your Review</h3><p>This procurement request requires your approval, rejection, or revision request.</p></div></div>' +
+      '<div class="rb-actions">' +
+      '<button class="btn btn-approve" onclick="financeAction(\'' + rec.id + '\',\'approve\');renderRecord();">&#10004; Confirm Funding</button>' +
+      '<button class="btn btn-info" onclick="financeAction(\'' + rec.id + '\',\'info\');renderRecord();">&#8635; Request More Info</button>' +
+      '<button class="btn btn-decline" onclick="financeAction(\'' + rec.id + '\',\'decline\');renderRecord();">&#10006; Decline Funding</button>' +
+      '</div></div>';
+  }
+
+  document.getElementById('recTabs').innerHTML = REC_TABS.map(function(t, i){
+    return '<button class="' + (i === REC.tab ? 'on' : '') + '" onclick="recSetTab(' + i + ')">' + t + '</button>';
+  }).join('');
+
+  var html = '';
+  if(REC.tab === 0){ html = recStatusTab(rec); }
+  else if(REC.tab === 1){
+    html = '<div class="form-card"><h2>General info</h2><div class="field-row3">' +
+      recField('Record ID', rec.id) + recField('Type', TYPE_LABELS[rec.kind]) + recField('Submitted', rec.submitted) +
+      '</div><div class="field-row3">' +
+      recField('Segment', rec.segment) + recField('Business Unit', rec.bu) + recField('Requestor', rec.owner + ' (auto via SSO)') +
+      '</div></div>';
+  }
+  else if(REC.tab === 2){
+    var linked = rec.kind === 'pipeline' ? (rec.convertedSr || '—')
+      : (rec.kind === 'sourcing' ? (rec.pipelineId || '— (no pipeline — under $100K or non-GTS)') : rec.pipelineId + ' · ' + rec.srId);
+    html = '<div class="form-card"><h2>Intake details</h2><div class="field-row3">' +
+      recField('Title', rec.title) + recField('Spend (CAD)', fmtSpend(rec.spend)) + recField('Vendor', rec.vendor || '—') +
+      '</div><div class="field-row3">' +
+      recField('Contract start', rec.startDate || '—') + recField('Contract end', rec.endDate || '—') +
+      recField(rec.kind === 'pipeline' ? 'Continued as (SR)' : 'Linked record(s)', linked) +
+      '</div>' +
+      (rec.aribaId ? '<div class="field-row3">' + recField('Ariba SR #', rec.aribaId) + '</div>' : '') +
+      '<div class="help">Values are locked from the original submission (wrong info pre-approval = full restart; a decline unlocks editing without a restart).</div></div>';
+  }
+  else if(REC.tab === 3){
+    html = '<div class="form-card"><h2>Justification</h2>' +
+      '<div class="field"><label>Detailed justification</label><textarea class="fld" disabled>' + rec.title + ' — justification captured at intake (locked).</textarea></div></div>';
+  }
+  else {
+    html = '<div class="form-card"><h2>Attachments / notes</h2>' +
+      '<div class="help">funding_confirmation.msg · approved_business_case.pdf (locked to the record; agenda-outcome attachments are also filed here).</div></div>';
+  }
+  document.getElementById('recContent').innerHTML = html;
+}
+
+function recStatusTab(rec){
+  var html = '<div class="form-card"><h2>Approval status</h2>';
+
+  if(rec.kind === 'pipeline'){
+    var cur = rec.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    html += '<div class="conditional-box purple" style="margin-bottom:6px;"><b>' + rec.id + '</b> — PipelineLevel: <b>' +
+      (cur ? cur.level : (rec.status === 'Approved' ? 'Complete' : '—')) + '</b> · PipelineStatus: <b>' + rec.status + '</b> · PipelineState: <b>' +
+      (rec.status === 'Approved' || rec.status === 'Declined' ? 'Closed' : 'Open') + '</b></div>';
+    html += apChipRowHtml(rec) + apLegendHtml();
+    var comments = rec.approvals.filter(function(a){ return a.comment; })
+      .map(function(a){ return a.level + ' (' + fmtDate(a.date) + '): “' + a.comment + '”'; }).join('\n');
+    html += '<div class="field"><label>Approval comments</label><textarea class="fld" disabled placeholder="Comments recorded at each agenda outcome appear here.">' + (comments || '') + '</textarea></div>';
+    html += '<div class="help">Pipeline approvals differ from USFF funding approvals: the full titled-approver table applies AND the <b>date each approval was entered is stamped under its bubble</b>. Interim approvals live on BOM agendas; only the final SEVP approval closes the record.</div>';
+
+    // ADMIN-ONLY: the Management Consulting routing flag (hidden from submitters)
+    if(rec.mcFlag && (PERSONA.key === 'admin' || PERSONA.key === 'bom')){
+      html += '<div class="conditional-box danger" style="margin-top:12px;"><b>Management Consulting flag — visible to admins &amp; BOM Leads only.</b> Triage answers matched the MC criteria (≥$100K, in-scope services, no exemption). Route this request for MC review alongside the pipeline chain. The submitter does not see this flag.</div>';
+    }
+    // Demo helper: let the walkthrough fast-forward the remaining approvals
+    if(rec.status === 'In approvals' && (rec.owner === PERSONA.name || PERSONA.key === 'admin')){
+      html += '<div style="margin-top:12px;"><button class="btn btn-outline btn-sm" onclick="demoFastForward(\'' + rec.id + '\')">Demo only: simulate remaining approvals</button>' +
+        '<span class="help" style="margin-left:8px;">stamps today\'s date on each remaining level so you can experience the staged hand-off</span></div>';
+    }
+  }
+
+  else if(rec.kind === 'sourcing'){
+    html += progressStripHtml(rec);
+    html += '<div class="conditional-box green" style="margin-top:8px;"><b>Created in Ariba:</b> downstream intake <b>' + rec.aribaId + '</b> was generated when this request was submitted — sourcing continues there in parallel with the funding approval.</div>';
+    if(rec.pipelineId){
+      html += '<div class="conditional-box purple"><b>From pipeline ' + rec.pipelineId + '</b> — this sourcing request was created from the staged pipeline hand-off; the pipeline record links here.</div>';
+    }
+    if(rec.status === 'Approved'){
+      html += '<div class="conditional-box"><b>Next step (GTS &gt;$100K flows):</b> once the Ariba record is executed, complete the final <b>SPID</b> intake from the SPID tab — it validates against ' + (rec.pipelineId || 'your pipeline') + ' and this request, and only asks net-new questions.</div>';
+    }
+  }
+
+  else { // spid
+    html += progressStripHtml(rec);
+    if(rec.approvals){
+      html += '<div class="tl-phase-label">Signing Party approval chain — same levels as the pipeline, retrieved again for contract execution</div>';
+      html += apChipRowHtml(rec) + apLegendHtml();
+    }
+    html += '<div class="conditional-box purple"><b>Validated against:</b> ' + rec.pipelineId + ' (pipeline) · ' + rec.srId + ' (USFF intake) · ' + rec.aribaId + ' (Ariba).</div>';
+    if(rec.discrepancies && rec.discrepancies.length){
+      html += '<div class="conditional-box danger"><b>' + rec.discrepancies.length + ' discrepancy(ies) flagged at submission:</b> ' +
+        rec.discrepancies.map(function(d){ return d.field + ' — pipeline: ' + d.pipeline + ' → current: ' + d.current; }).join(' · ') + '</div>';
+    }
+    html += '<div class="help">The SPID chain repeats the pipeline levels (VP → SVP → Finance AVP → Finance VP → SEVP) for contract-execution authorization — dates stamp under each bubble as they are entered. After the final SEVP approval, execution completes in Ariba via DocuSign.</div>';
+    if(rec.status === 'In review' && rec.approvals && (rec.owner === PERSONA.name || PERSONA.key === 'admin')){
+      html += '<div style="margin-top:12px;"><button class="btn btn-outline btn-sm" onclick="demoFastForward(\'' + rec.id + '\')">Demo only: simulate remaining approvals</button></div>';
+    }
+  }
+
+  html += '</div>';
+  return html;
+}
+
+function demoFastForward(id){
+  var r = findReq(id);
+  var guard = 0;
+  while(r.status !== 'Approved' && guard < 10){
+    advancePipeline(r, 'approve', 'Demo — simulated approval');
+    guard++;
+  }
+  if(r.kind === 'spid' && r.status === 'Approved'){
+    r.status = 'Approved — awaiting DocuSign';
+    r.progress[2] = {name:'Signing Party review', state:'done', date:TODAY};
+    r.progress[3] = {name:'Executed (DocuSign)', state:'current', date:null};
+  }
+  renderRecord();
+}
+
+/* ============================================================
+   FILE DOWNLOAD HELPERS (CSV / Excel-openable HTML)
+============================================================ */
+function csvEscape(v){ v = (v === null || v === undefined) ? '' : String(v); return '"' + v.replace(/"/g,'""') + '"'; }
+function downloadFile(filename, mime, content){
+  var blob = new Blob([content], {type: mime});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function downloadTable(baseName, headers, rows, fmt, sheetTitle){
+  if(fmt === 'csv'){
+    var lines = [headers.map(csvEscape).join(',')];
+    rows.forEach(function(r){ lines.push(r.map(csvEscape).join(',')); });
+    downloadFile(baseName + '.csv', 'text/csv;charset=utf-8', '﻿' + lines.join('\r\n'));
+  } else {
+    var esc = function(c){ return (c === null || c === undefined) ? '' : String(c).replace(/&/g,'&amp;').replace(/</g,'&lt;'); };
+    var html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>' +
+      (sheetTitle ? '<h3>' + esc(sheetTitle) + '</h3>' : '') +
+      '<table border="1"><tr>' + headers.map(function(h){ return '<th>' + esc(h) + '</th>'; }).join('') + '</tr>' +
+      rows.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('') +
+      '</table></body></html>';
+    downloadFile(baseName + '.xls', 'application/vnd.ms-excel', html);
+  }
+}
+</script>
+<script>
+/* ============================================================
+   ADMIN — single tab, AD-group aware.
+   USFF-Admins  → USFF Admin (finance partner matrix, users, config)
+   EMS-Admins   → Agenda Builder (BOM) + EMS Admin (approval matrix, reference & bulk loads)
+   BOM Leads    → Agenda Builder only (access granted via the matrix BOM flag)
+============================================================ */
+function adminTabsForPersona(){
+  if(PERSONA.key === 'admin'){
+    return [['agenda','Agenda Builder (BOM)'],['emsadmin','EMS Admin'],['usffadmin','USFF Admin']];
+  }
+  if(PERSONA.key === 'bom'){
+    return [['agenda','Agenda Builder (BOM)']];
+  }
+  return [];
+}
+
+function renderAdmin(){
+  var tabs = adminTabsForPersona();
+  var sub = document.getElementById('adminSub');
+  var groupsEl = document.getElementById('adminGroups');
+
+  if(!tabs.length){
+    document.getElementById('adminSubnav').innerHTML = '';
+    groupsEl.innerHTML = '';
+    sub.textContent = '';
+    document.getElementById('adminContent').innerHTML =
+      '<div class="note-banner"><span>&#9888;</span><span><b>No admin access</b> — your account is not in the USFF-Admins or EMS-Admins AD group, and you have no BOM Lead flag in the Financial Approval Matrix.</span></div>';
+    return;
+  }
+
+  if(PERSONA.key === 'admin'){
+    sub.innerHTML = 'One Admin tab for everyone — what you see inside is decided by your <b>AD group membership</b>, checked at sign-in.';
+    groupsEl.innerHTML = '<span class="ad-group-pill">AD: USFF-Admins</span> <span class="ad-group-pill" style="margin-left:6px;">AD: EMS-Admins</span>' +
+      '<span class="help" style="margin-left:10px;">' + PERSONA.name + ' is in both groups, so both admin areas are visible.</span>';
+  } else {
+    sub.innerHTML = 'You have <b>BOM Lead</b> access (granted via the Financial Approval Matrix) — the Agenda Builder is available. The EMS Admin and USFF Admin areas require the corresponding AD groups.';
+    groupsEl.innerHTML = '<span class="ad-group-pill" style="background:#f4e9fb;color:#5b2c8a;border-color:#d8bce8;">BOM Lead — via Approval Matrix</span>';
+  }
+
+  if(!STATE.adminTab || !tabs.some(function(t){ return t[0] === STATE.adminTab; })){
+    STATE.adminTab = tabs[0][0];
+  }
+  document.getElementById('adminSubnav').innerHTML = tabs.map(function(t){
+    return '<a class="' + (STATE.adminTab === t[0] ? 'on' : '') + '" onclick="setAdminTab(\'' + t[0] + '\')">' + t[1] + '</a>';
+  }).join('');
+
+  if(STATE.adminTab === 'agenda'){ renderAgendaBuilder(); }
+  else if(STATE.adminTab === 'emsadmin'){ renderEmsAdmin(); }
+  else { renderUsffAdmin(); }
+}
+
+function setAdminTab(t){ STATE.adminTab = t; renderAdmin(); }
+
+/* ============================================================
+   AGENDA BUILDER — its own component, robust:
+   Segment → Level → BU → gallery shows AUTOMATICALLY with
+   approve / decline / comment / open-record per pipeline,
+   approved items disabled, Generate Agenda (Excel) at the top.
+============================================================ */
+var AB = { segment:'', level:'', bu:'' };
+
+function abAllowedLevels(segment){
+  var allowed = {};
+  MATRIX.forEach(function(m){
+    var isMine = (PERSONA.key === 'admin') || (m.delegate === PERSONA.name && m.bomLead);
+    if(isMine && (m.segment === segment || m.segment === 'All segments')){ allowed[m.level] = true; }
+  });
+  if(PERSONA.key === 'admin'){ PL_LEVELS.forEach(function(l){ allowed[l] = true; }); }
+  return allowed;
+}
+
+function renderAgendaBuilder(){
+  var html =
+    '<div class="form-card"><h2 class="purple-accent">Agenda Builder <span class="tag new">BOM Leads only</span> <span class="bom-badge">signed in as ' + PERSONA.name + '</span></h2>' +
+    '<p class="page-sub" style="margin-bottom:16px;">Pick Segment → Level → Business Unit and the matching pipeline requests appear <b>immediately</b> — approve, decline or comment right here, drill into any record, or generate the agenda Excel for the meeting. The levels you can work are controlled by the Financial Approval Matrix.</p>' +
+    '<div class="field-row3" style="max-width:960px;">' +
+    '<div class="field"><label>1. Segment <span class="req">*</span></label>' +
+    '<select class="fld" id="abSegment" onchange="abOnChange()"><option value="">Select a segment...</option>' +
+    SHORT_SEGMENTS.map(function(s){ return '<option' + (AB.segment === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') + '</select></div>' +
+    '<div class="field" id="abLevelWrap"></div>' +
+    '<div class="field" id="abBuWrap"></div>' +
+    '</div>' +
+    '<div id="abGallery"></div>' +
+    '<div class="section-divider" id="abGeneratedDivider" style="display:' + (AGENDAS.length ? 'flex' : 'none') + ';"><span>Generated agendas</span><div class="line"></div></div>' +
+    '<div id="abGeneratedList"></div>' +
+    '</div>' +
+    '<div class="export-note" style="margin-top:16px;"><span style="flex-shrink:0;width:14px;height:14px;border-radius:50%;background:var(--td-green-light);color:var(--td-green-mid);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;margin-top:1px;">i</span>' +
+    '<span><b>Remember:</b> every outcome recorded here stamps the <b>date the approval was entered</b> on the pipeline record (shown under the approval bubble). Approving advances the PipelineLevel; fully-approved pipelines are disabled so the BOM knows exactly what belongs on the next agenda.</span></div>';
+  document.getElementById('adminContent').innerHTML = html;
+  renderAbLevel();
+  renderGeneratedAgendas();
+}
+
+function abOnChange(){
+  AB.segment = document.getElementById('abSegment').value;
+  AB.level = ''; AB.bu = '';
+  renderAbLevel();
+}
+
+function renderAbLevel(){
+  var wrap = document.getElementById('abLevelWrap');
+  if(!AB.segment){ wrap.innerHTML = ''; document.getElementById('abBuWrap').innerHTML = ''; document.getElementById('abGallery').innerHTML = ''; return; }
+  var allowed = abAllowedLevels(AB.segment);
+  var anyAllowed = Object.keys(allowed).length > 0;
+  wrap.innerHTML = '<label>2. Approval level <span class="req">*</span></label>' +
+    '<select class="fld" id="abLevel" onchange="abOnLevel()"><option value="">Select level...</option>' +
+    PL_LEVELS.map(function(l){
+      return '<option value="' + l + '"' + (allowed[l] ? (AB.level === l ? ' selected' : '') : ' disabled') + '>' + l + (allowed[l] ? '' : ' — no access') + '</option>';
+    }).join('') + '</select>' +
+    (anyAllowed
+      ? '<div class="help">Your access (per the Approval Matrix): <b>' + Object.keys(allowed).join(', ') + '</b></div>'
+      : '<div class="help" style="color:var(--red-text);font-weight:600;">No BOM Lead access for this segment.</div>');
+  renderAbBu();
+}
+
+function abOnLevel(){
+  AB.level = document.getElementById('abLevel').value;
+  AB.bu = '';
+  renderAbBu();
+}
+
+function renderAbBu(){
+  var wrap = document.getElementById('abBuWrap');
+  if(!AB.level){ wrap.innerHTML = ''; document.getElementById('abGallery').innerHTML = ''; return; }
+  var bus = [];
+  REQUESTS.forEach(function(r){
+    if(r.kind === 'pipeline' && r.segment === AB.segment && bus.indexOf(r.bu) === -1){ bus.push(r.bu); }
+  });
+  wrap.innerHTML = '<label>3. Business unit <span class="req">*</span></label>' +
+    '<select class="fld" id="abBu" onchange="abOnBu()"><option value="">Select business unit...</option>' +
+    bus.map(function(b){ return '<option' + (AB.bu === b ? ' selected' : '') + '>' + b + '</option>'; }).join('') + '</select>';
+  renderAbGallery();
+}
+
+function abOnBu(){
+  AB.bu = document.getElementById('abBu').value;
+  renderAbGallery();
+}
+
+function abMatches(){
+  return REQUESTS.filter(function(r){
+    if(r.kind !== 'pipeline' || r.segment !== AB.segment || r.bu !== AB.bu){ return false; }
+    if(r.status === 'Declined'){ return false; }
+    if(r.status === 'Approved'){ return true; } // shown, but disabled
+    var cur = r.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    return cur && cur.level === AB.level;
+  });
+}
+
+function renderAbGallery(){
+  var g = document.getElementById('abGallery');
+  if(!AB.bu){ g.innerHTML = ''; return; }
+  var m = abMatches();
+  var pending = m.filter(function(r){ return r.status !== 'Approved'; });
+  var approved = m.filter(function(r){ return r.status === 'Approved'; });
+
+  var html =
+    '<div class="conditional-box purple ab-step" style="margin-top:4px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+    '<span style="flex:1;min-width:240px;"><b>' + pending.length + ' pipeline request(s)</b> at ' + AB.level + ' — ' + AB.segment + ' · ' + AB.bu +
+    (approved.length ? ' <span style="opacity:.75;">(+' + approved.length + ' already approved, disabled below)</span>' : '') + '</span>' +
+    '<span style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+    '<input class="fld" type="date" id="abDate" style="width:160px;padding:7px 9px;" value="' + (document.getElementById('abDate') ? document.getElementById('abDate').value : '') + '">' +
+    '<button class="btn btn-primary btn-sm"' + (pending.length ? '' : ' disabled style="opacity:.5;cursor:not-allowed;"') + ' onclick="abGenerate()">&#8681; Generate agenda (Excel) →</button>' +
+    '</span></div>';
+
+  html += '<div class="gallery-grid ab-step">' +
+    pending.map(function(p){ return abGalleryCard(p, false); }).join('') +
+    approved.map(function(p){ return abGalleryCard(p, true); }).join('') +
+    (m.length ? '' : '<div class="meta" style="color:var(--ink-faint);font-size:12.5px;">No matching pipeline requests.</div>') +
+    '</div>';
+  g.innerHTML = html;
+}
+
+function abGalleryCard(p, disabled){
+  var cur = p.approvals.filter(function(a){ return a.state === 'current'; })[0];
+  var mc = p.mcFlag ? ' <span class="bom-badge" title="Management Consulting review required — admin/BOM-only flag">MC flag</span>' : '';
+  if(disabled){
+    return '<div class="gallery-card disabled"><h4>' + p.title + mc + '</h4>' +
+      '<div class="meta"><b>' + p.id + '</b> · ' + fmtSpend(p.spend) + ' · Requestor: ' + p.owner +
+      '<br><span class="status-badge sb-approved">Fully approved ' + fmtDate(p.approvals[4].date) + '</span></div>' +
+      '<div class="meta" style="color:var(--ink-faint);">Nothing to action — excluded from the next agenda.</div></div>';
+  }
+  return '<div class="gallery-card"><h4>' + p.title + mc + '</h4>' +
+    '<div class="meta"><b>' + p.id + '</b> · ' + fmtSpend(p.spend) + ' · Requestor: ' + p.owner +
+    '<br>Pending level: <b>' + (cur ? cur.level : '—') + '</b> · ' + statusBadgeHtml(p.status) + '</div>' +
+    '<textarea class="fld" id="abCm_' + p.id + '" placeholder="Approval comments..." style="min-height:38px;"></textarea>' +
+    '<div class="ga-actions">' +
+    '<button class="btn btn-approve btn-sm" onclick="abGalleryAction(\'' + p.id + '\',\'approve\')">&#10004; Approve</button>' +
+    '<button class="btn btn-decline btn-sm" onclick="abGalleryAction(\'' + p.id + '\',\'decline\')">&#10006; Decline</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="openRecord(\'' + p.id + '\')">Open record</button>' +
+    '</div></div>';
+}
+
+function abGalleryAction(id, action){
+  var r = findReq(id);
+  var cm = document.getElementById('abCm_' + id);
+  advancePipeline(r, action, cm ? cm.value.trim() : '');
+  renderAbGallery();
+}
+
+function abGenerate(){
+  var date = document.getElementById('abDate').value || TODAY;
+  var items = abMatches().filter(function(r){ return r.status !== 'Approved'; });
+  var ag = {
+    id: 'AG-' + (100 + abNextId++),
+    segment: AB.segment, level: AB.level, bu: AB.bu, date: date,
+    items: items.map(function(p){ return p.id; }),
+    status: 'Open', outcomes: {}
+  };
+  AGENDAS.unshift(ag);
+  abDownload(ag);
+  document.getElementById('abGeneratedDivider').style.display = 'flex';
+  renderGeneratedAgendas();
+  renderAbGallery();
+}
+
+function abFind(id){ return AGENDAS.filter(function(a){ return a.id === id; })[0]; }
+
+function abDownload(ag){
+  var rows = ag.items.map(function(pid){
+    var p = findReq(pid);
+    var cur = p.approvals.filter(function(a){ return a.state === 'current'; })[0];
+    return [p.id, p.title, fmtSpend(p.spend), p.owner, cur ? cur.level : '—', p.status, p.mcFlag ? 'MC review required' : ''];
+  });
+  downloadTable(ag.id + '_' + ag.level.replace(/[^A-Za-z]/g,'') + '_agenda_' + ag.date,
+    ['Pipeline ID','Title','Spend (CAD)','Requestor','Pending Level','Status','Flags (admin-only)'],
+    rows, 'xls',
+    ag.level + ' Agenda — ' + ag.segment + ' / ' + ag.bu + ' — ' + ag.date + ' (built by ' + PERSONA.name + ')');
+}
+
+function renderGeneratedAgendas(){
+  var wrap = document.getElementById('abGeneratedList');
+  if(!wrap){ return; }
+  if(!AGENDAS.length){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = AGENDAS.map(function(ag){
+    var closed = ag.status === 'Closed';
+    var dis = closed ? ' disabled style="opacity:.5;cursor:not-allowed;"' : '';
+    return '<div class="agenda-rec' + (closed ? ' closed' : '') + '">' +
+      '<h4>' + ag.id + ' — ' + ag.level + ' agenda · ' + ag.date + ' ' +
+      (closed ? '<span class="status-badge sb-approved">Closed</span>' : '<span class="status-badge sb-progress">Open</span>') + '</h4>' +
+      '<div class="meta">' + ag.segment + ' · ' + ag.bu + ' · ' + ag.items.length + ' item(s) — Excel emailed to the ' + ag.level + ' approver(s) and BOM team on creation (prototype: file downloaded instead).</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+      '<button class="btn btn-outline btn-sm"' + dis + ' onclick="abDownload(abFind(\'' + ag.id + '\'))">&#8681; Download Excel</button>' +
+      '<button class="btn btn-outline btn-sm"' + dis + ' onclick="abCloseAgenda(\'' + ag.id + '\')">Close agenda</button>' +
+      '</div></div>';
+  }).join('');
+}
+
+function abCloseAgenda(id){
+  var ag = abFind(id);
+  ag.status = 'Closed';
+  renderGeneratedAgendas();
+}
+
+/* ============================================================
+   EMS ADMIN — Financial Approval Matrix + Reference & Bulk Loads
+============================================================ */
+STATE.mxBom = false;
+function setMxBom(val, el){ STATE.mxBom = val; selRadio(el); }
+
+function renderEmsAdmin(){
+  var html =
+    '<div class="form-card"><h2>Financial Approval Matrix <span class="tag new">EMS-Admins AD group</span></h2>' +
+    '<p class="page-sub" style="margin-bottom:12px;">Replaces the SharePoint approvers list + Power App. Maintained by the EMS team and segment leads; the <b>BOM Lead flag grants Agenda Builder access</b>, and approval routing reads this matrix live.</p>' +
+    '<div id="matrixTableWrap"></div></div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">Add a role</h2>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Approver name <span class="req">*</span></label><input class="fld" id="mxApprover" placeholder="e.g. M. Chen"></div>' +
+    '<div class="field"><label>Approval level <span class="req">*</span></label><select class="fld" id="mxLevel">' + selectOpts(PL_LEVELS) + '</select></div>' +
+    '<div class="field"><label>Delegate <span class="req">*</span></label><input class="fld" id="mxDelegate" placeholder="Who supports this approver"></div>' +
+    '</div>' +
+    '<div class="field-row3">' +
+    '<div class="field"><label>Segment <span class="req">*</span></label><select class="fld" id="mxSegment">' + selectOpts(SHORT_SEGMENTS.concat(['All segments'])) + '</select></div>' +
+    '<div class="field"><label>Business Unit <span class="req">*</span></label><select class="fld" id="mxBu">' + selectOpts(BUSINESS_UNITS.concat(['All'])) + '</select></div>' +
+    '<div class="field"><label>BOM Lead?</label>' +
+    '<div class="radio-row"><div class="radio-opt sel" onclick="setMxBom(false,this)"><span class="dot"></span> No</div>' +
+    '<div class="radio-opt" onclick="setMxBom(true,this)"><span class="dot"></span> Yes — can build agendas</div></div></div>' +
+    '</div>' +
+    '<button class="btn btn-primary" onclick="addMatrixRow()">Add to matrix →</button>' +
+    '<div class="help" id="mxMsg" style="margin-top:8px;"></div></div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">Expense policy — required titled approvers (skip-logic source)</h2>' +
+    '<p class="page-sub" style="margin-bottom:12px;">Who the required titled approvers are — both LOB AND Finance — per spend type and band. Approvals still work sequentially up the chain; "skip logic" means the band doesn\'t REQUIRE levels above the titled approver.</p>' +
+    '<table class="policy-table">' +
+    '<tr><th>Section</th><th>Spend band</th><th>Required LOB approver</th><th>Finance</th></tr>' +
+    '<tr><td rowspan="4"><b>2.2 New commitments</b></td><td>&gt; $200MM</td><td>GH / SEVP</td><td>TDBG CFO; CEO/Board awareness</td></tr>' +
+    '<tr><td>&gt; $10MM – $200MM</td><td>GH / SEVP</td><td>Segment CFO — inform (in advance &gt;$50MM)</td></tr>' +
+    '<tr><td>&gt; $2MM – $10MM</td><td>EVP / SVP</td><td>Finance VP</td></tr>' +
+    '<tr><td>&le; $2MM</td><td>SVP (&gt;$1MM) / VP (&le;$1MM)</td><td>Finance AVP</td></tr>' +
+    '<tr><td rowspan="4"><b>2.3 Existing commitments</b><br><span class="help">Renewals count as EXISTING only if substantially similar AND increase &le; 10% or $10MM</span></td><td>&gt; $50MM</td><td>GH / SEVP</td><td>Segment CFO — inform in advance</td></tr>' +
+    '<tr><td>&gt; $10MM – $50MM</td><td>EVP / SVP</td><td>Segment CFO — inform</td></tr>' +
+    '<tr><td>&gt; $2MM – $10MM</td><td>SVP</td><td>Finance VP</td></tr>' +
+    '<tr><td>&le; $2MM</td><td>VP (&gt;$1MM) / AVP (&gt;$250K) / L11 (&le;$250K)</td><td>Finance AVP</td></tr>' +
+    '<tr><td rowspan="2"><b>3.2 Op. consulting — not anticipated</b></td><td>&gt; $5MM</td><td>GH / SEVP</td><td>TDBG / Segment CFO per band</td></tr>' +
+    '<tr><td>&le; $5MM</td><td>EVP &le;$5MM / SVP &le;$2MM (special delegation)</td><td>Segment CFO / Finance VP</td></tr>' +
+    '<tr><td rowspan="2"><b>3.3 Op. consulting — anticipated</b></td><td>&gt; $10MM</td><td>GH / SEVP (&gt;$50MM) / EVP-SVP</td><td>Segment CFO</td></tr>' +
+    '<tr><td>&le; $10MM</td><td>SVP (&gt;$2MM) / VP (&gt;$1MM) / AVP-L11 (&le;$1MM)</td><td>Finance VP / AVP per band</td></tr>' +
+    '</table>' +
+    '<div class="help" style="margin-top:10px;"><b>Footnotes:</b> no GH → SEVP approves · no EVP → SEVP may delegate to SVP (documented; P&amp;T delegation re-confirmed, capped $50MM). <span style="color:var(--red-text);font-weight:600;">Validate the bands against the full expense policy document (still owed) before build.</span></div></div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2>Reference data &amp; bulk loads</h2>' +
+    '<p class="page-sub" style="margin-bottom:10px;">One maintenance surface. Segment leads maintain individual rows in place; bulk load (CSV) is admin-only.</p>' +
+    '<table class="status-table" style="margin-bottom:14px;">' +
+    '<tr><th>MC exemption</th><th>Basis</th></tr>' +
+    '<tr><td>Cognizant · TCS · Wipro</td><td>Approved low-cost Global Delivery suppliers</td></tr>' +
+    '<tr><td>Eagle-funded remediation services</td><td>Funding-source exemption</td></tr>' +
+    '<tr><td>OEM maintenance, support or implementation</td><td>Not management consulting</td></tr>' +
+    '</table>' +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+    '<button class="btn btn-outline btn-sm" onclick="fakeBulkLoad(\'Approval Matrix\')">&#8682; Bulk load: Approval Matrix</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="fakeBulkLoad(\'MC exemption list\')">&#8682; Bulk load: MC exemptions</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="fakeBulkLoad(\'Valid pipeline list\')">&#8682; Bulk load: Pipeline ID list</button>' +
+    '</div><div class="help" id="bulkMsg" style="margin-top:8px;"></div></div>';
+
+  document.getElementById('adminContent').innerHTML = html;
+  renderMatrix();
+}
+
+function renderMatrix(){
+  var html = '<table class="status-table"><tr><th>Approver</th><th>Level</th><th>Segment</th><th>Business Unit</th><th>Delegate</th><th>BOM Lead</th><th style="width:90px;"></th></tr>';
+  MATRIX.forEach(function(m, i){
+    html += '<tr><td><b>' + m.approver + '</b></td><td>' + m.level + '</td><td>' + m.segment + '</td><td>' + m.bu + '</td>' +
+      '<td>' + m.delegate + '</td>' +
+      '<td>' + (m.bomLead ? '<span class="bom-badge">BOM Lead — agenda access</span>' : '—') + '</td>' +
+      '<td><button class="matrix-remove" onclick="removeMatrixRow(' + i + ')">Remove</button></td></tr>';
+  });
+  html += '</table>';
+  document.getElementById('matrixTableWrap').innerHTML = html;
+}
+
+function addMatrixRow(){
+  var approver = document.getElementById('mxApprover').value.trim();
+  var delegate = document.getElementById('mxDelegate').value.trim();
+  var msg = document.getElementById('mxMsg');
+  if(!approver || !delegate){
+    msg.style.color = 'var(--red-text)';
+    msg.textContent = 'Approver name and delegate are required.';
+    return;
+  }
+  MATRIX.push({
+    approver: approver,
+    level: document.getElementById('mxLevel').value,
+    segment: document.getElementById('mxSegment').value,
+    bu: document.getElementById('mxBu').value,
+    delegate: delegate,
+    bomLead: STATE.mxBom
+  });
+  document.getElementById('mxApprover').value = '';
+  document.getElementById('mxDelegate').value = '';
+  msg.style.color = 'var(--td-green-mid)';
+  msg.textContent = 'Added ✓' + (STATE.mxBom ? ' — ' + delegate + ' can now build agendas for this segment/level.' : '');
+  renderMatrix();
+}
+function removeMatrixRow(i){ MATRIX.splice(i, 1); renderMatrix(); }
+function fakeBulkLoad(what){
+  var el = document.getElementById('bulkMsg');
+  el.style.color = 'var(--td-green-mid)';
+  el.textContent = what + ' bulk load: CSV validated and staged — rows replace the current table after admin confirmation (prototype stub).';
+}
+
+/* ============================================================
+   USFF ADMIN — the general admin area (USFF-Admins AD group)
+============================================================ */
+function renderUsffAdmin(){
+  var html =
+    '<div class="form-card"><h2>Finance Partner Matrix <span class="tag new">USFF-Admins AD group</span></h2>' +
+    '<p class="page-sub" style="margin-bottom:12px;">The pivot that routes every sourcing request to its Finance funding approver — the same logic behind the approver\'s "Pending Your Review" queue.</p>' +
+    '<table class="status-table">' +
+    '<tr><th>Segment</th><th>Business Unit</th><th>Cost centre range</th><th>Finance Partner (funding approver)</th></tr>' +
+    '<tr><td>Canadian Banking Technology Solutions</td><td>AI Technology · Marketing Technology</td><td>CC-40000 – CC-40999</td><td>Melissa Tran</td></tr>' +
+    '<tr><td>Protect Platform</td><td>Risk Technology</td><td>CC-55000 – CC-55999</td><td>Melissa Tran</td></tr>' +
+    '<tr><td>Infrastructure &amp; Engineering</td><td>Corporate Technology · Enterprise Architecture</td><td>CC-31000 – CC-31999</td><td>D. Okafor</td></tr>' +
+    '<tr><td>TD Securities and Payments</td><td>All</td><td>CC-62000 – CC-62999</td><td>M. Laurent</td></tr>' +
+    '</table>' +
+    '<div style="margin-top:12px;"><button class="btn btn-outline btn-sm" onclick="fakeBulkLoad2(\'Finance Partner Matrix\')">&#8682; Bulk load (CSV)</button>' +
+    '<span class="help" id="usffBulkMsg" style="margin-left:8px;"></span></div></div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">Access &amp; AD groups</h2>' +
+    '<table class="status-table">' +
+    '<tr><th>AD group</th><th>Grants</th><th>Members (demo)</th></tr>' +
+    '<tr><td><b>USFF-Admins</b></td><td>This USFF Admin area — finance partner matrix, reference data, form configuration</td><td>A. Morgan, +4</td></tr>' +
+    '<tr><td><b>EMS-Admins</b></td><td>EMS Admin area — Financial Approval Matrix, reference &amp; bulk loads</td><td>A. Morgan, EMS team, segment leads</td></tr>' +
+    '<tr><td><b>BOM Lead (matrix flag)</b></td><td>Agenda Builder only — scoped to the segments/levels flagged in the Approval Matrix</td><td>J. Smith, A. Patel</td></tr>' +
+    '</table>' +
+    '<div class="help" style="margin-top:8px;">The app checks group membership at sign-in and shows only the applicable admin sections — one Admin tab for everyone.</div></div>' +
+
+    '<div class="form-card" style="margin-top:18px;"><h2 class="alt-accent">USFF configuration (existing)</h2>' +
+    '<div class="tile-grid">' +
+    '<div class="tile"><div class="tile-icon">F</div><h3>Intake form configuration</h3><p>Field visibility, required flags and dropdown values for the USFF sourcing intake.</p></div>' +
+    '<div class="tile"><div class="tile-icon">V</div><h3>Vendor master</h3><p>Vendor legal entity lookup powering the intake\'s vendor field.</p></div>' +
+    '<div class="tile"><div class="tile-icon">E</div><h3>Exports &amp; reporting</h3><p>Filtered Excel/CSV exports are the downstream hand-off — no app integrations.</p></div>' +
+    '</div></div>';
+  document.getElementById('adminContent').innerHTML = html;
+}
+function fakeBulkLoad2(what){
+  var el = document.getElementById('usffBulkMsg');
+  el.style.color = 'var(--td-green-mid)';
+  el.textContent = what + ': CSV validated and staged (prototype stub).';
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+renderNav();
+</script>
+</body>
+</html>
