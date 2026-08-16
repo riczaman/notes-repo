@@ -1,0 +1,2067 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="Testing the iManage Work Universal API in Postman, plus the endpoint reference and polling design for the Azure Function workspace sync.">
+<title>Workspace Sync Integration</title>
+<style>
+  /* minimal reset — the artifact host supplies one; a standalone file needs its own */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { margin: 0; }
+  img, svg { max-width: 100%; }
+  button { font-family: inherit; }
+</style>
+</head>
+<body>
+<style>
+  /* ---------- tokens: light is the base, both dark states re-declare ---------- */
+  :root {
+    --bg:          #F4F5F7;
+    --surface:     #FFFFFF;
+    --surface-2:   #EAEDF2;
+    --ink:         #14181F;
+    --ink-2:       #545E6C;
+    --ink-3:       #7C8695;
+    --rule:        #DCE0E7;
+    --rule-strong: #C3CAD4;
+    --accent:      #9A6410;
+    --accent-ink:  #7C500B;
+    --accent-soft: rgba(154, 100, 16, 0.10);
+    --m-get:       #2158B8;
+    --m-post:      #167041;
+    --m-put:       #4E5765;
+    --m-del:       #A5231C;
+    --warn-bg:     #FBF3E2;
+    --warn-rule:   #D8B26A;
+    --note-bg:     #EBF0F7;
+    --note-rule:   #9EB4D4;
+    --code-bg:     #12161C;
+    --code-surf:   #1A2029;
+    --code-ink:    #D3D9E2;
+    --code-dim:    #7F8A99;
+    --code-rule:   #262E39;
+    --code-str:    #A5C9A1;
+    --code-key:    #E0A34A;
+    --code-num:    #8FB8E8;
+    --shadow:      0 1px 2px rgba(20, 24, 31, .06), 0 8px 24px -12px rgba(20, 24, 31, .18);
+
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --serif: "Iowan Old Style", Charter, "Bitstream Charter", "Palatino Linotype", Georgia, serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:          #0E1116;
+      --surface:     #151A21;
+      --surface-2:   #1C222B;
+      --ink:         #E6E9EE;
+      --ink-2:       #9AA4B2;
+      --ink-3:       #6C7684;
+      --rule:        #262D37;
+      --rule-strong: #39424F;
+      --accent:      #D99A3E;
+      --accent-ink:  #E8B463;
+      --accent-soft: rgba(217, 154, 62, 0.13);
+      --m-get:       #7BAAF7;
+      --m-post:      #58C48C;
+      --m-put:       #A3ADBB;
+      --m-del:       #F0867E;
+      --warn-bg:     #26200F;
+      --warn-rule:   #7A5F26;
+      --note-bg:     #141C28;
+      --note-rule:   #33496B;
+      --shadow:      0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg:          #0E1116;
+    --surface:     #151A21;
+    --surface-2:   #1C222B;
+    --ink:         #E6E9EE;
+    --ink-2:       #9AA4B2;
+    --ink-3:       #6C7684;
+    --rule:        #262D37;
+    --rule-strong: #39424F;
+    --accent:      #D99A3E;
+    --accent-ink:  #E8B463;
+    --accent-soft: rgba(217, 154, 62, 0.13);
+    --m-get:       #7BAAF7;
+    --m-post:      #58C48C;
+    --m-put:       #A3ADBB;
+    --m-del:       #F0867E;
+    --warn-bg:     #26200F;
+    --warn-rule:   #7A5F26;
+    --note-bg:     #141C28;
+    --note-rule:   #33496B;
+    --shadow:      0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6);
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:hover { color: var(--accent); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  code, kbd, pre, samp { font-family: var(--mono); }
+
+  /* inline code */
+  p code, li code, td code, dd code, .lede code {
+    font-size: .855em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: .08em .34em;
+    word-break: break-word;
+  }
+
+  kbd {
+    font-size: .8em;
+    background: var(--surface);
+    border: 1px solid var(--rule-strong);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: .1em .4em;
+    white-space: nowrap;
+  }
+
+  /* ---------- shell ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 268px minmax(0, 1fr);
+    gap: 0;
+    max-width: 1560px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* ---------- sidebar ---------- */
+  .rail {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    max-height: 100vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 28px 20px 48px 28px;
+    border-right: 1px solid var(--rule);
+    background: var(--bg);
+  }
+
+  .brand { display: flex; flex-direction: column; gap: 3px; margin-bottom: 22px; }
+  .brand .mark {
+    font-family: var(--serif);
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--ink);
+  }
+  .brand .sub {
+    font-size: 11.5px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+  }
+
+  .tabset {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    margin-bottom: 26px;
+  }
+  .tabset button {
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-align: left;
+    color: var(--ink-2);
+    background: transparent;
+    border: 0;
+    border-radius: 5px;
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .tabset button:hover { color: var(--ink); }
+  .tabset button[aria-selected="true"] {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: var(--shadow);
+  }
+  .tabset .num {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .navgroup { margin-bottom: 22px; }
+  .navgroup > .label {
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 700;
+    padding: 0 0 8px 10px;
+  }
+  .navgroup a {
+    display: block;
+    font-size: 13.5px;
+    color: var(--ink-2);
+    text-decoration: none;
+    padding: 5px 10px;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+    border-radius: 0 4px 4px 0;
+  }
+  .navgroup a:hover { color: var(--ink); background: var(--surface-2); }
+  .navgroup a.on {
+    color: var(--accent-ink);
+    border-left-color: var(--accent);
+    font-weight: 600;
+  }
+
+  .railfoot {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    line-height: 1.5;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+  }
+
+  /* ---------- main ---------- */
+  .main { padding: 0 0 140px; min-width: 0; }
+
+  .panel[hidden] { display: none; }
+
+  .masthead {
+    padding: 52px 44px 32px;
+    border-bottom: 1px solid var(--rule);
+    max-width: 1180px;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 700;
+    margin: 0 0 12px;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(30px, 3.6vw, 42px);
+    line-height: 1.13;
+    letter-spacing: -.018em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  .lede {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    margin: 0;
+    max-width: 68ch;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 26px;
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+  .meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* section = prose column + optional code rail */
+  section { padding: 44px 44px 0; max-width: 1180px; scroll-margin-top: 12px; }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 460px);
+    gap: 34px;
+    align-items: start;
+  }
+  .prose { min-width: 0; max-width: 68ch; }
+  .rail-code { min-width: 0; position: sticky; top: 24px; }
+
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -.014em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+  h3 {
+    font-size: 15.5px;
+    font-weight: 700;
+    letter-spacing: -.005em;
+    margin: 30px 0 8px;
+    color: var(--ink);
+  }
+  h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 26px 0 8px;
+  }
+  p { margin: 0 0 14px; }
+  .prose > p:last-child { margin-bottom: 0; }
+
+  ul, ol { margin: 0 0 14px; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  li > ul, li > ol { margin-top: 7px; margin-bottom: 0; }
+
+  .rule { border: 0; border-top: 1px solid var(--rule); margin: 44px 44px 0; max-width: 1180px; }
+
+  /* numbered setup steps: the order genuinely matters here */
+  .steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+  .steps > li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 46px;
+    margin-bottom: 34px;
+  }
+  .steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+  }
+  .steps > li > h3 { margin-top: 0; font-size: 17px; }
+
+  /* callouts */
+  .callout {
+    border: 1px solid var(--note-rule);
+    background: var(--note-bg);
+    border-left-width: 3px;
+    border-radius: 0 6px 6px 0;
+    padding: 14px 16px;
+    margin: 0 0 16px;
+    font-size: 14.5px;
+  }
+  .callout.warn { border-color: var(--warn-rule); background: var(--warn-bg); }
+  .callout > :last-child { margin-bottom: 0; }
+  .callout .tag {
+    display: block;
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink-2);
+    margin-bottom: 5px;
+  }
+
+  /* endpoint header */
+  .ep {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    margin: 0 0 16px;
+  }
+  .ep .path {
+    font-family: var(--mono);
+    font-size: 12.7px;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+    min-width: 0;
+  }
+  .verb {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    flex: none;
+  }
+  .verb.get { color: var(--m-get); }
+  .verb.post { color: var(--m-post); }
+  .verb.put { color: var(--m-put); }
+  .verb.del { color: var(--m-del); }
+
+  /* tables */
+  .tw { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--rule); border-radius: 7px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.6px; }
+  th, td { text-align: left; padding: 9px 13px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-size: 10.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 700;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  .num-col { font-variant-numeric: tabular-nums; }
+  .req { color: var(--m-del); font-weight: 700; }
+
+  /* code blocks */
+  .code {
+    background: var(--code-bg);
+    border: 1px solid var(--code-rule);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 0 0 16px;
+  }
+  .code .cap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 13px;
+    background: var(--code-surf);
+    border-bottom: 1px solid var(--code-rule);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--code-dim);
+  }
+  .code pre {
+    margin: 0;
+    padding: 13px 15px;
+    overflow-x: auto;
+    font-size: 12.6px;
+    line-height: 1.62;
+    color: var(--code-ink);
+    tab-size: 2;
+  }
+  .code .k { color: var(--code-key); }
+  .code .s { color: var(--code-str); }
+  .code .n { color: var(--code-num); }
+  .code .c { color: var(--code-dim); font-style: italic; }
+
+  /* flow diagram */
+  .flow { display: grid; gap: 0; margin: 0 0 18px; }
+  .flow .node {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 13px;
+    align-items: start;
+    padding: 11px 13px;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+  }
+  .flow .node:first-child { border-radius: 7px 7px 0 0; }
+  .flow .node:last-child { border-radius: 0 0 7px 7px; }
+  .flow .node + .node { border-top: 0; }
+  .flow .tick {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .flow .body { font-size: 14px; min-width: 0; }
+  .flow .body b { display: block; color: var(--ink); font-weight: 650; }
+  .flow .body span { color: var(--ink-2); }
+  .flow .body code { font-size: .85em; }
+  .flow .node.loop { background: var(--accent-soft); border-color: var(--accent); }
+
+  /* question list */
+  .qlist { list-style: none; padding: 0; margin: 0; counter-reset: q; }
+  .qlist > li {
+    counter-increment: q;
+    border: 1px solid var(--rule);
+    border-radius: 7px;
+    background: var(--surface);
+    padding: 14px 16px;
+    margin-bottom: 11px;
+  }
+  .qlist > li > .qh {
+    display: flex;
+    gap: 9px;
+    align-items: baseline;
+    font-weight: 650;
+    color: var(--ink);
+    margin-bottom: 5px;
+  }
+  .qlist > li > .qh::before {
+    content: "Q" counter(q);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    flex: none;
+  }
+  .qlist p { font-size: 14px; color: var(--ink-2); margin: 0; }
+
+  .pillrow { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+  .pill {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    border: 1px solid var(--rule-strong);
+    background: var(--surface);
+    color: var(--ink-2);
+  }
+  .pill.hot { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); font-weight: 600; }
+
+  @media (max-width: 1320px) {
+    .split { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+    .rail-code { position: static; }
+    .prose { max-width: none; }
+  }
+
+  @media (max-width: 860px) {
+    .shell { grid-template-columns: minmax(0, 1fr); }
+    .rail {
+      position: static;
+      max-height: none;
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+      padding: 22px 20px 24px;
+    }
+    .navgroup { display: none; }
+    .railfoot { display: none; }
+    .tabset { margin-bottom: 0; flex-direction: row; }
+    .tabset button { flex: 1; justify-content: center; }
+    .masthead { padding: 32px 20px 26px; }
+    section { padding: 34px 20px 0; }
+    .rule { margin: 34px 20px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <!-- ============================= SIDEBAR ============================= -->
+  <aside class="rail">
+    <div class="brand">
+      <span class="sub">iManage Work · API v2.2.26</span>
+      <span class="mark">Workspace Sync Integration</span>
+    </div>
+
+    <div class="tabset" role="tablist" aria-label="Guide sections">
+      <button role="tab" id="tab-setup" aria-controls="panel-setup" aria-selected="true">
+        <span class="num">01</span> Testing in Postman
+      </button>
+      <button role="tab" id="tab-ref" aria-controls="panel-ref" aria-selected="false">
+        <span class="num">02</span> API reference &amp; design
+      </button>
+    </div>
+
+    <nav class="navgroup" data-for="panel-setup">
+      <div class="label">On this page</div>
+      <a href="#s-reality">The provisioning problem</a>
+      <a href="#s-install">1 · Install Postman</a>
+      <a href="#s-import">2 · Import collection</a>
+      <a href="#s-mock">3 · Create the mock server</a>
+      <a href="#s-point">4 · Point baseUrl at the mock</a>
+      <a href="#s-send">5 · Send the first request</a>
+      <a href="#s-walk">6 · Walk the whole flow</a>
+      <a href="#s-live">7 · Switch to the live tenant</a>
+      <a href="#s-headers">Reading rate-limit headers</a>
+      <a href="#s-trouble">Troubleshooting</a>
+    </nav>
+
+    <nav class="navgroup" data-for="panel-ref" hidden>
+      <div class="label">Reference</div>
+      <a href="#r-env">Environments &amp; base URL</a>
+      <a href="#r-auth">Authentication</a>
+      <a href="#r-discovery">Discovery</a>
+      <a href="#r-features">Feature flags</a>
+      <a href="#r-workspaces">Workspaces (initial sync)</a>
+      <a href="#r-crawl">Bulk crawl alternative</a>
+      <a href="#r-events">Change events</a>
+      <a href="#r-queues">Change event queues</a>
+      <a href="#r-cursor">Cursors &amp; restart</a>
+      <a href="#r-rate">Rate limiting</a>
+      <div class="label" style="padding-top:16px">Our design</div>
+      <a href="#r-design">Polling architecture</a>
+      <a href="#r-sql">State table</a>
+      <a href="#r-gaps">Open questions</a>
+    </nav>
+
+    <div class="railfoot">
+      Compiled 15 August 2026 from the iManage Work Universal API documentation for
+      cloudimanage.com (v2.2.26, 4 August 2026) and the iManage Work REST API Developer
+      Guide 10.2.3.
+    </div>
+  </aside>
+
+  <!-- ============================== MAIN =============================== -->
+  <main class="main">
+
+    <!-- ========================= PANEL 1: SETUP ======================== -->
+    <div class="panel" id="panel-setup" role="tabpanel" aria-labelledby="tab-setup">
+
+      <header class="masthead">
+        <p class="eyebrow">Part one</p>
+        <h1>Testing the iManage APIs in Postman</h1>
+        <p class="lede">
+          Everything needed to call the workspace and change-event endpoints from a standing start,
+          including how to see real response shapes before iManage has provisioned a library for us.
+        </p>
+        <div class="meta">
+          <span><b>Target</b> iManage Cloud (cloudimanage.com)</span>
+          <span><b>API</b> Universal API v2.2.26</span>
+          <span><b>Auth</b> OAuth2 password grant</span>
+        </div>
+      </header>
+
+      <section id="s-reality">
+        <div class="split">
+          <div class="prose">
+            <h2>The provisioning problem, and the way around it</h2>
+            <p>
+              There is no iManage sandbox. Searching both the cloudimanage.com and the
+              imanage.work/on-premises API documentation returns zero results for
+              <em>sandbox</em>, <em>trial</em> or <em>test environment</em>. Every endpoint requires
+              a provisioned hostname, a customer ID, an iManage-issued <code>client_id</code> and
+              <code>client_secret</code>, and a service account that is permitted to log on. None of
+              that exists for us yet.
+            </p>
+            <p>
+              So the plan is to build the requests now against a <strong>Postman Mock Server</strong>
+              seeded with the exact response examples published by iManage. You get the real JSON
+              shapes, the real field names, the real cursor formats and the real rate-limit headers
+              today. When the vendor provisions the tenant, you change one variable and the same
+              requests hit production.
+            </p>
+
+            <div class="callout warn">
+              <span class="tag">What the mock does not prove</span>
+              <p>
+                A mock confirms the shape of a response, not the behaviour of the server. It cannot
+                tell you your real token lifetime, your actual rate-limit ceiling, how many workspaces
+                a page returns under load, or whether your service account has permission for a given
+                endpoint. Those are live-tenant questions and they are exactly what the vendor email
+                asks about.
+              </p>
+            </div>
+
+            <h3>What you are importing</h3>
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr><th>File</th><th>Contains</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>iManage_Work_API_v2_v1.0.0.postman_collection.json</code></td>
+                    <td>4 folders, 13 requests, 16 saved response examples. Collection-level
+                        <code>X-Auth-Token</code> auth and scripts that capture the token, customer ID
+                        and cursors automatically.</td>
+                  </tr>
+                  <tr>
+                    <td><code>iManage_Cloud_v1.0.0.postman_environment.json</code></td>
+                    <td>12 variables. Credentials and the token are marked <em>secret</em> so Postman
+                        masks them and keeps them out of shared workspaces.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>the whole flow</span><span>7 calls</span></div>
+<pre><span class="c"># 1. authenticate</span>
+POST /auth/oauth2/token
+
+<span class="c"># 2. who am I, what libraries</span>
+GET  /api
+
+<span class="c"># 3. cloud or on-prem? rate limits on?</span>
+GET  /work/api/v2/customers/{cid}/features
+
+<span class="c"># 4. one-time backfill, paged</span>
+GET  .../libraries/{lib}/workspaces
+       ?paging_mode=standard_cursor
+       &amp;limit=500&amp;sort_order=asc
+
+<span class="c"># 5. create the position bookmark</span>
+POST .../change-events/queues
+
+<span class="c"># 6. poll, forever, on a timer</span>
+GET  .../change-events?cursor={c}
+
+<span class="c"># 7. commit the new position</span>
+PUT  .../change-events/queues/{qid}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="s-install">
+        <div class="split">
+          <div class="prose">
+            <h2>Setup, step by step</h2>
+            <p>
+              Seven steps. Steps 1 to 6 work today with no credentials. Step 7 is what you do the
+              day the vendor hands over the tenant details.
+            </p>
+
+            <ol class="steps">
+              <li id="s-install-i">
+                <h3>Install Postman</h3>
+                <p>
+                  Download the desktop app from <a href="https://www.postman.com/downloads/">postman.com/downloads</a>
+                  and install it. Use the desktop app rather than the web version: the web version
+                  routes requests through a browser agent, which complicates things later when you
+                  point at an internal hostname.
+                </p>
+                <p>
+                  On first launch Postman asks you to sign in. <strong>Sign in.</strong> Mock servers
+                  are a cloud feature and will not work on a local-only account. A free account is
+                  enough.
+                </p>
+                <p>
+                  Postman's layout: <strong>Collections</strong> in the left sidebar hold saved
+                  requests. The <strong>environment selector</strong> is the dropdown in the top
+                  right and decides what <code>{{variables}}</code> resolve to. The main pane is the
+                  request builder, with the response appearing underneath after you press
+                  <kbd>Send</kbd>.
+                </p>
+              </li>
+
+              <li id="s-import">
+                <h3>Import the collection and the environment</h3>
+                <p>
+                  Click <strong>Import</strong> at the top of the left sidebar. Drag both JSON files
+                  in at once, or click <strong>Choose files</strong> and select them. Postman detects
+                  the format and imports one collection and one environment.
+                </p>
+                <p>
+                  You should now see <em>iManage Work Universal API v2 — Workspace Sync</em> under
+                  Collections. Expand it and you will find four folders. Select
+                  <em>iManage Cloud — mock</em> from the environment dropdown in the top right. If
+                  you skip this the requests will fail with unresolved variables.
+                </p>
+                <div class="callout">
+                  <span class="tag">Worth reading first</span>
+                  <p>
+                    Every folder and every request carries a description explaining what it does and
+                    which documented constraints apply. Click a request and open the
+                    <strong>Documentation</strong> pane on the right to read it. That prose is the
+                    same material as Part two of this page, kept where you will actually be looking.
+                  </p>
+                </div>
+              </li>
+
+              <li id="s-mock">
+                <h3>Create the mock server</h3>
+                <p>
+                  Right-click the collection name and choose <strong>Mock collection</strong>. Give
+                  it a name, leave <em>Make this mock server private</em> unticked for now, and
+                  create it.
+                </p>
+                <p>
+                  Postman generates a URL that looks like
+                  <code>https://a1b2c3d4-....mock.pstmn.io</code>. Copy it. The mock matches incoming
+                  requests against the saved examples by method and path, and returns the matching
+                  example including its headers.
+                </p>
+                <p>
+                  The examples were saved against literal path values, <code>customerId</code> of
+                  <code>100</code> and <code>libraryId</code> of <code>ACTIVE_US</code>, and the
+                  environment ships with those same defaults so paths resolve to a match. If you
+                  change those variables before finishing your mock testing, the mock stops matching
+                  and returns a 404.
+                </p>
+              </li>
+
+              <li id="s-point">
+                <h3>Point <code>baseUrl</code> at the mock</h3>
+                <p>
+                  Open the environment (the eye icon next to the environment dropdown, then
+                  <strong>Edit</strong>). Replace the <code>baseUrl</code> current value with the mock
+                  URL you copied. Save.
+                </p>
+                <p>
+                  Keep the initial value as <code>https://cloudimanage.com</code> and only change the
+                  current value. Postman syncs initial values to shared workspaces and keeps current
+                  values local, so this way nobody else inherits your mock URL.
+                </p>
+              </li>
+
+              <li id="s-send">
+                <h3>Send the first request</h3>
+                <p>
+                  Open <strong>1 · Authentication → Get access token</strong> and press
+                  <kbd>Send</kbd>. You should get a 200 with an <code>access_token</code>,
+                  <code>refresh_token</code>, <code>token_type</code> and <code>expires_in</code>.
+                </p>
+                <p>
+                  Open the <strong>Console</strong> at the bottom left. The test script has written
+                  the token into the <code>authToken</code> environment variable, and every other
+                  request in the collection sends it as <code>X-Auth-Token</code> automatically. You
+                  never copy and paste a token.
+                </p>
+                <p>
+                  Note the body type. The token endpoint takes
+                  <code>application/x-www-form-urlencoded</code>, not JSON. This trips people up
+                  constantly. Everything else in the API is JSON.
+                </p>
+              </li>
+
+              <li id="s-walk">
+                <h3>Walk the whole flow</h3>
+                <p>Run the requests in order and watch the Console output:</p>
+                <ul>
+                  <li><strong>Discovery</strong> captures <code>customerId</code> from
+                      <code>data.user.customer_id</code> and lists your libraries.</li>
+                  <li><strong>Get features</strong> tells you whether the tenant is cloud and whether
+                      rate limiting is enforced.</li>
+                  <li><strong>List workspaces</strong> returns a page and stores the cursor. Send
+                      <strong>Next page</strong> repeatedly to see paging work.</li>
+                  <li><strong>Get change events</strong> returns the event batch and stores the
+                      change-events cursor.</li>
+                  <li><strong>Create queue</strong>, then <strong>Get</strong>, <strong>Update</strong>
+                      and <strong>Delete queue</strong> to see the server-side position store.</li>
+                </ul>
+                <p>
+                  To see an error path, add the header <code>x-mock-response-code: 429</code> to the
+                  change-events request and send it. The mock returns the rate-limited example with
+                  <code>x-ratelimit-remaining: 0</code> and <code>x-ratelimit-reset: 35</code>. That
+                  is the response your retry logic has to survive.
+                </p>
+              </li>
+
+              <li id="s-live">
+                <h3>Switch to the live tenant</h3>
+                <p>When the vendor provisions us, fill in five environment values:</p>
+                <div class="tw">
+                  <table>
+                    <thead><tr><th>Variable</th><th>Where it comes from</th></tr></thead>
+                    <tbody>
+                      <tr><td><code>baseUrl</code></td><td>Your iManage hostname, e.g. <code>https://cloudimanage.com</code></td></tr>
+                      <tr><td><code>clientId</code></td><td>Issued by iManage when the application is registered</td></tr>
+                      <tr><td><code>clientSecret</code></td><td>Issued by iManage. Required when the client is a web application</td></tr>
+                      <tr><td><code>username</code></td><td>The dedicated service account</td></tr>
+                      <tr><td><code>password</code></td><td>The service account password</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p>
+                  Clear <code>customerId</code> and <code>libraryId</code>, then run Discovery first.
+                  It writes both from the live response, so you are never guessing at values.
+                </p>
+                <div class="callout warn">
+                  <span class="tag">Credential handling</span>
+                  <p>
+                    <code>password</code>, <code>clientSecret</code> and <code>authToken</code> are
+                    marked as secret variable types, so Postman masks them in the UI and excludes them
+                    from exports. Do not move them to the initial-value column and do not commit an
+                    exported environment containing real values. iManage's own guidance is blunt about
+                    this: password grant "should only be used between secured endpoints such as a
+                    server-to-server process."
+                  </p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>token request</span><span>form-urlencoded</span></div>
+<pre>POST {{baseUrl}}/auth/oauth2/token
+<span class="k">Content-Type</span>: application/x-www-form-urlencoded
+
+<span class="k">grant_type</span>=password
+<span class="k">username</span>={{username}}
+<span class="k">password</span>={{password}}
+<span class="k">client_id</span>={{clientId}}
+<span class="k">client_secret</span>={{clientSecret}}</pre>
+            </div>
+
+            <div class="code">
+              <div class="cap"><span>200 response</span><span>application/json</span></div>
+<pre>{
+  <span class="k">"access_token"</span>: <span class="s">"yS43rRgVDthYbMEkzFpU5KNb…"</span>,
+  <span class="k">"refresh_token"</span>: <span class="s">"85zx_QYyZ1XQQWu6TrU49gPF…"</span>,
+  <span class="k">"token_type"</span>: <span class="s">"Bearer"</span>,
+  <span class="k">"expires_in"</span>: <span class="n">3600</span>
+}</pre>
+            </div>
+
+            <div class="code">
+              <div class="cap"><span>test script</span><span>captures the token</span></div>
+<pre><span class="c">// runs automatically after Send</span>
+<span class="k">const</span> json = pm.response.json();
+<span class="k">if</span> (json.access_token) {
+  pm.environment.set(
+    <span class="s">'authToken'</span>, json.access_token);
+}</pre>
+            </div>
+
+            <div class="code">
+              <div class="cap"><span>forcing an error</span><span>request header</span></div>
+<pre><span class="k">x-mock-response-code</span>: 429
+
+<span class="c">→ returns the saved 429 example</span>
+<span class="c">  with x-ratelimit-reset: 35</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="s-headers">
+        <div class="split">
+          <div class="prose">
+            <h2>Reading the rate-limit headers</h2>
+            <p>
+              A test script runs on every request in the collection and logs the throttling budget to
+              the Console. This is the single most useful habit to build early, because the polling
+              frequency we choose has to live inside whatever ceiling iManage sets.
+            </p>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Header</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><code>x-ratelimit-remaining</code></td><td>Requests left in the current window. As it approaches zero, slow down.</td></tr>
+                  <tr><td><code>x-ratelimit-reset</code></td><td>Seconds until the remaining count resets to full capacity.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              iManage states the values differ per endpoint, so a budget observed on the change-events
+              call tells you nothing about the workspaces call. Their guidance is monitor, adjust,
+              retry: recalculate your rate from the headers on every response, and treat a 429 as a
+              bug in your pacing rather than a normal condition.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>console output</span><span>every request</span></div>
+<pre><span class="c">rate limit: 97 left, resets in 10s</span>
+<span class="c">6 events, overflow=false</span>
+<span class="c">cursor advanced to 2687321</span>
+  2018-04-18T21:46:25Z container insert
+  2018-04-18T21:46:25Z container container_link
+  2018-04-18T21:46:26Z container update</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="s-trouble">
+        <div class="prose" style="max-width:none">
+          <h2>Troubleshooting</h2>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>Could not send request</code>, unresolved variable</td>
+                  <td>No environment selected</td>
+                  <td>Pick <em>iManage Cloud — mock</em> in the top-right dropdown.</td>
+                </tr>
+                <tr>
+                  <td>404 from the mock on every call</td>
+                  <td>Path no longer matches a saved example</td>
+                  <td>Reset <code>customerId</code> to <code>100</code> and <code>libraryId</code> to <code>ACTIVE_US</code>. The mock matches literal paths.</td>
+                </tr>
+                <tr>
+                  <td>Mock server option is greyed out</td>
+                  <td>Not signed in to a Postman account</td>
+                  <td>Sign in. Mocks are a cloud feature.</td>
+                </tr>
+                <tr>
+                  <td>401 <code>NRC_ACCESS_DENIED</code> against the live tenant</td>
+                  <td>Token missing, expired or revoked</td>
+                  <td>Re-run <em>Get access token</em>. iManage warns a token can be invalidated at any time, so the Function must handle this too.</td>
+                </tr>
+                <tr>
+                  <td>Token call returns an error about the grant</td>
+                  <td>Account is synchronised with an external IDP that has no Direct Grant support, or <code>allow_logon</code> is false</td>
+                  <td>A vendor question. See <a href="#r-gaps" data-goto="panel-ref">open questions</a>.</td>
+                </tr>
+                <tr>
+                  <td>403 on <em>Crawl workspaces</em></td>
+                  <td>Service account is not <code>WORK_MIGRATION</code> or <code>BACKUP_RESTORE_AGENT</code></td>
+                  <td>Expected unless the vendor issues a migration-class account. Use the workspaces search endpoint instead.</td>
+                </tr>
+                <tr>
+                  <td>429 <code>Too Many Requests</code></td>
+                  <td>Polling faster than the tenant allows</td>
+                  <td>Back off for <code>x-ratelimit-reset</code> seconds, then resume. Do not retry immediately.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ======================= PANEL 2: REFERENCE ====================== -->
+    <div class="panel" id="panel-ref" role="tabpanel" aria-labelledby="tab-ref" hidden>
+
+      <header class="masthead">
+        <p class="eyebrow">Part two</p>
+        <h1>Endpoints, constraints and how we will use them</h1>
+        <p class="lede">
+          The subset of the iManage Work Universal API this integration depends on, with the
+          documented limits that shape the design, and the polling architecture we are proposing.
+        </p>
+        <div class="meta">
+          <span><b>Source</b> Universal API docs v2.2.26, 4 Aug 2026</span>
+          <span><b>Scope</b> Workspaces &amp; change events</span>
+        </div>
+      </header>
+
+      <section id="r-env">
+        <div class="split">
+          <div class="prose">
+            <h2>Environments and base URL</h2>
+            <p>
+              Every path in this reference is relative to <code>https://{hostname}</code>. iManage
+              publishes two documentation sets and they are not the same document:
+            </p>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Environment</th><th>Doc version</th><th>Last updated</th></tr></thead>
+                <tbody>
+                  <tr><td>iManage Cloud at <code>cloudimanage.com</code></td><td class="num-col">2.2.26</td><td class="num-col">4 Aug 2026</td></tr>
+                  <tr><td><code>imanage.work</code> and on-premises</td><td class="num-col">2.1.11</td><td class="num-col">9 Apr 2026</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              The endpoint surface is broadly the same. What differs is the release train and, on some
+              endpoints, the request and response bodies. iManage's own instruction is not to guess:
+              call the features endpoint and read the <code>cloudimanage</code> flag. True means use
+              the cloudimanage.com schema, false means the on-premises variant.
+            </p>
+            <p>
+              We are targeting cloud, so this reference follows v2.2.26. If that assumption turns out
+              to be wrong, the on-premises documentation is roughly four months behind and some fields
+              documented here may not exist yet.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>path anatomy</span></div>
+<pre>https://cloudimanage.com
+  /work/api/v2
+  /customers/<span class="k">100</span>
+  /libraries/<span class="k">ACTIVE_US</span>
+  /change-events
+
+<span class="c">discovery is the exception —</span>
+<span class="c">it sits at the root:</span>
+https://cloudimanage.com/api</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-auth">
+        <div class="split">
+          <div class="prose">
+            <h2>Authentication</h2>
+            <div class="ep">
+              <span class="verb post">POST</span>
+              <span class="path">/auth/oauth2/token</span>
+            </div>
+            <p>
+              Returns the access token that every subsequent call carries in the
+              <code>X-Auth-Token</code> header. That header authenticates the caller and determines
+              their privileges, so the integration sees exactly what the service account sees, no
+              more.
+            </p>
+            <p>
+              Body is form-urlencoded. Token lifetime is configured per environment; the documented
+              examples show 1800 and 3600 seconds but yours will be whatever the vendor sets. When it
+              expires, call this endpoint again.
+            </p>
+
+            <h4>Request body</h4>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                  <tr><td><code>grant_type</code> <span class="req">*</span></td><td>enum</td><td><code>password</code> for us. Also supports <code>authorization_code</code>, <code>refresh_token</code>, <code>urn:ietf:params:oauth:grant-type:saml2-bearer</code>.</td></tr>
+                  <tr><td><code>client_id</code></td><td>string</td><td>Required for all grant types except refresh token. Issued by iManage at app registration.</td></tr>
+                  <tr><td><code>client_secret</code></td><td>string</td><td>Required if the client is a web application.</td></tr>
+                  <tr><td><code>username</code></td><td>string</td><td>The service account.</td></tr>
+                  <tr><td><code>password</code></td><td>string</td><td>The service account password.</td></tr>
+                  <tr><td><code>customer_id</code></td><td>integer</td><td>Required for the SAML grant only.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout warn">
+              <span class="tag">Password grant constraints — quoted from the docs</span>
+              <p>
+                "The password grant can only be used for users that are not synchronized with an
+                external IDP, or if the IDP uses the OIDC protocol with Direct Grant support."
+              </p>
+              <p>
+                Separately: "The user must have a valid iManage account, and <code>allow_logon</code>
+                must be true for this account."
+              </p>
+              <p>
+                This matches what the vendor told us. It is also the single biggest delivery risk on
+                this integration, because it is a constraint on <em>their</em> identity configuration,
+                not on our code.
+              </p>
+            </div>
+
+            <h4>Token invalidation</h4>
+            <p>
+              iManage is explicit that "a token may become invalid at any time through expiration or
+              revocation" and that the maximum number of tokens per user is not guaranteed. The
+              Function must treat a 401 as a signal to re-authenticate and resubmit, not as a failed
+              run. Caching one token for its full lifetime and reacting to 401 is the right pattern;
+              requesting a fresh token on every poll is not, and will burn the token allowance.
+            </p>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>grant types supported</span></div>
+<pre>SAML                        RFC 7522
+Authorization Code + PKCE   RFC 6749, 7636
+Password                    RFC 6749
+Refresh Token               RFC 6749</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>200 OK</span></div>
+<pre>{
+  <span class="k">"access_token"</span>: <span class="s">"yS43rRgVDth…"</span>,
+  <span class="k">"refresh_token"</span>: <span class="s">"85zx_QYyZ1X…"</span>,
+  <span class="k">"token_type"</span>: <span class="s">"Bearer"</span>,
+  <span class="k">"expires_in"</span>: <span class="n">3600</span>
+}</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>401 Unauthorized</span></div>
+<pre>{
+  <span class="k">"error"</span>: {
+    <span class="k">"code"</span>: <span class="s">"NRC_ACCESS_DENIED"</span>,
+    <span class="k">"code_message"</span>: <span class="s">"Access is denied"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-discovery">
+        <div class="split">
+          <div class="prose">
+            <h2>Discovery</h2>
+            <div class="ep">
+              <span class="verb get">GET</span>
+              <span class="path">/api</span>
+            </div>
+            <p>
+              Note the path. Discovery is <code>/api</code> at the root, not under
+              <code>/work/api/v2</code>. It returns the customer ID, the authenticated user, the
+              libraries available and the DMS version.
+            </p>
+            <p>
+              Read <code>data.user.customer_id</code>. iManage describes this value as permanently and
+              uniquely assigned to the system, and says it "needs to be checked only once when the
+              application first runs each time." Resolve it at Function startup and hold it; do not
+              call this on every polling cycle.
+            </p>
+            <p>
+              <code>data.work.libraries[].alias</code> gives the library IDs. A successful sign-in is
+              indicated by <code>auth_status: "authenticated"</code>.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>200 OK</span><span>trimmed</span></div>
+<pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"auth_status"</span>: <span class="s">"authenticated"</span>,
+    <span class="k">"user"</span>: {
+      <span class="k">"id"</span>: <span class="s">"svc_integration"</span>,
+      <span class="k">"user_type"</span>: <span class="s">"enterprise"</span>,
+      <span class="k">"customer_id"</span>: <span class="n">100</span>
+    },
+    <span class="k">"work"</span>: {
+      <span class="k">"libraries"</span>: [
+        { <span class="k">"alias"</span>: <span class="s">"ACTIVE_US"</span>,
+          <span class="k">"type"</span>: <span class="s">"worksite"</span> }
+      ],
+      <span class="k">"preferred_library"</span>: <span class="s">"ACTIVE_US"</span>
+    },
+    <span class="k">"dms_version"</span>: <span class="s">"10.2.1"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-features">
+        <div class="split">
+          <div class="prose">
+            <h2>Feature flags</h2>
+            <div class="ep">
+              <span class="verb get">GET</span>
+              <span class="path">/work/api/v2/customers/{customerId}/features</span>
+            </div>
+            <p>Two flags matter here.</p>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Flag</th><th>Why we care</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td><code>cloudimanage</code></td>
+                    <td>True means read the cloudimanage.com schema variant. False means imanage.work
+                        or on-premises, where some request and response bodies differ.</td>
+                  </tr>
+                  <tr>
+                    <td><code>rate_limiting</code></td>
+                    <td>True means <code>x-ratelimit-remaining</code> and
+                        <code>x-ratelimit-reset</code> are populated and adaptive throttling can rely
+                        on them. False means we pace conservatively and handle 429 blind.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Worth calling once at startup and logging the result. It costs one request and removes
+              an entire class of "works in one environment, not the other" bug.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>200 OK</span></div>
+<pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"cloudimanage"</span>: <span class="n">true</span>,
+    <span class="k">"rate_limiting"</span>: <span class="n">true</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-workspaces">
+        <div class="split">
+          <div class="prose">
+            <h2>Workspaces — the initial synchronisation</h2>
+            <div class="ep">
+              <span class="verb get">GET</span>
+              <span class="path">/work/api/v2/customers/{customerId}/libraries/{libraryId}/workspaces</span>
+            </div>
+            <p>
+              Returns a page of workspaces with their full metadata profile. This is the one-time
+              backfill that runs before polling starts, and it is also the endpoint the vendor pointed
+              us at.
+            </p>
+
+            <h4>Pagination</h4>
+            <p>
+              Use cursor paging, not offset. The iManage sample request for this endpoint is
+              <code>?paging_mode=standard_cursor&amp;limit=500&amp;sort_order=asc&amp;cursor=154300</code>.
+              Hold <code>sort_order=asc</code> constant so the walk is stable while the backfill runs.
+              Keep sending the cursor from the previous response until no cursor comes back.
+            </p>
+            <p>
+              The workspaces cursor looks like <code>31653;1</code>. The change-events cursor looks
+              like <code>2687321</code>. Different formats, different endpoints, not interchangeable.
+              Store them in separate columns.
+            </p>
+
+            <h4>Filter parameters worth knowing</h4>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Parameter</th><th>Purpose</th></tr></thead>
+                <tbody>
+                  <tr><td><code>custom1</code> … <code>custom30</code></td><td>The client and matter metadata fields. Which number holds what is configured per firm, so confirm the mapping with the vendor.</td></tr>
+                  <tr><td><code>container_ids</code></td><td>Comma-separated workspace IDs, for fetching a known set.</td></tr>
+                  <tr><td><code>edit_date</code>, <code>create_date</code></td><td>Date filters. Useful for a narrowed reconciliation rather than a full re-crawl.</td></tr>
+                  <tr><td><code>total</code></td><td>Set true to get <code>total_count</code>, so you can log backfill progress against a known denominator.</td></tr>
+                  <tr><td><code>limit</code>, <code>offset</code>, <code>cursor</code>, <code>sort_order</code></td><td>Paging controls.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h4>Response envelope</h4>
+            <p>
+              <code>{ cursor, data: { results: [], facets: {} } }</code>. Note the workspace array is
+              nested under <code>data.results</code>, not <code>data</code> directly, which differs
+              from the change-events response.
+            </p>
+            <p>
+              Each workspace carries roughly forty fields. The ones that matter for a metadata sync
+              are <code>id</code>, <code>name</code>, <code>description</code>,
+              <code>custom1</code>–<code>custom30</code>, <code>owner</code>,
+              <code>database</code>, <code>edit_date</code>, <code>wstype</code> and
+              <code>is_external</code>.
+            </p>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>request</span></div>
+<pre>GET /work/api/v2/customers/100
+      /libraries/ACTIVE_US/workspaces
+    ?paging_mode=standard_cursor
+    &amp;limit=500
+    &amp;sort_order=asc
+    &amp;total=true
+<span class="k">X-Auth-Token</span>: {{authToken}}</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>200 OK</span><span>one result shown</span></div>
+<pre>{
+  <span class="k">"cursor"</span>: <span class="s">"31653;1"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"results"</span>: [
+      {
+        <span class="k">"id"</span>: <span class="s">"active_us!7601"</span>,
+        <span class="k">"name"</span>: <span class="s">"1009.002 - Worldcom v. Pfieffer"</span>,
+        <span class="k">"description"</span>: <span class="s">"(1009.002) - Worldcom Inc."</span>,
+        <span class="k">"custom1"</span>: <span class="s">"1009"</span>,
+        <span class="k">"custom2"</span>: <span class="s">"002"</span>,
+        <span class="k">"custom4"</span>: <span class="s">"CO"</span>,
+        <span class="k">"database"</span>: <span class="s">"active_us"</span>,
+        <span class="k">"document_number"</span>: <span class="n">31653</span>,
+        <span class="k">"edit_date"</span>: <span class="s">"1999-02-25T12:11:53Z"</span>,
+        <span class="k">"default_security"</span>: <span class="s">"public"</span>,
+        <span class="k">"owner"</span>: <span class="s">"WORKSITEADMIN"</span>,
+        <span class="k">"is_external"</span>: <span class="n">false</span>,
+        <span class="k">"wstype"</span>: <span class="s">"workspace"</span>
+      }
+    ],
+    <span class="k">"facets"</span>: { }
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-crawl">
+        <div class="split">
+          <div class="prose">
+            <h2>The bulk crawl alternative</h2>
+            <div class="ep">
+              <span class="verb post">POST</span>
+              <span class="path">/work/api/v2/customers/{customerId}/libraries/{libraryId}/sync/workspaces/crawl</span>
+            </div>
+            <p>
+              The vendor did not mention this one. iManage publishes a whole <strong>Sync Export</strong>
+              collection of crawl endpoints built specifically for bulk extraction, and workspaces is
+              one of them. It accepts <code>cursor</code>, <code>limit</code> (1 to 1000, default 100)
+              and <code>workspace_ids</code> (max 50).
+            </p>
+            <p>
+              A limit of 1000 against the search endpoint's paging makes a material difference on a
+              first-run backfill of a large library.
+            </p>
+            <div class="callout warn">
+              <span class="tag">Access restriction — quoted from the docs</span>
+              <p>
+                "Only system users of the type 'Library Migration' (<code>WORK_MIGRATION</code>) or
+                'Backup and Restore' (<code>BACKUP_RESTORE_AGENT</code>) can execute this request."
+              </p>
+              <p>
+                So this is only available to us if the vendor issues a migration-class service account.
+                That is a question worth asking, not an assumption to build on. If the answer is no,
+                the workspaces search endpoint does the job and the design does not change.
+              </p>
+            </div>
+            <p>
+              The same collection includes <code>Crawl deleted events</code>, <code>Crawl folders</code>,
+              <code>Crawl container name-value pairs</code> and around thirty more. If the scope ever
+              widens past workspace metadata, this is where to look first.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>request body</span></div>
+<pre>{
+  <span class="k">"limit"</span>: <span class="n">1000</span>,
+  <span class="k">"cursor"</span>: <span class="s">"31653;1"</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-events">
+        <div class="split">
+          <div class="prose">
+            <h2>Change events</h2>
+            <div class="ep">
+              <span class="verb get">GET</span>
+              <span class="path">/work/api/v2/customers/{customerId}/libraries/{libraryId}/change-events</span>
+            </div>
+            <p>
+              The journal of actions performed on iManage Work objects. This is what the Azure Function
+              polls.
+            </p>
+
+            <h4>Query parameters — the complete list for v2.2.26</h4>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Parameter</th><th>Type</th><th>Notes</th></tr></thead>
+                <tbody>
+                  <tr><td><code>cursor</code></td><td>string</td><td>Position marker. Omit it and the result set starts from the beginning.</td></tr>
+                  <tr><td><code>limit</code></td><td>integer</td><td>Default 100.</td></tr>
+                  <tr><td><code>actions</code></td><td>enum, CSV</td><td>Which actions to return.</td></tr>
+                  <tr><td><code>item_types</code></td><td>enum, CSV</td><td>Which object types to return.</td></tr>
+                  <tr><td><code>root_id</code></td><td>string, CSV</td><td>Restrict to specific workspace IDs.</td></tr>
+                  <tr><td><code>exclude_app_ids</code></td><td>string, CSV</td><td>Drop events generated by named applications.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              There is no <code>queue_id</code> parameter. The queue endpoints are a separate store,
+              covered below.
+            </p>
+
+            <h4>Actions</h4>
+            <div class="pillrow">
+              <span class="pill hot">insert</span><span class="pill hot">update</span>
+              <span class="pill hot">delete</span><span class="pill hot">profile_update</span>
+              <span class="pill">security_update</span><span class="pill">document_link</span>
+              <span class="pill">container_link</span><span class="pill">document_unlink</span>
+              <span class="pill">container_unlink</span><span class="pill hot">name_value_pair_update</span>
+              <span class="pill">declared</span><span class="pill">undeclared</span>
+              <span class="pill">container_move</span><span class="pill">restored_from_trash</span>
+              <span class="pill">purged_from_trash</span><span class="pill">kmtag_update</span>
+            </div>
+
+            <h4>Item types</h4>
+            <div class="pillrow">
+              <span class="pill">document</span><span class="pill hot">container</span>
+              <span class="pill">type</span><span class="pill">user</span><span class="pill">group</span>
+              <span class="pill">worklist</span><span class="pill">checkout_list</span>
+              <span class="pill">sync_preference</span><span class="pill">container_item</span>
+              <span class="pill">group_member</span>
+            </div>
+            <p style="font-size:13.5px;color:var(--ink-2)">
+              Highlighted values are the ones relevant to workspace metadata synchronisation.
+            </p>
+
+            <div class="callout">
+              <span class="tag">Workspaces arrive as containers</span>
+              <p>
+                A workspace is a <code>container</code>. A new workspace shows up as
+                <code>item_type: container</code>, <code>action_type: insert</code>. Metadata edits
+                arrive as <code>profile_update</code> or <code>name_value_pair_update</code>.
+              </p>
+              <p>
+                The event carries <code>object_id</code> and <code>action_type</code> only — never the
+                new field values. To learn what changed you fetch the workspace profile separately.
+                That is two calls per changed workspace, which matters when you size the rate-limit
+                budget.
+              </p>
+            </div>
+
+            <h4>Response fields</h4>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+                <tbody>
+                  <tr><td><code>id</code> <span class="req">*</span></td><td>Unique event ID. Monotonic in the published example.</td></tr>
+                  <tr><td><code>action_type</code> <span class="req">*</span></td><td>What happened.</td></tr>
+                  <tr><td><code>item_type</code> <span class="req">*</span></td><td>What kind of object.</td></tr>
+                  <tr><td><code>object_id</code> <span class="req">*</span></td><td>The object acted on, e.g. <code>ACTIVE!11556</code>.</td></tr>
+                  <tr><td><code>event_date</code> <span class="req">*</span></td><td>ISO 8601 timestamp.</td></tr>
+                  <tr><td><code>root_id</code></td><td>The container tree the event belongs to.</td></tr>
+                  <tr><td><code>related_object_id</code></td><td>Set on link and unlink events.</td></tr>
+                  <tr><td><code>app_id</code></td><td>Which application generated the event. Pairs with <code>exclude_app_ids</code>.</td></tr>
+                  <tr><td><code>cursor</code> <span class="req">*</span></td><td>Top-level. Always present.</td></tr>
+                  <tr><td><code>overflow</code></td><td>True when more records are waiting than <code>limit</code> returned.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>production request</span></div>
+<pre>GET …/ACTIVE_US/change-events
+    ?limit=100
+    &amp;item_types=container
+    &amp;actions=insert,profile_update,
+             name_value_pair_update,delete
+    &amp;cursor=2687086</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>200 OK</span><span>published example</span></div>
+<pre>{
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"action_type"</span>: <span class="s">"insert"</span>,
+      <span class="k">"event_date"</span>: <span class="s">"2018-04-18T21:46:25Z"</span>,
+      <span class="k">"id"</span>: <span class="s">"2687087"</span>,
+      <span class="k">"object_id"</span>: <span class="s">"ACTIVE!11556"</span>,
+      <span class="k">"item_type"</span>: <span class="s">"container"</span>,
+      <span class="k">"root_id"</span>: <span class="s">"ACTIVE!11551"</span>
+    },
+    {
+      <span class="k">"action_type"</span>: <span class="s">"container_link"</span>,
+      <span class="k">"event_date"</span>: <span class="s">"2018-04-18T21:46:25Z"</span>,
+      <span class="k">"id"</span>: <span class="s">"2687088"</span>,
+      <span class="k">"object_id"</span>: <span class="s">"ACTIVE!11551"</span>,
+      <span class="k">"item_type"</span>: <span class="s">"container"</span>,
+      <span class="k">"related_object_id"</span>: <span class="s">"ACTIVE!11556"</span>,
+      <span class="k">"root_id"</span>: <span class="s">"ACTIVE!11551"</span>
+    }
+  ],
+  <span class="k">"overflow"</span>: <span class="n">false</span>,
+  <span class="k">"cursor"</span>: <span class="s">"2687321"</span>
+}</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>quiet poll</span><span>nothing changed</span></div>
+<pre>{
+  <span class="k">"data"</span>: [],
+  <span class="k">"overflow"</span>: <span class="n">false</span>,
+  <span class="k">"cursor"</span>: <span class="s">"2687321"</span>
+}
+<span class="c">// cursor still returned — this is</span>
+<span class="c">// the property that makes polling work</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-queues">
+        <div class="split">
+          <div class="prose">
+            <h2>Change event queues</h2>
+            <p>
+              iManage can hold your read position server-side. A queue is a named bookmark storing the
+              last <code>event_id</code> your application processed. Four operations, all under
+              <code>.../change-events/queues</code>.
+            </p>
+
+            <div class="ep"><span class="verb post">POST</span><span class="path">/…/change-events/queues</span></div>
+            <p>
+              Create. Body takes <code>queue_id</code> (required, the queue name),
+              <code>event_id</code> (optional) and <code>filter_options</code> (optional). Omit
+              <code>event_id</code> and iManage defaults it to the latest change event for the library,
+              which means you start at "now" and receive no history. Supply one to replay from a known
+              point.
+            </p>
+
+            <div class="ep"><span class="verb get">GET</span><span class="path">/…/change-events/queues/{queueId}</span></div>
+            <p>
+              Read the current position. Returns <code>event_id</code>, <code>queue_id</code>,
+              <code>event_date</code> (when the queue was last updated) and <code>filter_options</code>.
+              A stale <code>event_date</code> makes a decent liveness check.
+            </p>
+
+            <div class="ep"><span class="verb put">PUT</span><span class="path">/…/change-events/queues/{queueId}</span></div>
+            <p>
+              Advance the position. Body takes <code>event_id</code> (required, max 254 characters) and
+              <code>filter_options</code>. The response schema notes <code>filter_options</code> as
+              "[Currently not implemented]", so do not design around it.
+            </p>
+
+            <div class="ep"><span class="verb del">DELETE</span><span class="path">/…/change-events/queues/{queueId}</span></div>
+            <p>Remove the queue. Relevant for teardown or forcing a full reconciliation.</p>
+
+            <div class="callout warn">
+              <span class="tag">The gap in the documentation</span>
+              <p>
+                <code>GET /change-events</code> takes a <code>cursor</code> but has no
+                <code>queue_id</code> parameter, so creating a queue does not make the read
+                automatically resume from it. The queue is a place to store a position, not a
+                subscription.
+              </p>
+              <p>
+                The published change-events example returns <code>"cursor": "2687321"</code>, which is
+                the same format as an event <code>id</code> — so <em>it appears</em> you read the queue,
+                pass its <code>event_id</code> as the <code>cursor</code>, and write it back with PUT.
+                The documentation never states this. It is an inference from the example, and it is
+                question one for the vendor.
+              </p>
+            </div>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>create queue</span></div>
+<pre>POST …/change-events/queues
+{
+  <span class="k">"queue_id"</span>: <span class="s">"azfn-workspace-sync"</span>
+}</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>201 Created</span></div>
+<pre>{
+  <span class="k">"data"</span>: {
+    <span class="k">"queue_id"</span>: <span class="s">"azfn-workspace-sync"</span>,
+    <span class="k">"event_id"</span>: <span class="s">"2687321"</span>,
+    <span class="k">"event_date"</span>: <span class="s">"2026-08-15T09:14:02Z"</span>,
+    <span class="k">"filter_options"</span>: <span class="s">""</span>
+  }
+}</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>advance position</span></div>
+<pre>PUT …/change-events/queues
+      /azfn-workspace-sync
+{
+  <span class="k">"event_id"</span>: <span class="s">"2687455"</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-cursor">
+        <div class="split">
+          <div class="prose">
+            <h2>Cursors and restart behaviour</h2>
+            <p>
+              iManage documents several pagination schemes. Change events uses
+              <strong>explicit overflow with required cursor</strong>, described as "intended for
+              continuous scrolling of new results. As the cursor is present even when there are no
+              additional records, the client application may use this cursor to periodically poll for
+              the next page."
+            </p>
+            <p>
+              That single property is what makes the whole polling design sound. A quiet poll still
+              returns a cursor, so there is never a state where the Function loses its place because
+              nothing happened.
+            </p>
+
+            <h3>Where the position lives</h3>
+            <p>
+              We have two places to keep it: our SQL database and the iManage queue. Use both, and
+              treat SQL as authoritative.
+            </p>
+            <ul>
+              <li>
+                <strong>SQL is authoritative</strong> because the commit that advances the cursor can
+                be made atomic with the commit that writes the workspace records. A remote PUT cannot
+                participate in that transaction.
+              </li>
+              <li>
+                <strong>The iManage queue is a mirror</strong>, updated after the local commit
+                succeeds. It costs one extra call per cycle and gives the vendor visibility into where
+                we are, which is useful when raising a support case.
+              </li>
+            </ul>
+
+            <h3>Ordering matters</h3>
+            <p>
+              Read the batch, process it, commit the downstream writes <em>and</em> the new cursor in
+              one transaction, then mirror to iManage. If you advance the cursor before the writes
+              land, a crash in between silently drops events and nothing will ever tell you.
+            </p>
+            <p>
+              Getting this wrong is invisible in testing and expensive in production, which is why it
+              is worth being deliberate about now.
+            </p>
+
+            <h3>Outages</h3>
+            <p>
+              As long as the cursor survives, an outage costs nothing but latency. The Function
+              restarts, reads the stored cursor, and continues from where it stopped. No full
+              reconciliation.
+            </p>
+            <p>
+              The unknown is retention: how far back the change-event journal goes. If the Function is
+              down for a week and iManage only keeps events for 72 hours, the cursor becomes invalid
+              and we do need a full re-crawl. That is question two for the vendor.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>safe cycle</span><span>pseudocode</span></div>
+<pre>cursor = sql.read_cursor(library)
+
+resp = GET /change-events
+         ?cursor=cursor&amp;limit=100
+
+<span class="k">BEGIN TRANSACTION</span>
+  <span class="k">for</span> e <span class="k">in</span> resp.data:
+      ws = GET /workspaces/{e.object_id}
+      sql.upsert_workspace(ws)
+  sql.write_cursor(resp.cursor)
+<span class="k">COMMIT</span>
+
+<span class="c"># only now, and failure here is safe</span>
+PUT /change-events/queues/{qid}
+    { <span class="s">"event_id"</span>: resp.cursor }
+
+<span class="k">if</span> resp.overflow:
+    <span class="c"># more waiting — loop again now,</span>
+    <span class="c"># don't wait for the next timer</span>
+    repeat</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-rate">
+        <div class="split">
+          <div class="prose">
+            <h2>Rate limiting</h2>
+            <p>
+              Availability is per environment. Check <code>rate_limiting</code> on the features
+              endpoint. When it is on, successful responses carry two headers.
+            </p>
+            <div class="tw">
+              <table>
+                <thead><tr><th>Header</th><th>Meaning</th></tr></thead>
+                <tbody>
+                  <tr><td><code>x-ratelimit-remaining</code></td><td>Requests left in the window.</td></tr>
+                  <tr><td><code>x-ratelimit-reset</code></td><td>Seconds until the count resets to full capacity.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              Exceeding the limit returns <strong>429 Too Many Requests</strong>. iManage's guidance is
+              monitor, adjust, retry: recalculate your pacing from the headers on every response, and
+              treat a 429 as evidence the pacing logic is wrong rather than as routine.
+            </p>
+            <div class="callout">
+              <span class="tag">Two documented details worth designing for</span>
+              <p>
+                <strong>Limits differ per endpoint.</strong> The budget seen on change-events says
+                nothing about the workspaces call. Track them separately.
+              </p>
+              <p>
+                <strong>Requests are retried server-side.</strong> iManage notes that requests "are
+                continually retried by iManage until a certain period before they succeed", so a
+                throttled request may surface to us as latency rather than an error. Set generous HTTP
+                timeouts on the Function.
+              </p>
+            </div>
+            <p>
+              The practical consequence for polling frequency: one poll of change-events is one
+              request, but each changed workspace adds a profile fetch. A quiet cycle costs one
+              request; a busy cycle costs one plus the number of changes. Make the interval
+              configurable, start conservative, and let the observed headers tell you how much room
+              there is.
+            </p>
+          </div>
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>successful response headers</span></div>
+<pre>HTTP/2 200
+<span class="k">x-ratelimit-remaining</span>: 9
+<span class="k">x-ratelimit-reset</span>: 10</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>throttled</span></div>
+<pre>HTTP/2 429
+<span class="k">x-ratelimit-remaining</span>: 0
+<span class="k">x-ratelimit-reset</span>: 35
+
+<span class="c">// sleep 35s, then resume</span></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-design">
+        <div class="split">
+          <div class="prose">
+            <h2>How the Azure Function uses this</h2>
+            <p>
+              A timer-triggered Function, a SQL table holding the cursor, and no webhook anywhere.
+              That last point is not a design preference: the iManage Work Universal API has no push
+              mechanism at all. Searching the full documentation for <em>webhook</em>,
+              <em>callback</em>, <em>server-sent</em> and <em>websocket</em> returns nothing. Polling
+              is the only option available, so the question is not whether to poll but how to pace it.
+            </p>
+
+            <h3>Startup, once</h3>
+            <div class="flow">
+              <div class="node"><span class="tick">A</span><span class="body"><b>Authenticate</b><span><code>POST /auth/oauth2/token</code>. Cache the token for its lifetime.</span></span></div>
+              <div class="node"><span class="tick">B</span><span class="body"><b>Resolve identity</b><span><code>GET /api</code> for <code>customer_id</code> and libraries. Once per process.</span></span></div>
+              <div class="node"><span class="tick">C</span><span class="body"><b>Check environment</b><span><code>GET /…/features</code> for <code>cloudimanage</code> and <code>rate_limiting</code>. Log both.</span></span></div>
+              <div class="node"><span class="tick">D</span><span class="body"><b>Backfill, if the cursor table is empty</b><span>Page <code>GET /…/workspaces</code> with <code>paging_mode=standard_cursor</code> until exhausted.</span></span></div>
+              <div class="node"><span class="tick">E</span><span class="body"><b>Create the queue</b><span><code>POST /…/change-events/queues</code>. Record the returned <code>event_id</code> as the starting cursor.</span></span></div>
+            </div>
+
+            <h3>Every cycle</h3>
+            <div class="flow">
+              <div class="node loop"><span class="tick">1</span><span class="body"><b>Read the cursor from SQL</b><span>Not from iManage. SQL is authoritative.</span></span></div>
+              <div class="node loop"><span class="tick">2</span><span class="body"><b>Fetch the batch</b><span><code>GET /…/change-events?cursor=…&amp;item_types=container&amp;actions=…</code></span></span></div>
+              <div class="node loop"><span class="tick">3</span><span class="body"><b>Fetch changed profiles</b><span>One <code>GET /…/workspaces/{id}</code> per distinct <code>object_id</code>. Deduplicate first: several events on one workspace need only one fetch.</span></span></div>
+              <div class="node loop"><span class="tick">4</span><span class="body"><b>Commit atomically</b><span>Workspace upserts and the new cursor in a single transaction.</span></span></div>
+              <div class="node loop"><span class="tick">5</span><span class="body"><b>Mirror to iManage</b><span><code>PUT /…/change-events/queues/{queueId}</code>. Best-effort; failure here is recoverable.</span></span></div>
+              <div class="node loop"><span class="tick">6</span><span class="body"><b>Loop or sleep</b><span>If <code>overflow</code> is true, go again immediately. Otherwise wait for the next timer tick.</span></span></div>
+            </div>
+
+            <div class="callout">
+              <span class="tag">Deduplicate before fetching</span>
+              <p>
+                A single workspace edit can produce several events — <code>update</code>,
+                <code>profile_update</code> and <code>name_value_pair_update</code> in one batch. Group
+                by <code>object_id</code> and fetch each profile once. On a busy batch this is the
+                difference between staying inside the rate-limit budget and not.
+              </p>
+            </div>
+          </div>
+
+          <div class="rail-code">
+            <div class="code">
+              <div class="cap"><span>configuration surface</span></div>
+<pre><span class="c"># make these settings, not constants</span>
+PollIntervalSeconds      = 300
+ChangeEventPageLimit     = 100
+WorkspacePageLimit       = 500
+MaxCyclesPerInvocation   = 20
+RateLimitFloor           = 10
+BackoffOnFloorSeconds    = 30
+ItemTypes                = container
+Actions                  = insert,update,
+   profile_update,
+   name_value_pair_update,delete</pre>
+            </div>
+            <div class="code">
+              <div class="cap"><span>failure handling</span></div>
+<pre>401  → re-authenticate, retry once
+429  → sleep x-ratelimit-reset, retry
+5xx  → exponential backoff, cap at 5
+     → after cap, leave cursor unchanged
+       and exit. Next tick resumes.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-sql">
+        <div class="prose" style="max-width:none">
+          <h2>The state table</h2>
+          <p style="max-width:68ch">
+            One row per library. Keeping the workspaces cursor separate from the change-events cursor
+            matters because the two formats are different and a half-finished backfill needs to resume
+            independently of the event position.
+          </p>
+          <div class="code" style="max-width:820px">
+            <div class="cap"><span>sync state</span><span>T-SQL</span></div>
+<pre><span class="k">CREATE TABLE</span> dbo.ImanageSyncState (
+    LibraryId            <span class="k">NVARCHAR</span>(64)   <span class="k">NOT NULL PRIMARY KEY</span>,
+    CustomerId           <span class="k">INT</span>            <span class="k">NOT NULL</span>,
+    QueueId              <span class="k">NVARCHAR</span>(254)  <span class="k">NULL</span>,
+    ChangeEventCursor    <span class="k">NVARCHAR</span>(254)  <span class="k">NULL</span>,  <span class="c">-- e.g. 2687321</span>
+    BackfillCursor       <span class="k">NVARCHAR</span>(254)  <span class="k">NULL</span>,  <span class="c">-- e.g. 31653;1</span>
+    BackfillComplete     <span class="k">BIT</span>            <span class="k">NOT NULL DEFAULT</span> <span class="n">0</span>,
+    LastSuccessfulPollUtc <span class="k">DATETIME2</span>(3)  <span class="k">NULL</span>,
+    LastEventDateUtc     <span class="k">DATETIME2</span>(3)   <span class="k">NULL</span>,  <span class="c">-- from the newest event seen</span>
+    ConsecutiveFailures  <span class="k">INT</span>            <span class="k">NOT NULL DEFAULT</span> <span class="n">0</span>,
+    LastErrorMessage     <span class="k">NVARCHAR</span>(2000) <span class="k">NULL</span>,
+    UpdatedUtc           <span class="k">DATETIME2</span>(3)   <span class="k">NOT NULL DEFAULT</span> SYSUTCDATETIME()
+);</pre>
+          </div>
+          <p style="max-width:68ch">
+            <code>LastEventDateUtc</code> earns its place as a monitoring signal. Comparing it against
+            the clock gives you sync lag in seconds, which is a far more useful alert than "the
+            Function did not throw."
+          </p>
+        </div>
+      </section>
+
+      <hr class="rule">
+
+      <section id="r-gaps">
+        <div class="prose" style="max-width:none">
+          <h2>Open questions for iManage</h2>
+          <p style="max-width:68ch">
+            Six things the documentation does not settle. These are the contents of the vendor email,
+            listed here so the team can see what is still assumption rather than fact.
+          </p>
+          <ol class="qlist" style="max-width:900px">
+            <li>
+              <span class="qh">Do the queue <code>event_id</code> and the change-events <code>cursor</code> share a namespace?</span>
+              <p>
+                <code>GET /change-events</code> has no <code>queue_id</code> parameter. We infer the
+                queue's <code>event_id</code> is passed as the <code>cursor</code>, based on the
+                published example returning <code>"cursor": "2687321"</code>. Not documented anywhere.
+              </p>
+            </li>
+            <li>
+              <span class="qh">How long are change events retained?</span>
+              <p>
+                Determines whether a long outage costs latency or a full reconciliation. Undocumented.
+              </p>
+            </li>
+            <li>
+              <span class="qh">What are the actual rate limits for our tenant?</span>
+              <p>
+                The headers describe the budget at runtime but give no number to design a polling
+                interval against before go-live.
+              </p>
+            </li>
+            <li>
+              <span class="qh">What type will the service account be, and is <code>allow_logon</code> set?</span>
+              <p>
+                Also whether it qualifies for <code>WORK_MIGRATION</code> or
+                <code>BACKUP_RESTORE_AGENT</code>, which is what gates the faster crawl endpoints.
+              </p>
+            </li>
+            <li>
+              <span class="qh">Is the account outside the external IDP, or does the IDP support OIDC Direct Grant?</span>
+              <p>
+                Password grant fails otherwise, and that is a blocker rather than a workaround.
+              </p>
+            </li>
+            <li>
+              <span class="qh">Which <code>custom</code> fields hold which business values?</span>
+              <p>
+                <code>custom1</code> through <code>custom30</code> are configured per firm. We cannot
+                map client and matter without the schema.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+
+    function activate(tabId, push) {
+      tabs.forEach(function (t) {
+        var on = t.id === tabId;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if (panel) { panel.hidden = !on; }
+        var nav = document.querySelector('.navgroup[data-for="' + t.getAttribute('aria-controls') + '"]');
+        if (nav) { nav.hidden = !on; }
+      });
+      if (push) {
+        history.replaceState(null, '', tabId === 'tab-ref' ? '#panel-ref' : '#panel-setup');
+      }
+    }
+
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function () {
+        activate(t.id, true);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      });
+    });
+
+    // Cross-panel links: a link tagged data-goto switches tab first.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest ? e.target.closest('a[data-goto]') : null;
+      if (!a) { return; }
+      var target = a.getAttribute('data-goto') === 'panel-ref' ? 'tab-ref' : 'tab-setup';
+      activate(target, false);
+    });
+
+    // Deep link support.
+    if (location.hash === '#panel-ref') { activate('tab-ref', false); }
+
+    // Highlight the nav entry for whichever section is in view.
+    var links = Array.prototype.slice.call(document.querySelectorAll('.navgroup a[href^="#"]'));
+    var byId = {};
+    links.forEach(function (l) { byId[l.getAttribute('href').slice(1)] = l; });
+
+    var targets = Object.keys(byId)
+      .map(function (id) { return document.getElementById(id); })
+      .filter(Boolean);
+
+    if ('IntersectionObserver' in window && targets.length) {
+      var seen = {};
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { seen[en.target.id] = en.isIntersecting; });
+        var current = null;
+        targets.forEach(function (t) { if (seen[t.id] && !current) { current = t.id; } });
+        if (current) {
+          links.forEach(function (l) { l.classList.remove('on'); });
+          if (byId[current]) { byId[current].classList.add('on'); }
+        }
+      }, { rootMargin: '0px 0px -70% 0px', threshold: 0 });
+      targets.forEach(function (t) { io.observe(t); });
+    }
+  })();
+</script>
+</body>
+</html>
