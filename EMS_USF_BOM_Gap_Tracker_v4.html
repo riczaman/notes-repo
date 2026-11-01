@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMS USF Decision Tracker</title>
+<script>try{const t=localStorage.getItem('ems-usf-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<style>
+:root{--bg:#fff;--panel:#f3f6f4;--text:#1e2622;--muted:#56625c;--line:#d3dcd7;--green:#1a5336;--red:#a32a1e;--redbg:#f9e7e3;--amber:#7a5b00;--amberbg:#fbf0d5;--okbg:#deede3;--oktx:#155c36;--greybg:#e8ecea;--greytx:#47524c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111714;--panel:#1a221e;--text:#e8eeea;--muted:#a6b3ac;--line:#35433c;--green:#7ed29f;--red:#f59d8f;--redbg:#44201a;--amber:#efd488;--amberbg:#3e320f;--okbg:#1b3b29;--oktx:#a5e2bd;--greybg:#2a3430;--greytx:#c5cfca}}
+:root[data-theme="dark"]{--bg:#111714;--panel:#1a221e;--text:#e8eeea;--muted:#a6b3ac;--line:#35433c;--green:#7ed29f;--red:#f59d8f;--redbg:#44201a;--amber:#efd488;--amberbg:#3e320f;--okbg:#1b3b29;--oktx:#a5e2bd;--greybg:#2a3430;--greytx:#c5cfca}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Calibri,"Segoe UI",Arial,sans-serif}
+main{max-width:1120px;margin:auto;padding:28px 24px 56px}
+.top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between}
+.eyebrow{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:3px 0 6px;font-size:32px;line-height:1.15;color:var(--green)}
+h2{margin:0;font-size:22px;color:var(--green)}
+h3{margin:0 0 4px;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.lead{margin:0 0 18px;max-width:880px}
+button,select{font:inherit;color:var(--text)}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--green)}
+.callout{background:var(--amberbg);color:var(--text);padding:14px 18px;margin-bottom:18px}
+.callout b{color:var(--amber)}
+.criteria{display:grid;grid-template-columns:1.25fr 1fr;border:1px solid var(--line);margin-bottom:22px}
+.criteria>div{padding:14px 16px}
+.criteria>div:first-child{border-right:1px solid var(--line)}
+.criteria ul,.body ul{margin:0;padding-left:19px}
+.criteria li{margin-bottom:4px;font-size:15px}
+.criteria h3{font-size:15px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:700;margin-bottom:6px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center}
+.tools input{flex:1;min-width:210px;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 10px}
+section{margin-top:26px}
+.sec-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.sec-head p{margin:0;color:var(--muted)}
+.issue{border-top:1px solid var(--line)}
+.issue:last-child{border-bottom:1px solid var(--line)}
+.sum{display:grid;grid-template-columns:62px 1fr 20px;gap:12px;align-items:center;padding:12px 4px;width:100%;background:none;border:0;text-align:left;cursor:pointer}
+.sum:hover{background:var(--panel)}
+.iid{font-weight:700;color:var(--muted)}
+.ititle{font-weight:700;font-size:17px;line-height:1.25}
+.ione{display:block;font-weight:400;font-size:14.5px;color:var(--muted);margin-top:2px}
+.chev{color:var(--muted)}
+.body{padding:4px 4px 22px 78px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px}
+.full{grid-column:1/-1}
+.body p{margin:0}
+.body li{margin-bottom:5px}
+.problem{background:var(--panel);padding:11px 14px}
+.risk{background:var(--redbg);padding:11px 14px}
+.dep{background:var(--amberbg);padding:11px 14px}
+.meta{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.meta select{padding:4px 6px;background:var(--bg);border:1px solid var(--line);border-radius:5px}
+.note{font-size:13.5px;color:var(--muted);margin-top:26px;border-top:1px solid var(--line);padding-top:12px}
+@media (max-width:760px){main{padding:18px 16px 40px}.top{flex-direction:column}.criteria{grid-template-columns:1fr}.criteria>div:first-child{border-right:0;border-bottom:1px solid var(--line)}.sum{grid-template-columns:44px 1fr 16px}.body{padding-left:4px}.grid{grid-template-columns:1fr}}
+@media print{.tools,.btn,#theme{display:none}}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><div>
+<div class="eyebrow">USF development team | Project Greenlight</div>
+<h1>EMS integration: BOM feedback and show-stopper decisions</h1>
+</div><button class="btn" id="theme" aria-label="Switch color theme">Dark mode</button></div>
+<p class="lead">The BOM feedback log consolidates into <b>22 issues</b>. None has been confirmed as a show-stopper. Expand any issue for the problem, what BOM users said, requirements and proposed tests.</p>
+<div class="callout"><b>Current position:</b> leadership and the EMS business team decide whether any item is a show-stopper. If it is, we fix it before deployment. If it is not, we deploy and work it as a fast follow.</div>
+<div class="criteria">
+<div><h3>Proposed show-stopper test (for leadership and EMS to confirm)</h3><ul><li>Could a request reach the wrong route or approval path?</li><li>Could an approval be invalid for audit?</li><li>Could BOMs be unable to run a Signing Party?</li><li>Is there no acceptable interim workaround?</li></ul></div>
+<div><h3>How the groups below are organized</h3><ul><li><b>Critical:</b> rated critical in the BOM feedback</li><li><b>Operational readiness:</b> rated important in the feedback, or an operational gap in it</li><li><b>Smaller items:</b> specific form and output feedback</li></ul></div>
+</div>
+<div class="tools">
+<input id="q" type="search" placeholder="Search issues, for example send-back, invoice, agenda" aria-label="Search issues">
+<button class="btn" id="expand">Expand all</button><button class="btn" id="collapse">Collapse all</button>
+</div>
+<div id="out"></div>
+<p class="note"><b>How to read this.</b> Facts come only from EMS_USF_BOM_Testing_Feedback_Master.md, based on the sessions on Oct 22, 27 and 30. § marks its section number. The grouping, proposed test, risk wording where shortened, and proposed tests are summaries for discussion. This page does not confirm current build behaviour.</p>
+</main>
+<script>
+const I=[
+{id:'C-01',t:'c',title:'Intake asks for information before it is known',one:'Reveal questions by lifecycle stage, and add stage and rule data to every field.',owner:'Technology Team; Requirements / BSA; Business SMEs',
+problem:'BOM users distinguish a unified experience from a single up-front form. Pipeline, Vendor Expense, Management Consulting, Procurement, Invoice, Approval to Hire and SPID activities occur at different stages and rely on information that matures over time.',
+bom:['Do not ask every Pipeline, Procurement, MC, Vendor Expense, Invoice and SPID question at the start.','Do not block concept approval by requiring later-stage MC artifacts.','Pipeline should pre-populate SPID where appropriate, and values must remain editable.','Distinguish preliminary estimates from final values and keep appropriate change history.'],
+req:['Initial triage: business-language questions that determine the process.','Pipeline / concept approval: business need, justification, estimated spend, preliminary funding and potential vendor if known.','Post-Pipeline / Procurement / MC: sourcing, consulting, approvals and artifacts when applicable.','Contract / SPID: final vendor, contract, negotiated value, funding confirmation and final approval-to-spend information.','Signing Party / Finance / final decision: validate prerequisites, record outcomes, progress the request and retain evidence.','Extend field mapping with: field, stage first needed, required status, display condition, routing impact, editability, data owner and audit requirement.'],
+risk:'Users provide estimates as final data, do unnecessary work, or struggle to complete the form. Equivalent fields can appear at the wrong stage or with incorrect rules.',
+accept:['Recreate a historical Pipeline request using only concept-stage information.','Progress it through the lifecycle, adding later data when it would realistically be available.','Compare the final record with the historical SPID and contract outcome.'],
+dec:'What are the authoritative lifecycle stages? Which questions and artifacts belong to each? Which fields can change after Pipeline approval and SPID submission?',src:'§1.1, 1.2, 2.3, 3.1, 3.3, 9, 10.1, 11 to 13',legacy:['RSK-01','RSK-12','BKL-01','ACT-01','ACT-06','ACT-07','DEC-01','DEC-02','DEC-03','REQ-06','REQ-17']},
+{id:'C-02',t:'c',title:'Redirects can bypass triage',one:'Preserve decision logic and provide a return path or link from retained EMS flows.',owner:'Technology Team',
+problem:'Users may not know whether they need Pipeline, Vendor Expense, Approval to Hire, Invoice or SPID. A direct redirect into an existing process may bypass essential triage questions.',
+bom:['Ask about facts users understand: whether an approved SOW exists, whether the request is resource-based, whether an invoice already exists.','Approval to Hire routes must not bypass Vendor Expense or Pipeline where contractual setup or an approved SOW is missing.','Resource Type should be derived from, or fixed by, earlier selections.'],
+req:['Preserve the EMS triage decision logic instead of asking users to identify their process.','Where USF redirects to an EMS flow, provide a clear return path or linkage if Vendor Expense or Pipeline is later needed.','Support workforce-specific details and policy-driven routing for resource-based requests.'],
+risk:'Approval to Hire or other routes bypass required triage and enter the wrong workflow.',
+accept:['People / resource-based Vendor Expense follows the expected path.','Approval to Hire requiring Vendor Expense or Pipeline does not bypass the prerequisite.'],
+dec:'Confirm centralized triage and return or linkage expectations for retained EMS flows.',src:'§2.1, 2.4, 9, 10.2, 11, 12',legacy:['RSK-02','BKL-03','ACT-02','REQ-08','REQ-09','TST-02','TST-03']},
+{id:'C-03',t:'c',title:'Invoice routing is not designed',one:'Invoices need explicit rules and must not automatically inherit the $100K Pipeline rule.',owner:'Technology Team',
+problem:'Invoice functionality was not represented in the POC. Invoices may currently enter through Vendor Expense while the dedicated Invoice process continues to evolve.',
+bom:['Invoice routing must not automatically inherit the rule that spend above $100K requires Pipeline.','The current process may use a nominal value during early triage and capture the actual value later.'],
+req:['Give invoices explicit design treatment.','Document invoice-specific bypass, exception and approval rules separately.','Add invoice-specific routing and Pipeline-bypass behaviour.'],
+risk:'Standard spend thresholds incorrectly force invoices into Pipeline.',
+accept:['Invoice above and below $100K, including Pipeline-bypass scenarios, follows documented rules.'],
+dec:'Which invoices bypass Pipeline, and under what conditions?',src:'§2.5, 9, 10.2, 11 to 13',legacy:['RSK-03','BKL-04','ACT-03','DEC-06','REQ-10','TST-04']},
+{id:'C-04',t:'c',title:'Pipeline and SPID approvals must be separate',one:'They are distinct approval exercises and their levels cannot be assumed to align.',owner:'Governance / Business Owners; Technology Team',
+problem:'Pipeline is a concept or pre-approval process confirming strategy, forecast or funding alignment, and permission to proceed. SPID is a later approval-to-spend process based on final contract and expense information.',
+bom:['Pipeline follows its own approval model and may route to Group Head level.','SPID follows the Expense Policy approval grid and generally requires at least VP approval.','A request may legitimately require two approval exercises.','BOMs may require controlled access to update an in-flight SPID between submission and final approval.'],
+req:['Separate Pipeline concept logic from SPID approval-to-spend logic.','Maintain separate configurable approval models, and document where each applies.'],
+risk:'Incorrect approval levels, control failures, or duplicated or omitted approvals.',
+accept:['Pipeline and SPID can use different approval levels on one request, with each outcome recorded.'],
+dec:'What are the authoritative Pipeline and SPID approval matrices?',src:'§2.2, 2.3, 9, 10.2, 11 to 13',legacy:['RSK-04','BKL-02','ACT-09','DEC-05','REQ-07','TST-06']},
+{id:'C-05',t:'c',title:'Agenda and bulk review must fit real BOM work',one:'There is no single Signing Party model, and BOMs cannot open each request individually.',owner:'Technology Team',
+problem:'Different teams run different agenda models. BOMs rely on SharePoint extracts and Excel to review many requests and fields together, and packages can combine resources, Vendor Expense, Pipeline, invoices, Archer findings, business cases and miscellaneous approvals.',
+bom:['Some teams run multiple parties for different executives; others run one meeting with workbook tabs by business or executive.','Some approvals are formal, and others are offline or by email.','Some teams paste agendas into email; others depend on an attached workbook structure.','Pipeline agenda generation may take several minutes, and workbooks often need manual cleanup.','Updating one Pipeline request can be tied to the broader agenda.'],
+req:['Configure agendas by business, executive, approval level, request type and review style.','Allow consolidated agendas across request types.','Filter and group by segment, business, executive, status, approval level and request type.','Support bulk validation and review, queues, search, reporting and historical access.','Allow Presenter to differ from Requestor or Submitter.','Capture meeting and offline outcomes, and preserve historical agendas and evidence.'],
+risk:'A single agenda design fails, and BOMs revert to unmanaged spreadsheets.',
+accept:['Multiple-executive and single-meeting models both work.','Offline approval and formal meeting approval can both be recorded.','High-volume agenda generation and bulk review are usable.'],
+dec:'What agenda and bulk-review capabilities must be available at launch?',src:'§1.3, 4.2, 4.3, 5, 9, 10.2, 11 to 13',legacy:['RSK-06','RSK-07','BKL-06','ACT-04','DEC-09','REQ-11','REQ-12','REQ-13','REQ-14','TST-07','TST-08','TST-14']},
+{id:'C-06',t:'c',title:'Signing Party prerequisites need a gate',one:'Requests should not reach Signing Party without required evidence.',owner:'Business SMEs; Technology Team',
+problem:'BOM testers expect prerequisites before Vendor Expense or SPID reaches Signing Party. If approval occurs without required evidence, it may need to be revisited for audit.',
+bom:['Expected where applicable: Finance Funding Confirmation, SG workflow approval evidence, final draft contract documentation, MC approvals and forms, business case or other approval artifacts.','Attachments should be accessible without direct SharePoint-library navigation or URL manipulation.'],
+req:['Block Signing Party routing when required prerequisites are missing.','Show a clear validation message or gate.','Provide both stage-specific and general document areas.'],
+risk:'Invalid approvals may require audit remediation or reapproval.',
+accept:['A missing prerequisite attachment produces a clear message and blocks progression.'],
+dec:'What prerequisite evidence must block Signing Party progression?',src:'§7, 9, 10.2, 11, 13',legacy:['RSK-08','BKL-07','DEC-08','REQ-15','TST-11']},
+{id:'C-07',t:'c',title:'Corrections need a controlled send-back path',one:'Define who changes what, when approvals stay valid, and when reapproval is required.',owner:'Governance / Business Owners; Technology Team',
+problem:'The current SPID process has no formal Send Back capability. Corrections are often requested through Teams or during the review meeting.',
+bom:['Best practice is for the submitter or requestor to correct their own request.','BOMs may make selected changes, but should not become default maintainers.','Minor clarification may not require executive re-review.','Changes to negotiated values, contractual terms, scope or other substantive information may require reapproval.'],
+req:['Formal return or send-back status.','Correction reason and comments.','Requestor notification.','Version and change history.','Clear rules for when previous approvals remain valid.','Automatic reapproval when material fields change.','Controlled BOM or administrator override where necessary.'],
+risk:'Changes after approval may not be traceable and may invalidate earlier decisions.',
+accept:['Request correction before approval works.','Material change after approval triggers reapproval.'],
+dec:'What changes require executive reapproval?',src:'§6, 9, 10.2, 11, 13',legacy:['RSK-09','BKL-08','DEC-04','TST-09','TST-10']},
+{id:'C-08',t:'c',title:'Status progression needs visible exception handling',one:'Approved requests must move reliably, and stuck records must be visible.',owner:'Technology Team',
+problem:'Pipeline does not always advance reliably after an agenda closes. BOMs manually monitor records and escalate items that appear approved but do not receive the expected next status.',
+bom:['SPID review is heavily status-driven.','Statuses may include Submitted / Not Yet Reviewed, VP Approved / SVP Approval Required, CIO FYI Required, CIO Approval Required, Finance stages, Fully Approved, Rejected, On Hold and Cancelled.'],
+req:['Reliably move each request to the next queue or approval stage.','Add transactional routing, visible exceptions, alerts and reconciliation reporting.'],
+risk:'Approved requests become stuck and require manual detection.',
+accept:['A stuck or failed status progression is visible and can be resolved.'],
+dec:'Confirm exception ownership as part of the support model.',src:'§5.2, 5.3, 5.4, 9, 10.2, 11',legacy:['RSK-10','BKL-09','REQ-16','TST-13']},
+{id:'C-09',t:'c',title:'BOM visibility model needs confirmation',one:'Confirm whether segment is a default filter or an access boundary.',owner:'Security / Product Owners',
+problem:'BOM users appear to have broad visibility across segments, with their own segment as a default view. This differs from a design restricting BOMs to one segment unless they have administrator access.',
+bom:['Common filters include VP, SVP, EVP, state, submission status and pending status.'],
+req:['Confirm the target access model, including cross-business coverage.','Validate enterprise visibility, default filters, role boundaries and delegated coverage.'],
+risk:'BOMs cannot provide cross-business coverage, or receive excessive access.',
+accept:['Cross-segment BOM coverage works under the confirmed model.'],
+dec:'Is BOM enterprise-wide visibility required, with segment as a default filter?',src:'§4.4, 9, 10.2, 11 to 13',legacy:['RSK-14','BKL-05','ACT-10','DEC-07','TST-12']},
+{id:'C-10',t:'c',title:'Connected EMS processes need a roadmap',one:'Named in the feedback as the most material program risk.',owner:'Program / Change Management',
+problem:'Moving Vendor Expense into USF before connected processes have a clear migration roadmap could fragment the existing EMS ecosystem.',
+bom:['A technically improved Vendor Expense experience could still increase business complexity.','Users may navigate multiple platforms, duplicate triage or determine routing themselves.'],
+req:['Publish a phased migration roadmap.','Preserve triage.','Provide integrated navigation and communications.'],
+risk:'Users work across multiple tools, lose end-to-end visibility and experience increased confusion.',
+accept:['No specific test scenario is listed; confirm through the follow-up BOM walkthrough.'],
+dec:'What is the migration roadmap for Approval to Hire, Business Casing, Invoice and other connected EMS processes?',src:'Executive Summary, §9, 11 to 13',legacy:['RSK-05','BKL-10','ACT-11','DEC-10']},
+
+{id:'O-01',t:'o',title:'Approval outcomes and locking',one:'Capture a complete decision record and control post-decision changes.',owner:'Not named in the feedback',
+problem:'BOM and Signing Party leads need decision evidence after a meeting or offline review.',bom:['Authorized leads or administrators may need elevated access to unlock or amend records.'],
+req:['Record decision, date, approver, level, business-visible notes, private admin notes, outcome documents and next queue.','Fully decisioned requests may be locked.','Make post-approval changes auditable.','Keep evidence attached for audit and historical review.'],
+risk:'Audit evidence may be incomplete or changes may be uncontrolled.',accept:['Historical search and audit-evidence retrieval works.'],dec:'Who may unlock or amend a decided record?',src:'§8, 10.2, 11',legacy:['BKL-14','BKL-15','BKL-16','TST-15']},
+{id:'O-02',t:'o',title:'Attachments and MC artifacts',one:'Support documents that arrive later, plus a general evidence area.',owner:'Technology Team',
+problem:'MC artifacts may not exist at initial intake. The application also needs a place for contracts, business cases, correspondence, emails and other evidence.',bom:['Proof-of-Funding and MC artifacts should remain in their applicable sections.','SET and Segment CFO approval artifacts may also be required.'],
+req:['Add general attachments alongside stage-specific artifacts.','Allow the Consulting Approval Form to be downloaded, completed and uploaded.','Allow later addition before the relevant MC gate or Ariba submission.'],
+risk:'Users may be blocked or evidence may be scattered.',accept:['MC with artifacts added after initial submission works.'],dec:'Confirm required MC artifacts per stage.',src:'§3.2, 3.3, 7, 10.2, 11, 12',legacy:['BKL-11','ACT-05','REQ-04','REQ-05','TST-05']},
+{id:'O-03',t:'o',title:'Scale and performance',one:'Test queues, exports, search and agenda generation at realistic volume.',owner:'Not named in the feedback',
+problem:'The current Signing Party portal was described as containing more than 40,000 items after about two years.',bom:['Performance and data-volume design are material requirements.'],
+req:['Performance-test queues, exports, search and agenda generation at realistic scale, including more than 40,000 records.'],
+risk:'Large queues, agenda generation and historical searches become slow or unreliable.',accept:['High-volume scenarios meet agreed targets.'],dec:'What performance targets apply?',src:'§4.3, 9, 11, 13',legacy:['RSK-15','BKL-17','DEC-12']},
+{id:'O-04',t:'o',title:'Day 2 support',one:'Define support and escalation for Signing Party windows.',owner:'Operations / Support',
+problem:'BOM and Signing Party leads currently escalate operational and technical incidents. Approval meetings and queues can be disrupted by unresolved incidents.',bom:['Urgent escalation coverage matters during Signing Party windows.'],
+req:['Define support tiers, urgent escalation channels, named ownership, SLAs and monitoring.'],
+risk:'Approval meetings and queues are disrupted.',accept:['No specific test scenario is listed; confirm support readiness in acceptance.'],dec:'What support and escalation coverage is required during Signing Party windows?',src:'§4.1, 9, 10.3, 11 to 13',legacy:['RSK-16','BKL-18','ACT-12','DEC-11']},
+{id:'O-05',t:'o',title:'Requirements governance',one:'Manage ongoing EMS process changes.',owner:'Not named in the feedback',
+problem:'Continued EMS changes create redesign and misalignment.',bom:['The solution must accommodate evolving processes, structures, names, policies, funding types and routing rules.'],
+req:['Establish requirements governance, change intake, impact assessment and regular business validation.'],
+risk:'Redesign and misalignment.',accept:['No specific test scenario is listed.'],dec:'Who owns requirements governance?',src:'§1.3, 9, 11',legacy:['RSK-11','BKL-20']},
+{id:'O-06',t:'o',title:'Adoption and validation with real requests',one:'Test with real historical requests and prepare users for a phased transition.',owner:'Business and Technology; Program / Change Management; Project Team',
+problem:'BOM testers recommended real previously approved requests instead of generic sample data. Users may otherwise find the consolidated solution harder than the current process.',bom:['Identify premature questions, missing questions, redundant fields, incorrect routing and invalid approval assumptions.','A follow-up walkthrough is open and scheduling constrained.'],
+req:['Test using real historical Pipeline, SPID, Invoice and resource-based examples.','Use business-language prompts.','Create change-management materials for a potentially phased transition.','Conduct a follow-up BOM walkthrough.'],
+risk:'Users find the solution harder, and adoption suffers.',accept:['Non-people Vendor Expense passes with a real historical example.'],dec:'Which historical requests should be used?',src:'§9, 10, 11, 12',legacy:['RSK-13','BKL-19','ACT-08','ACT-13','TST-01']},
+
+{id:'S-01',t:'s',title:'Description length',one:'Assess about 1,200 characters against real examples.',owner:'Not named in the feedback',problem:'The limit shown at about 800 characters may be insufficient.',bom:['About 1,200 characters should be assessed using real historical examples.'],req:['Finalize the limit using real examples.'],risk:'Executive-level descriptions may be cut short.',accept:['Real historical descriptions fit.'],dec:'Confirm the final limit.',src:'§3.2, 11',legacy:['BKL-12']},
+{id:'S-02',t:'s',title:'Presenter separate from Requestor and Submitter',one:'The presenter can be a different person.',owner:'Not named in the feedback',problem:'Presenter must remain distinct from Requestor and Submitter.',bom:['Agenda Builder should allow a different Presenter.'],req:['Keep Presenter as a separate value.'],risk:'Agendas could show the wrong presenter.',accept:['A request can show a different Presenter on its agenda.'],dec:'None listed.',src:'§3.2, 5.4, 11',legacy:['BKL-13']},
+{id:'S-03',t:'s',title:'Funding confirmation name',one:'Capture who provided funding confirmation.',owner:'Not named in the feedback',problem:'The feedback requires the funding confirmation name to be captured.',bom:['Funding confirmation name must be captured.'],req:['Add or confirm the funding confirmation name.'],risk:'Reviewers may not see who confirmed funding.',accept:['The name is visible on the request.'],dec:'None listed.',src:'§3.2',legacy:['REQ-02']},
+{id:'S-04',t:'s',title:'Segment and Business Unit relationship',one:'Segment should constrain Business Unit values.',owner:'Not named in the feedback',problem:'Dropdowns should reflect the approved organizational mapping.',bom:['Segment should constrain available Business Unit values.'],req:['Use the approved Segment to Business Unit mapping.'],risk:'Invalid combinations could be selected.',accept:['Selecting a Segment limits Business Unit values.'],dec:'Confirm the approved mapping.',src:'§1.3, 3.2',legacy:['REQ-01']},
+{id:'S-05',t:'s',title:'Filename handling',one:'Support standard business filenames and common special characters.',owner:'Not named in the feedback',problem:'Uploads should not fail unnecessarily on normal filenames.',bom:['Support common special characters.'],req:['Accept standard business filenames and common special characters.'],risk:'Unnecessary upload failures.',accept:['Representative filenames upload successfully.'],dec:'None listed.',src:'§3.2',legacy:['REQ-03']},
+{id:'S-06',t:'s',title:'Agenda workbook cleanup',one:'Reduce manual cleanup and reformatting.',owner:'Technology Team',problem:'Pipeline agenda workbooks often require manual cleanup and reformatting.',bom:['Generation may also take several minutes.'],req:['Reduce manual formatting after the core agenda decisions are made.'],risk:'BOM preparation stays manual.',accept:['Generated output needs less cleanup.'],dec:'None listed.',src:'§5.2',legacy:[]}
+];
+const SEC={c:['Critical: decision needed','Rated critical in the BOM feedback. Show-stopper or fast follow?'],o:['Operational readiness','Important in the feedback. Fast follow unless leadership or EMS decides otherwise.'],s:['Smaller items','Specific feedback. Fast follow unless leadership or EMS decides otherwise.']};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const list=a=>`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`;
+const open=new Set(),$=id=>document.getElementById(id);
+function render(){
+ const q=$('q').value.trim().toLowerCase();
+ $('out').innerHTML=['c','o','s'].map(k=>{
+  const a=I.filter(i=>i.t===k&&(!q||JSON.stringify(i).toLowerCase().includes(q)));if(!a.length)return'';
+  return `<section><div class="sec-head"><h2>${SEC[k][0]} (${a.length})</h2><p>${SEC[k][1]}</p></div>${a.map(i=>{const o=open.has(i.id);return `<article class="issue"><button class="sum" data-id="${i.id}" aria-expanded="${o}"><span class="iid">${i.id}</span><span class="ititle">${esc(i.title)}<span class="ione">${esc(i.one)}</span></span><span class="chev">${o?'▾':'▸'}</span></button>${o?`<div class="body"><div class="grid">
+<div class="full problem"><h3>The problem</h3><p>${esc(i.problem)}</p></div>
+<div><h3>What BOM users said</h3>${list(i.bom)}</div>
+<div><h3>Requirements in the feedback</h3>${list(i.req)}</div>
+<div class="risk"><h3>Risk if it remains open at deployment</h3><p>${esc(i.risk)}</p></div>
+<div class="dep"><h3>Decision needed</h3><p>${esc(i.dec)}</p></div>
+<div class="full"><h3>Proposed test</h3>${list(i.accept)}</div>
+<div class="full meta"><span><b>Owner:</b> ${esc(i.owner)}</span><span><b>Source:</b> ${esc(i.src)}</span></div>
+</div></div>`:''}</article>`}).join('')}</section>`}).join('')||'<p>No issues match this search.</p>';
+}
+$('out').addEventListener('click',e=>{const b=e.target.closest('.sum');if(b){const id=b.dataset.id;open.has(id)?open.delete(id):open.add(id);render()}});
+$('q').addEventListener('input',render);
+$('expand').onclick=()=>{I.forEach(i=>open.add(i.id));render()};
+$('collapse').onclick=()=>{open.clear();render()};
+function themeLabel(){const d=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');$('theme').textContent=d==='dark'?'Light mode':'Dark mode';return d}
+$('theme').onclick=()=>{const n=themeLabel()==='dark'?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('ems-usf-theme',n)}catch(e){}themeLabel()};
+themeLabel();render();
+</script>
+</body>
+</html>
